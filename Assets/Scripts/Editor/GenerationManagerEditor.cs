@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace Editor
         private const string CachedGeneratorNamesKey = "CachedGeneratorNames";
         private const string CachedGenerationManagerIdKey = "CachedGenerationManagerId";
         private const string PrefabPath = "Assets/Prefabs/GenerationManager.prefab";
+        private const string SavedDungeonPathKey = "SavedDungeonPath";
 
         private List<BaseGenerator> _generators = new();
         private int _selectedGeneratorIndex;
@@ -95,30 +97,58 @@ namespace Editor
         private void DrawGeneratorSettings()
         {
             if (!_currentGenerator) return;
-
+        
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Generator Settings", EditorStyles.boldLabel);
-
+        
             var generatorObject = new SerializedObject(_currentGenerator);
             var property = generatorObject.GetIterator();
             property.NextVisible(true); // Skip the first property (script)
-
+        
             while (property.NextVisible(false))
             {
                 EditorGUILayout.PropertyField(property, true);
             }
-
+        
             generatorObject.ApplyModifiedProperties();
-
+        
             EditorGUILayout.Space();
             if (GUILayout.Button("Generate Dungeon"))
             {
                 Generate();
             }
-
+        
             if (GUILayout.Button("Clear Dungeon"))
             {
                 _currentGenerator.ClearDungeon();
+            }
+            
+            if (GUILayout.Button("Save Dungeon"))
+            {
+                SaveDungeon();
+            }
+            
+            if (GUILayout.Button("Load Dungeon"))
+            {
+                
+            }
+        }
+        
+        private void SaveDungeon()
+        {
+            var path = EditorPrefs.GetString(SavedDungeonPathKey, string.Empty);
+            if (string.IsNullOrEmpty(path))
+            {
+                path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    EditorPrefs.SetString(SavedDungeonPathKey, path);
+                }
+            }
+        
+            if (!string.IsNullOrEmpty(path))
+            {
+                _currentGenerator.SaveDungeon(path);
             }
         }
 

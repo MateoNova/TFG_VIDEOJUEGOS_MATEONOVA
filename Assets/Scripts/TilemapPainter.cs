@@ -56,4 +56,58 @@ public class TilemapPainter : MonoBehaviour
         walkableTilemap?.ClearAllTiles();
         wallTilemap?.ClearAllTiles();
     }
+
+   public void SaveTilemap(string path)
+   {
+       var walkableTiles = new List<SerializableTile>();
+       var wallTiles = new List<SerializableTile>();
+   
+       foreach (var pos in walkableTilemap.cellBounds.allPositionsWithin)
+       {
+           var tile = walkableTilemap.GetTile(pos);
+           if (tile)
+           {
+               walkableTiles.Add(new SerializableTile(pos, tile.name));
+           }
+       }
+   
+       foreach (var pos in wallTilemap.cellBounds.allPositionsWithin)
+       {
+           var tile = wallTilemap.GetTile(pos);
+           if (tile)
+           {
+               wallTiles.Add(new SerializableTile(pos, tile.name));
+           }
+       }
+   
+       var tilemapData = new TilemapData(walkableTiles, wallTiles);
+       var json = JsonUtility.ToJson(tilemapData);
+       System.IO.File.WriteAllText(path, json);
+   }
+}
+
+[System.Serializable]
+public class TilemapData
+{
+    public List<SerializableTile> walkableTiles;
+    public List<SerializableTile> wallTiles;
+
+    public TilemapData(List<SerializableTile> walkableTiles, List<SerializableTile> wallTiles)
+    {
+        this.walkableTiles = walkableTiles;
+        this.wallTiles = wallTiles;
+    }
+}
+
+[System.Serializable]
+public class SerializableTile
+{
+    public Vector3Int position;
+    public string tileName;
+
+    public SerializableTile(Vector3Int position, string tileName)
+    {
+        this.position = position;
+        this.tileName = tileName;
+    }
 }
