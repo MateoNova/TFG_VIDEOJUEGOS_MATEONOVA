@@ -35,4 +35,14 @@ public abstract class BaseGenerator : MonoBehaviour
     /// Must be implemented by derived classes.
     /// </summary>
     protected abstract void RunGeneration();
+
+    public void ClearDungeon()
+    {
+        if (!tilemapPainter)
+        {
+            Debug.LogError("TilemapVisualizer is not assigned.");
+            return;
+        }
+        tilemapPainter.ResetAllTiles();
+    }
 }
