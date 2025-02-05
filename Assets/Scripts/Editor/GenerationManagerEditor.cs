@@ -14,7 +14,6 @@ namespace Editor
         private BaseGenerator _currentGenerator;
         private List<string> _cachedGeneratorNames = new();
         private GameObject _cachedGenerationManager;
-        private static GameObject _cachedPrefab;
 
         /// <summary>
         /// Shows the Generation Manager window.
@@ -28,8 +27,9 @@ namespace Editor
         /// <summary>
         /// Called when the window is enabled.
         /// </summary>
-        private void Awake()
+        private void OnEnable()
         {
+            InitScene();
             FindAllGenerators();
         }
 
@@ -38,11 +38,6 @@ namespace Editor
         /// </summary>
         private void OnGUI()
         {
-            if (GUILayout.Button("Init"))
-            {
-                InitScene();
-            }
-
             if (_generators == null || _generators.Count == 0)
             {
                 EditorGUILayout.LabelField("No generators found in the scene.");
@@ -103,14 +98,7 @@ namespace Editor
 
             if (_cachedGenerationManager)
             {
-                // Si ya tenemos los generadores cacheados, no los volvemos a buscar
-                if (_generators.Count == 0)
-                {
-                    _cachedGenerationManager.TryGetComponent(out BaseGenerator rootGenerator);
-                    Debug.Log("hola");
-                    _generators = new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
-                }
-
+                _generators = new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
                 _cachedGeneratorNames = GetGeneratorNames();
             }
             else
@@ -120,7 +108,6 @@ namespace Editor
                 _cachedGeneratorNames.Clear();
             }
         }
-
 
         /// <summary>
         /// Generates the dungeon using the selected generator.
@@ -143,20 +130,16 @@ namespace Editor
         /// <param name="index">The index of the generator to select.</param>
         private void SelectGenerator(int index)
         {
-            if (index == _selectedGeneratorIndex) return; // No hacer nada si el índice no ha cambiado
-
             if (index >= 0 && index < _generators.Count)
             {
                 _selectedGeneratorIndex = index;
                 _currentGenerator = _generators[_selectedGeneratorIndex];
-                EditorUtility.SetDirty(this);
             }
             else
             {
                 Debug.LogWarning("Invalid generator index.");
             }
         }
-
 
         /// <summary>
         /// Gets the names of all generators.
@@ -189,32 +172,46 @@ namespace Editor
         /// <summary>
         /// Initializes the scene with the necessary GameObjects.
         /// </summary>
-       
-
+        private static GameObject _cachedPrefab;
+        
         private void InitScene()
         {
-            if (!_cachedGenerationManager)
+            // Try to retrieve the cached GenerationManager from EditorPrefs
+            var cachedGenerationManagerId = EditorPrefs.GetInt("CachedGenerationManagerId", -1);
+            if (cachedGenerationManagerId != -1)
+            {
+                _cachedGenerationManager = EditorUtility.InstanceIDToObject(cachedGenerationManagerId) as GameObject;
+            }
+        
+            if (_cachedGenerationManager == null)
             {
                 _cachedGenerationManager = GameObject.Find("GenerationManager");
+                if (_cachedGenerationManager != null)
+                {
+                    // Cache the instance ID of the found GenerationManager
+                    EditorPrefs.SetInt("CachedGenerationManagerId", _cachedGenerationManager.GetInstanceID());
+                    Debug.Log("GenerationManager encontrado en la escena.");
+                }
             }
-
+        
             if (_cachedGenerationManager)
             {
                 Debug.LogWarning("GenerationManager ya existe en la escena.");
                 return;
             }
-
-            if (!_cachedPrefab)
+        
+            if (_cachedPrefab == null)
             {
                 _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/GenerationManager.prefab");
+                Debug.Log("Prefab cargado.");
             }
 
-            if (_cachedPrefab)
-            {
-                _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
-            }
-    
-            FindAllGenerators();
+            if (!_cachedPrefab) return;
+            
+            _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
+            // Cache the instance ID of the instantiated GenerationManager
+            EditorPrefs.SetInt("CachedGenerationManagerId", _cachedGenerationManager.GetInstanceID());
+            Debug.Log("GenerationManager instanciado.");
         }
 
     }
