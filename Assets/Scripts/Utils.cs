@@ -1,6 +1,14 @@
 ﻿using UnityEngine;
+
+/// <summary>
+/// Utility class providing helper methods.
+/// </summary>
 public static class Utils
 {
+    /// <summary>
+    /// Gets a random cardinal direction (up, right, down, left).
+    /// </summary>
+    /// <returns>A Vector2Int representing a random cardinal direction.</returns>
     public static Vector2Int GetRandomCardinalDirection()
     {
         var direction = Random.Range(0, 4);
