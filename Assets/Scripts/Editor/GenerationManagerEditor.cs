@@ -125,15 +125,25 @@ namespace Editor
             
             if (GUILayout.Button("Save Dungeon"))
             {
+                Debug.Log("Save Dungeon");
                 SaveDungeon();
             }
             
             if (GUILayout.Button("Load Dungeon"))
             {
-                
+                LoadDungeon();
             }
         }
-        
+
+        private void LoadDungeon()
+        {
+            var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
+            if (!string.IsNullOrEmpty(path))
+            {
+                _currentGenerator.LoadDungeon(path);
+            }
+        }
+
         private void SaveDungeon()
         {
             var path = EditorPrefs.GetString(SavedDungeonPathKey, string.Empty);
@@ -145,11 +155,25 @@ namespace Editor
                     EditorPrefs.SetString(SavedDungeonPathKey, path);
                 }
             }
-        
-            if (!string.IsNullOrEmpty(path))
+
+            if (string.IsNullOrEmpty(path)) return;
+            
+            if (System.IO.File.Exists(path))
             {
-                _currentGenerator.SaveDungeon(path);
+                var overwrite = EditorUtility.DisplayDialog(
+                    "Overwrite Confirmation",
+                    "The file already exists. Do you want to overwrite it?",
+                    "Yes",
+                    "No"
+                );
+            
+                if (!overwrite)
+                {
+                    return; // User chose not to overwrite the file
+                }
             }
+            
+            _currentGenerator.SaveDungeon(path);
         }
 
         /// <summary>

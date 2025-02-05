@@ -55,4 +55,14 @@ public abstract class BaseGenerator : MonoBehaviour
         }
         tilemapPainter.SaveTilemap(path);
     }
+
+    public void LoadDungeon(string path)
+    {
+        if (!tilemapPainter)
+        {
+            Debug.LogError("TilemapVisualizer is not assigned.");
+            return;
+        }
+        tilemapPainter.LoadTilemap(path);
+    }
 }

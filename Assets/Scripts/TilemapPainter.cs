@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -83,6 +85,33 @@ public class TilemapPainter : MonoBehaviour
        var tilemapData = new TilemapData(walkableTiles, wallTiles);
        var json = JsonUtility.ToJson(tilemapData);
        System.IO.File.WriteAllText(path, json);
+   }
+
+   public void LoadTilemap(string path)
+   {
+       var json = System.IO.File.ReadAllText(path);
+       var tilemapData = JsonUtility.FromJson<TilemapData>(json);
+
+       ResetAllTiles();
+
+       foreach (var tile in tilemapData.walkableTiles)
+       {
+           var tileBase = GetTileBaseByName(tile.tileName);
+           walkableTilemap.SetTile(tile.position, tileBase);
+       }
+
+       foreach (var tile in tilemapData.wallTiles)
+       {
+           var tileBase = GetTileBaseByName(tile.tileName);
+           wallTilemap.SetTile(tile.position, tileBase);
+       }
+   }
+
+   private static TileBase GetTileBaseByName(string tileName)
+   {
+       // Find all assets with the specified name
+       var guids = AssetDatabase.FindAssets(tileName, new[] {"Assets/Assets/TilemapsDungeonTilesetil"});
+       return guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Select(AssetDatabase.LoadAssetAtPath<TileBase>).FirstOrDefault(tile => tile && tile.name == tileName);
    }
 }
 
