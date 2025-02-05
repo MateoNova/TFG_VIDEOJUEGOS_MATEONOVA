@@ -9,7 +9,7 @@ public abstract class BaseGenerator : MonoBehaviour
     /// The TilemapRenderer used to visualize the dungeon.
     /// </summary>
     [SerializeField]
-    protected TilemapRenderer tilemapRenderer;
+    protected TilemapPainter tilemapPainter;
     
     /// <summary>
     /// The origin point for the dungeon generation.
@@ -22,12 +22,12 @@ public abstract class BaseGenerator : MonoBehaviour
     /// </summary>
     public void GenerateDungeon()
     {
-        if (!tilemapRenderer)
+        if (!tilemapPainter)
         {
             Debug.LogError("TilemapVisualizer is not assigned.");
             return;
         }
-        tilemapRenderer.ResetAllTiles();
+        tilemapPainter.ResetAllTiles();
         RunGeneration();
     }
     /// <summary>

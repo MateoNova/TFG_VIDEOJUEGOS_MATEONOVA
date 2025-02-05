@@ -8,13 +8,13 @@ public class WallGenerator : MonoBehaviour
     /// Generates walls based on the positions of walkable tiles.
     /// </summary>
     /// <param name="walkableTilesPositions">A set of positions of walkable tiles.</param>
-    /// <param name="tilemapRenderer">The TilemapRenderer used to render the wall tiles.</param>
-    public static void GenerateWalls(HashSet<Vector2Int> walkableTilesPositions, TilemapRenderer tilemapRenderer)
+    /// <param name="tilemapPainter">The TilemapRenderer used to render the wall tiles.</param>
+    public static void GenerateWalls(HashSet<Vector2Int> walkableTilesPositions, TilemapPainter tilemapPainter)
     {
         var wallPositions = GetWallsPositions(walkableTilesPositions);
         foreach (var position in wallPositions)
         {
-            tilemapRenderer.RenderWallTiles(new[] { position });
+            tilemapPainter.PaintWallTiles(new[] { position });
         }
     }
 

@@ -20,8 +20,8 @@ namespace RandomWalkGeneration
         protected override void RunGeneration()
         { 
             var floorPositions = GenerateWalkableArea();
-            tilemapRenderer.RenderWalkableTiles(floorPositions);
-            WallGenerator.GenerateWalls(floorPositions, tilemapRenderer);
+            tilemapPainter.PaintWalkableTiles(floorPositions);
+            WallGenerator.GenerateWalls(floorPositions, tilemapPainter);
         }
 
         /// <summary>
