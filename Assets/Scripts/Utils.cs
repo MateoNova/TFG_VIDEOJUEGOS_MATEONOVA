@@ -6,6 +6,14 @@
 public static class Utils
 {
     /// <summary>
+    /// Array of cardinal directions (up, down, left, right).
+    /// </summary>
+    public static readonly Vector2Int[] Directions = 
+    {
+        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
+    };
+    
+    /// <summary>
     /// Gets a random cardinal direction (up, right, down, left).
     /// </summary>
     /// <returns>A Vector2Int representing a random cardinal direction.</returns>

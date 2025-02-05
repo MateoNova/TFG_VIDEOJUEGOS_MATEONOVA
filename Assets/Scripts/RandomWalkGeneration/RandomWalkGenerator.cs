@@ -21,6 +21,7 @@ namespace RandomWalkGeneration
         { 
             var floorPositions = GenerateWalkableArea();
             tilemapRenderer.RenderWalkableTiles(floorPositions);
+            WallGenerator.GenerateWalls(floorPositions, tilemapRenderer);
         }
 
         /// <summary>

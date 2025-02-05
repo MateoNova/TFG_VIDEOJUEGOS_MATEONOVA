@@ -11,13 +11,13 @@ public class TilemapRenderer : MonoBehaviour
     /// The Tilemap used to render walkable tiles.
     /// </summary>
     [SerializeField]
-    private Tilemap walkableTilemap;
+    private Tilemap walkableTilemap, wallTilemap;
 
     /// <summary>
     /// The TileBase used for walkable tiles.
     /// </summary>
     [SerializeField]
-    private TileBase walkableTileBase;
+    private TileBase walkableTileBase, wallTileBase;
 
     /// <summary>
     /// Renders the walkable tiles at the specified positions.
@@ -26,6 +26,11 @@ public class TilemapRenderer : MonoBehaviour
     public void RenderWalkableTiles(IEnumerable<Vector2Int> tilesPositions)
     {
         RenderTiles(tilesPositions, walkableTilemap, walkableTileBase);
+    }
+
+    public void RenderWallTiles(IEnumerable<Vector2Int> position)
+    {
+        RenderTiles(position, wallTilemap, wallTileBase);
     }
 
     /// <summary>
@@ -44,10 +49,11 @@ public class TilemapRenderer : MonoBehaviour
     }
 
     /// <summary>
-    /// Clears all tiles from the walkable Tilemap.
+    /// Clears all tiles from grid.
     /// </summary>
     public void ResetAllTiles()
     {
         walkableTilemap?.ClearAllTiles();
+        wallTilemap?.ClearAllTiles();
     }
 }

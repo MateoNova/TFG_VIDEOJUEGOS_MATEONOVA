@@ -1,0 +1,40 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public class WallGenerator : MonoBehaviour
+{
+    /// <summary>
+    /// Generates walls based on the positions of walkable tiles.
+    /// </summary>
+    /// <param name="walkableTilesPositions">A set of positions of walkable tiles.</param>
+    /// <param name="tilemapRenderer">The TilemapRenderer used to render the wall tiles.</param>
+    public static void GenerateWalls(HashSet<Vector2Int> walkableTilesPositions, TilemapRenderer tilemapRenderer)
+    {
+        var wallPositions = GetWallsPositions(walkableTilesPositions);
+        foreach (var position in wallPositions)
+        {
+            tilemapRenderer.RenderWallTiles(new[] { position });
+        }
+    }
+
+    /// <summary>
+    /// Gets the positions of walls based on the positions of floor tiles.
+    /// </summary>
+    /// <param name="floorPositions">A set of positions of floor tiles.</param>
+    /// <returns>A set of positions of wall tiles.</returns>
+    private static HashSet<Vector2Int> GetWallsPositions(HashSet<Vector2Int> floorPositions)
+    {
+        var neighborPositions = new HashSet<Vector2Int>();
+    
+        foreach (var neighborPos in from position in floorPositions
+                 from direction in Utils.Directions
+                 select position + direction)
+        {
+            neighborPositions.Add(neighborPos);
+        }
+    
+        neighborPositions.ExceptWith(floorPositions);
+        return neighborPositions;
+    }
+}
