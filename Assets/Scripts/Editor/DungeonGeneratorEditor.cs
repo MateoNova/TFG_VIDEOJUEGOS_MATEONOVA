@@ -6,7 +6,7 @@ using UnityEngine;
 /// TODO: it will be deleted after the tool is done
 /// </summary>
 [CustomEditor(typeof(BaseGenerator), true)]
-public class DungeonGeneratorEditor : Editor
+public class DungeonGeneratorEditor : UnityEditor.Editor
 {
     /// <summary>
     /// Reference to the BaseGenerator instance being edited.
