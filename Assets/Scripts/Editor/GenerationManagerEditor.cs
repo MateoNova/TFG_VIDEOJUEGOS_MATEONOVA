@@ -38,6 +38,9 @@ namespace Editor
             InitScene();
         }
 
+        /// <summary>
+        /// Initializes the scene by retrieving or instantiating the Generation Manager.
+        /// </summary>
         private void InitScene()
         {
             _cachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
@@ -60,6 +63,9 @@ namespace Editor
             DrawGeneratorSettings();
         }
 
+        /// <summary>
+        /// Draws the buttons for the window.
+        /// </summary>
         private void DrawButtons()
         {
             EditorGUILayout.Space();
@@ -74,12 +80,18 @@ namespace Editor
             }
         }
 
+        /// <summary>
+        /// Draws the generator selection dropdown.
+        /// </summary>
         private void DrawGeneratorSelection()
         {
             _selectedGeneratorIndex = EditorGUILayout.Popup("Select Generator", _selectedGeneratorIndex, _cachedGeneratorNames.ToArray());
             SelectGenerator(_selectedGeneratorIndex);
         }
 
+        /// <summary>
+        /// Draws the settings for the selected generator.
+        /// </summary>
         private void DrawGeneratorSettings()
         {
             if (!_currentGenerator) return;
@@ -119,7 +131,10 @@ namespace Editor
             {
                 _generators = new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
                 _cachedGeneratorNames = GetGeneratorNames();
-                CacheGeneratorNames();
+                if (_cachedGeneratorNames.Count > 0)
+                {
+                    EditorPrefs.SetString(CachedGeneratorNamesKey, string.Join(",", _cachedGeneratorNames));
+                }
             }
             else
             {
@@ -128,14 +143,9 @@ namespace Editor
             }
         }
 
-        private void CacheGeneratorNames()
-        {
-            if (_cachedGeneratorNames.Count > 0)
-            {
-                EditorPrefs.SetString(CachedGeneratorNamesKey, string.Join(",", _cachedGeneratorNames));
-            }
-        }
-
+        /// <summary>
+        /// Clears the generator lists and cached generator names.
+        /// </summary>
         private void ClearGeneratorLists()
         {
             _generators.Clear();
@@ -198,6 +208,10 @@ namespace Editor
             return names;
         }
 
+        /// <summary>
+        /// Retrieves the cached Generation Manager from EditorPrefs.
+        /// </summary>
+        /// <returns>The cached Generation Manager GameObject.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
             var cachedGenerationManagerId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
@@ -208,6 +222,10 @@ namespace Editor
             return null;
         }
 
+        /// <summary>
+        /// Instantiates the Generation Manager prefab.
+        /// </summary>
+        /// <returns>The instantiated Generation Manager GameObject.</returns>
         private GameObject InstantiateGenerationManager()
         {
             if (!_cachedPrefab)
