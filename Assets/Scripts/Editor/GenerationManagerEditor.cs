@@ -13,6 +13,7 @@ namespace Editor
         private int _selectedGeneratorIndex;
         private BaseGenerator _currentGenerator;
         private List<string> _cachedGeneratorNames = new();
+        private GameObject _cachedGenerationManager;
 
         /// <summary>
         /// Shows the Generation Manager window.
@@ -94,8 +95,22 @@ namespace Editor
         /// </summary>
         private void FindAllGenerators()
         {
-            _generators = new List<BaseGenerator>(FindObjectsByType<BaseGenerator>(FindObjectsSortMode.None));
-            _cachedGeneratorNames = GetGeneratorNames();
+            if (!_cachedGenerationManager)
+            {
+                _cachedGenerationManager = GameObject.Find("GenerationManager");
+            }
+
+            if (_cachedGenerationManager)
+            {
+                _generators = new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
+                _cachedGeneratorNames = GetGeneratorNames();
+            }
+            else
+            {
+                Debug.LogWarning("GenerationManager no encontrado en la escena.");
+                _generators.Clear();
+                _cachedGeneratorNames.Clear();
+            }
         }
 
         /// <summary>
@@ -163,6 +178,13 @@ namespace Editor
         /// </summary>
         private void InitScene()
         {
+            // Optimal check for the GenerationManager prefab
+            if (GameObject.Find("GenerationManager"))
+            {
+                Debug.LogWarning("GenerationManager already exists in the scene.");
+                return;
+            }
+            
             // Load prefabs
             var generationManager = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/GenerationManager.prefab");
 
