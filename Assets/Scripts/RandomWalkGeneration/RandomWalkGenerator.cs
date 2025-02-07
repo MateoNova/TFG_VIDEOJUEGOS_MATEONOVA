@@ -12,32 +12,67 @@ namespace RandomWalkGeneration
         /// <summary>
         /// Settings for the random walk algorithm.
         /// </summary>
-        [SerializeField] private RandomWalkRoomsSettings randomWalkRoomsSettings;
+        /// <remarks>
+        /// These settings control the behavior of the random walk algorithm, such as the number of iterations and steps per iteration.
+        /// </remarks>
+        [SerializeField, Tooltip("Settings for the random walk algorithm.")]
+        private RandomWalkRoomsSettings randomWalkRoomsSettings;
 
         /// <summary>
         /// Flag to determine if corridors should be generated.
         /// </summary>
-        [SerializeField] private bool generateCorridors;
+        /// <remarks>
+        /// If true, the generator will create corridors and calculate potential room positions.
+        /// </remarks>
+        [SerializeField, Tooltip("Flag to determine if corridors should be generated and calcule potential rooms positions.")]
+        private bool generateCorridors;
 
         /// <summary>
         /// Length of each corridor.
         /// </summary>
-        [ConditionalField("generateCorridors")] [SerializeField]
+        /// <remarks>
+        /// A smaller value will create shorter corridors, resulting in a more compact dungeon layout.
+        /// A larger value will create longer corridors, resulting in a more spread-out dungeon layout.
+        /// </remarks>
+        [ConditionalField("generateCorridors"), SerializeField,
+         Tooltip(
+             "Length of each corridor. Smaller values create shorter corridors, resulting in a more compact dungeon layout. Larger values create longer corridors, resulting in a more spread-out dungeon layout.")]
         private int corridorLength = 10;
 
         /// <summary>
         /// Number of corridors to generate.
         /// </summary>
-        [ConditionalField("generateCorridors")] [SerializeField]
+        /// <remarks>
+        /// A smaller value will create fewer corridors, resulting in fewer connections between rooms.
+        /// A larger value will create more corridors, resulting in more connections between rooms.
+        /// </remarks>
+        [ConditionalField("generateCorridors"), SerializeField,
+         Tooltip(
+             "Number of corridors to generate. Smaller values create fewer corridors, resulting in fewer connections between rooms. Larger values create more corridors, resulting in more connections between rooms.")]
         private int corridorCount = 5;
 
         /// <summary>
         /// Percentage of potential room positions to convert into rooms.
         /// </summary>
-        [ConditionalField("generateCorridors")] [SerializeField, Range(0f, 1f)]
+        /// <remarks>
+        /// A smaller value will create fewer rooms, resulting in a more sparse dungeon layout.
+        /// A larger value will create more rooms, resulting in a more dense dungeon layout.
+        /// </remarks>
+        [ConditionalField("generateCorridors"), SerializeField, Range(0f, 1f),
+         Tooltip(
+             "Percentage of potential room positions to convert into rooms. Smaller values create fewer rooms, resulting in a more sparse dungeon layout. Larger values create more rooms, resulting in a more dense dungeon layout.")]
         private float roomPercentage = 0.8f;
 
-        [ConditionalField("generateCorridors")] [SerializeField, Range(1f, 4f)]
+        /// <summary>
+        /// Width of the corridors.
+        /// </summary>
+        /// <remarks>
+        /// A smaller value will create narrower corridors, resulting in tighter passageways.
+        /// A larger value will create wider corridors, resulting in more spacious passageways.
+        /// </remarks>
+        [ConditionalField("generateCorridors"), SerializeField, Range(1f, 4f),
+         Tooltip(
+             "Width of the corridors. Smaller values create narrower corridors, resulting in tighter passageways. Larger values create wider corridors, resulting in more spacious passageways.")]
         private int corridorWidth = 1;
 
         /// <summary>
@@ -116,7 +151,6 @@ namespace RandomWalkGeneration
                 })
                 .ToList();
         }
-
 
         /// <summary>
         /// Creates rooms from potential room positions.
