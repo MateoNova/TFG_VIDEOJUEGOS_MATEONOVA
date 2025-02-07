@@ -52,4 +52,9 @@ public abstract class BaseGenerator : MonoBehaviour
         }
         tilemapPainter.LoadTilemap(path);
     }
+
+    public Vector2Int getOrigin()
+    {
+        return origin;
+    }
 }

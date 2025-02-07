@@ -18,6 +18,7 @@ namespace Editor
         private List<BaseGenerator> _generators = new();
         private int _selectedGeneratorIndex;
         private BaseGenerator _currentGenerator;
+        private bool _clearDungeon = true;
 
         private List<string> _cachedGeneratorNames = new();
         private GameObject _cachedGenerationManager;
@@ -155,6 +156,8 @@ namespace Editor
         {
             EditorGUILayoutExtensions.Vertical(() =>
             {
+                _clearDungeon = EditorGUILayout.Toggle("Clear Dungeon Before Generation", _clearDungeon);
+                
                 if (GUILayout.Button("Generate Dungeon"))
                 {
                     Generate();
@@ -259,7 +262,7 @@ namespace Editor
         {
             if (_currentGenerator)
             {
-                _currentGenerator.RunGeneration();
+                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.getOrigin()); 
             }
             else
             {
