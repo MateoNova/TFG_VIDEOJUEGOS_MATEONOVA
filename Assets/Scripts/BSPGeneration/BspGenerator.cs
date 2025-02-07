@@ -1,7 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace BSPGeneration
@@ -72,8 +70,7 @@ namespace BSPGeneration
         public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
             if (resetTilemap) tilemapPainter.ResetAllTiles();
-            
-            Debug.Log("Generating dungeon using BSP algorithm..." + startPoint);
+
             var rootNode = new BspNode(new RectInt(startPoint.x, startPoint.y, maxRoomSize * 2, maxRoomSize * 2));
             SplitNode(rootNode, maxIterations);
 
@@ -173,11 +170,11 @@ namespace BSPGeneration
         /// <param name="node">The current node in the BSP tree.</param>
         /// <param name="walkableTiles">The set of walkable tiles to update.</param>
         /// <param name="rooms">The list of rooms to ensure connectivity.</param>
-        private static void CreateCorridors(BspNode node, HashSet<Vector2Int> walkableTiles, List<RectInt> rooms)
+        private void CreateCorridors(BspNode node, HashSet<Vector2Int> walkableTiles, List<RectInt> rooms)
         {
             if (node.Left == null || node.Right == null) return;
-            
-            EnsureAllRoomsConnected(rooms, walkableTiles);
+
+            EnsureAllRoomsConnected(node, walkableTiles);
         }
 
         /// <summary>
@@ -206,43 +203,43 @@ namespace BSPGeneration
         }
 
         /// <summary>
-        /// Ensures all rooms are connected by creating additional corridors if necessary.
+        /// Ensures all rooms are connected using BSP corridor algorithm.
         /// </summary>
-        /// <param name="rooms">The list of rooms to connect.</param>
+        /// <param name="node">The root node of the BSP tree.</param>
         /// <param name="walkableTiles">The set of walkable tiles to update.</param>
-        private static void EnsureAllRoomsConnected(List<RectInt> rooms, HashSet<Vector2Int> walkableTiles)
+        private void EnsureAllRoomsConnected(BspNode node, HashSet<Vector2Int> walkableTiles)
         {
-            var connectedRooms = new HashSet<RectInt> { rooms[0] };
-            var remainingRooms = new HashSet<RectInt>(rooms);
-            remainingRooms.Remove(rooms[0]);
+            if (node?.Left == null || node.Right == null)
+                return;
 
-            while (remainingRooms.Count > 0)
-            {
-                RectInt closestRoom = default;
-                RectInt connectedRoom = default;
-                var closestDistance = float.MaxValue;
+            EnsureAllRoomsConnected(node.Left, walkableTiles);
+            EnsureAllRoomsConnected(node.Right, walkableTiles);
 
-                foreach (var room in connectedRooms)
-                {
-                    foreach (var otherRoom in remainingRooms)
-                    {
-                        var distance = Vector2Int.Distance(Vector2Int.RoundToInt(room.center),
-                            Vector2Int.RoundToInt(otherRoom.center));
-                        
-                        if (!(distance < closestDistance)) continue;
-                        closestDistance = distance;
-                        closestRoom = otherRoom;
-                        connectedRoom = room;
-                    }
-                }
+            var leftRoom = GetRoomFromNode(node.Left);
+            var rightRoom = GetRoomFromNode(node.Right);
 
-                CreateCorridor(new Vector2Int((int)connectedRoom.center.x, (int)connectedRoom.center.y),
-                    new Vector2Int((int)closestRoom.center.x, (int)closestRoom.center.y),
-                    walkableTiles);
+            if (!leftRoom.HasValue || !rightRoom.HasValue) return;
+            
+            var leftCenter = Vector2Int.RoundToInt(leftRoom.Value.center);
+            var rightCenter = Vector2Int.RoundToInt(rightRoom.Value.center);
 
-                connectedRooms.Add(closestRoom);
-                remainingRooms.Remove(closestRoom);
-            }
+            CreateCorridor(leftCenter, rightCenter, walkableTiles);
+        }
+
+        /// <summary>
+        /// Retrieves a room from a BSP node.
+        /// </summary>
+        /// <param name="node">The node to retrieve the room from.</param>
+        /// <returns>The room if available, otherwise null.</returns>
+        private RectInt? GetRoomFromNode(BspNode node)
+        {
+            if (node.Room != default)
+                return node.Room;
+
+            var leftRoom = node.Left != null ? GetRoomFromNode(node.Left) : null;
+            var rightRoom = node.Right != null ? GetRoomFromNode(node.Right) : null;
+
+            return leftRoom ?? rightRoom;
         }
     }
 
