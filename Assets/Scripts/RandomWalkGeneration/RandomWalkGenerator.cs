@@ -22,23 +22,22 @@ namespace RandomWalkGeneration
         /// <summary>
         /// Length of each corridor.
         /// </summary>
-        [ConditionalField("generateCorridors")]
-        [SerializeField] private int corridorLength = 10;
+        [ConditionalField("generateCorridors")] [SerializeField]
+        private int corridorLength = 10;
 
         /// <summary>
         /// Number of corridors to generate.
         /// </summary>
-        [ConditionalField("generateCorridors")]
-        [SerializeField] private int corridorCount = 5;
+        [ConditionalField("generateCorridors")] [SerializeField]
+        private int corridorCount = 5;
 
         /// <summary>
         /// Percentage of potential room positions to convert into rooms.
         /// </summary>
-        [ConditionalField("generateCorridors")]
-        [SerializeField, Range(0f, 1f)] private float roomPercentage = 0.8f;
-        
-        [ConditionalField("generateCorridors")]
-        [SerializeField, Range(1f,4f)]
+        [ConditionalField("generateCorridors")] [SerializeField, Range(0f, 1f)]
+        private float roomPercentage = 0.8f;
+
+        [ConditionalField("generateCorridors")] [SerializeField, Range(1f, 4f)]
         private int corridorWidth = 1;
 
         /// <summary>
@@ -106,11 +105,18 @@ namespace RandomWalkGeneration
         private List<Vector2Int> FindAllDeadEnds(HashSet<Vector2Int> floorPositions)
         {
             return floorPositions
-                .Where(pos => Utils.Directions.Count(direction =>
-                    Enumerable.Range(0, corridorWidth).All(offset =>
-                        floorPositions.Contains(pos + direction * offset))) == 1)
+                .Where(pos =>
+                {
+                    var validDirections = Utils.Directions.Count(direction =>
+                        Enumerable.Range(1, corridorWidth).All(offset =>
+                            floorPositions.Contains(pos + direction * offset)
+                        )
+                    );
+                    return validDirections == 1;
+                })
                 .ToList();
         }
+
 
         /// <summary>
         /// Creates rooms from potential room positions.
@@ -162,21 +168,21 @@ namespace RandomWalkGeneration
         {
             var currentPos = startPos;
             var direction = Utils.GetRandomCardinalDirection();
-        
+
             List<Vector2Int> path = new() { startPos };
-        
+
             for (var i = 0; i < length; i++)
             {
                 currentPos += direction;
                 path.Add(currentPos);
-        
+
                 // Add width to the corridor
                 for (var w = 1; w < corridorWidth; w++)
                 {
                     path.Add(currentPos + Utils.GetPerpendicularDirection(direction) * w);
                 }
             }
-        
+
             return path;
         }
 
