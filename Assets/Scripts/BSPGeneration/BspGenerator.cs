@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace BSPGeneration
 {
@@ -56,6 +59,11 @@ namespace BSPGeneration
              "Aspect ratio threshold for deciding split direction. Smaller values make the algorithm more likely to split nodes in both directions. Larger values make the algorithm more likely to split nodes in one direction, creating more elongated rooms.")]
         private float aspectProportion = 1.5f;
 
+        public void Start()
+        {
+            RunGeneration(true, origin);
+        }
+
         /// <summary>
         /// Runs the generation process.
         /// </summary>
@@ -64,7 +72,8 @@ namespace BSPGeneration
         public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
             if (resetTilemap) tilemapPainter.ResetAllTiles();
-
+            
+            Debug.Log("Generating dungeon using BSP algorithm..." + startPoint);
             var rootNode = new BspNode(new RectInt(startPoint.x, startPoint.y, maxRoomSize * 2, maxRoomSize * 2));
             SplitNode(rootNode, maxIterations);
 
@@ -167,18 +176,7 @@ namespace BSPGeneration
         private static void CreateCorridors(BspNode node, HashSet<Vector2Int> walkableTiles, List<RectInt> rooms)
         {
             if (node.Left == null || node.Right == null) return;
-
-            var leftRoom = node.Left.Room;
-            var rightRoom = node.Right.Room;
-
-            var start = new Vector2Int((int)leftRoom.center.x, (int)leftRoom.center.y);
-            var end = new Vector2Int((int)rightRoom.center.x, (int)rightRoom.center.y);
-
-            CreateCorridor(start, end, walkableTiles);
-
-            CreateCorridors(node.Left, walkableTiles, rooms);
-            CreateCorridors(node.Right, walkableTiles, rooms);
-
+            
             EnsureAllRoomsConnected(rooms, walkableTiles);
         }
 
