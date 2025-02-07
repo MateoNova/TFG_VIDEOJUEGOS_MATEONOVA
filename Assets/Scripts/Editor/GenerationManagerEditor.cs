@@ -154,30 +154,28 @@ namespace Editor
         /// </summary>
         private void DrawDungeonActions()
         {
-            EditorGUILayoutExtensions.Vertical(() =>
+            _clearDungeon = EditorGUILayout.Toggle("Clear all tiles", _clearDungeon);
+            EditorGUILayout.Space();
+            
+            if (GUILayout.Button("Generate Dungeon"))
             {
-                _clearDungeon = EditorGUILayout.Toggle("Clear Dungeon Before Generation", _clearDungeon);
-                
-                if (GUILayout.Button("Generate Dungeon"))
-                {
-                    Generate();
-                }
+                Generate();
+            }
 
-                if (GUILayout.Button("Clear Dungeon"))
-                {
-                    _currentGenerator.ClearDungeon();
-                }
+            if (GUILayout.Button("Clear Dungeon"))
+            {
+                _currentGenerator.ClearDungeon();
+            }
 
-                if (GUILayout.Button("Save Dungeon"))
-                {
-                    SaveDungeon();
-                }
+            if (GUILayout.Button("Save Dungeon"))
+            {
+                SaveDungeon();
+            }
 
-                if (GUILayout.Button("Load Dungeon"))
-                {
-                    LoadDungeon();
-                }
-            });
+            if (GUILayout.Button("Load Dungeon"))
+            {
+                LoadDungeon();
+            }
         }
 
         /// <summary>
