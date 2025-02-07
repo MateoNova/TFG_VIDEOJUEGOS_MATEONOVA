@@ -2,10 +2,6 @@
 using System.Linq;
 using UnityEngine;
 
-#if ODIN_INSPECTOR
-using Sirenix.OdinInspector;
-#endif
-
 namespace RandomWalkGeneration
 {
     /// <summary>
@@ -16,7 +12,7 @@ namespace RandomWalkGeneration
         /// <summary>
         /// Settings for the random walk algorithm.
         /// </summary>
-        [SerializeField] private RandomWalkSettings randomWalkSettings;
+        [SerializeField] private RandomWalkRoomsSettings randomWalkRoomsSettings;
 
         /// <summary>
         /// Flag to determine if corridors should be generated.
@@ -26,25 +22,18 @@ namespace RandomWalkGeneration
         /// <summary>
         /// Length of each corridor.
         /// </summary>
-        #if ODIN_INSPECTOR
-        [ShowIf("generateCorridors")]
-        #endif
+        [ConditionalField("generateCorridors")]
         [SerializeField] private int corridorLength = 10;
 
         /// <summary>
         /// Number of corridors to generate.
         /// </summary>
-        #if ODIN_INSPECTOR
-        [ShowIf("generateCorridors")]
-        #endif
+        [ConditionalField("generateCorridors")]
         [SerializeField] private int corridorCount = 5;
 
         /// <summary>
         /// Percentage of potential room positions to convert into rooms.
         /// </summary>
-        #if ODIN_INSPECTOR
-        [ShowIf("generateCorridors")]
-        #endif
         [SerializeField, Range(0f, 1f)] private float roomPercentage = 0.8f;
 
         /// <summary>
@@ -188,11 +177,11 @@ namespace RandomWalkGeneration
             var currentPos = startPos;
             var tiles = new HashSet<Vector2Int>();
 
-            for (var i = 0; i < randomWalkSettings.walkIterations; i++)
+            for (var i = 0; i < randomWalkRoomsSettings.walkIterations; i++)
             {
-                var path = RandomWalkAlgorithm(currentPos, randomWalkSettings.stepsPerIteration);
+                var path = RandomWalkAlgorithm(currentPos, randomWalkRoomsSettings.stepsPerIteration);
                 tiles.UnionWith(path);
-                if (randomWalkSettings.randomizeStartPos && tiles.Count > 0)
+                if (randomWalkRoomsSettings.randomizeStartPos && tiles.Count > 0)
                 {
                     currentPos = tiles.ElementAt(Random.Range(0, tiles.Count));
                 }

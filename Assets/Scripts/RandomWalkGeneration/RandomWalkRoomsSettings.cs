@@ -1,7 +1,7 @@
 namespace RandomWalkGeneration
 {
     [System.Serializable]
-    public class RandomWalkSettings
+    public class RandomWalkRoomsSettings
     {
         /// <summary>
         /// The number of iterations to perform the random walk.

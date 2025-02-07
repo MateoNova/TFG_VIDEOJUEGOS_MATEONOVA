@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace Editor
         private List<BaseGenerator> _generators = new();
         private int _selectedGeneratorIndex;
         private BaseGenerator _currentGenerator;
-        
+
         private List<string> _cachedGeneratorNames = new();
         private GameObject _cachedGenerationManager;
         private static GameObject _cachedPrefab;
@@ -60,6 +61,7 @@ namespace Editor
                 EditorGUILayout.LabelField("No generators found in the scene.");
                 return;
             }
+
             DrawGeneratorSelection();
             DrawGeneratorSettings();
         }
@@ -74,6 +76,7 @@ namespace Editor
             {
                 ClearCachedData();
             }
+
             EditorGUILayout.Space();
             if (GUILayout.Button("Initialize Scene"))
             {
@@ -86,7 +89,8 @@ namespace Editor
         /// </summary>
         private void DrawGeneratorSelection()
         {
-            _selectedGeneratorIndex = EditorGUILayout.Popup("Select Generator", _selectedGeneratorIndex, _cachedGeneratorNames.ToArray());
+            _selectedGeneratorIndex = EditorGUILayout.Popup("Select Generator", _selectedGeneratorIndex,
+                _cachedGeneratorNames.ToArray());
             SelectGenerator(_selectedGeneratorIndex);
         }
 
@@ -96,38 +100,60 @@ namespace Editor
         private void DrawGeneratorSettings()
         {
             if (!_currentGenerator) return;
-        
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Generator Settings", EditorStyles.boldLabel);
-        
+
             var generatorObject = new SerializedObject(_currentGenerator);
             var property = generatorObject.GetIterator();
             property.NextVisible(true); // Skip the first property (script)
-        
+
             while (property.NextVisible(false))
             {
+                var field = _currentGenerator.GetType().GetField(property.name,
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    var conditionalAttribute =
+                        (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field,
+                            typeof(ConditionalFieldAttribute));
+                    if (conditionalAttribute != null)
+                    {
+                        var conditionField = _currentGenerator.GetType()
+                            .GetField(conditionalAttribute.ConditionFieldName,
+                                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                        if (conditionField != null)
+                        {
+                            var conditionValue = (bool)conditionField.GetValue(_currentGenerator);
+                            if (!conditionValue)
+                            {
+                                continue; // Skip this property if the condition is not met
+                            }
+                        }
+                    }
+                }
+
                 EditorGUILayout.PropertyField(property, true);
             }
-        
+
             generatorObject.ApplyModifiedProperties();
-        
+
             EditorGUILayout.Space();
             if (GUILayout.Button("Generate Dungeon"))
             {
                 Generate();
             }
-        
+
             if (GUILayout.Button("Clear Dungeon"))
             {
                 _currentGenerator.ClearDungeon();
             }
-            
+
             if (GUILayout.Button("Save Dungeon"))
             {
-                Debug.Log("Save Dungeon");
                 SaveDungeon();
             }
-            
+
             if (GUILayout.Button("Load Dungeon"))
             {
                 LoadDungeon();
@@ -156,7 +182,7 @@ namespace Editor
             }
 
             if (string.IsNullOrEmpty(path)) return;
-            
+
             if (System.IO.File.Exists(path))
             {
                 var overwrite = EditorUtility.DisplayDialog(
@@ -165,13 +191,13 @@ namespace Editor
                     "Yes",
                     "No"
                 );
-            
+
                 if (!overwrite)
                 {
                     return; // User chose not to overwrite the file
                 }
             }
-            
+
             _currentGenerator.SaveDungeon(path);
         }
 
@@ -182,7 +208,8 @@ namespace Editor
         {
             if (_cachedGenerationManager)
             {
-                _generators = new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
+                _generators =
+                    new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
                 _cachedGeneratorNames = GetGeneratorNames();
                 if (_cachedGeneratorNames.Count > 0)
                 {
@@ -257,6 +284,7 @@ namespace Editor
                     Debug.LogWarning("Generator is null.");
                 }
             }
+
             return names;
         }
 
@@ -271,6 +299,7 @@ namespace Editor
             {
                 return EditorUtility.InstanceIDToObject(cachedGenerationManagerId) as GameObject;
             }
+
             return null;
         }
 
@@ -285,7 +314,10 @@ namespace Editor
                 _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             }
 
-            if (!_cachedPrefab) { return null; }
+            if (!_cachedPrefab)
+            {
+                return null;
+            }
 
             _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
             EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
@@ -306,7 +338,7 @@ namespace Editor
             _cachedGeneratorNames.Clear();
             _generators.Clear();
             _selectedGeneratorIndex = 0;
-            
+
             // Repaint the window to reflect the changes.
             EditorApplication.delayCall += Repaint;
         }
