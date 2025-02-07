@@ -15,9 +15,11 @@ namespace BSPGeneration
         /// A smaller value will create smaller rooms, which can result in a more complex and dense dungeon layout.
         /// A larger value will create larger rooms, which can result in a more open and spacious dungeon layout.
         /// </remarks>
-        [SerializeField, Tooltip("Minimum size of the rooms. Smaller values create smaller rooms, resulting in a more complex and dense dungeon layout. Larger values create larger rooms, resulting in a more open and spacious dungeon layout.")] 
+        [SerializeField,
+         Tooltip(
+             "Minimum size of the rooms. Smaller values create smaller rooms, resulting in a more complex and dense dungeon layout. Larger values create larger rooms, resulting in a more open and spacious dungeon layout.")]
         private int minRoomSize = 5;
-        
+
         /// <summary>
         /// Maximum size of the rooms.
         /// </summary>
@@ -25,9 +27,11 @@ namespace BSPGeneration
         /// A smaller value will limit the maximum size of the rooms, leading to a more uniform room size.
         /// A larger value will allow for larger rooms, creating more variation in room sizes.
         /// </remarks>
-        [SerializeField, Tooltip("Maximum size of the rooms. Smaller values limit the maximum size of the rooms, leading to a more uniform room size. Larger values allow for larger rooms, creating more variation in room sizes.")] 
+        [SerializeField,
+         Tooltip(
+             "Maximum size of the rooms. Smaller values limit the maximum size of the rooms, leading to a more uniform room size. Larger values allow for larger rooms, creating more variation in room sizes.")]
         private int maxRoomSize = 20;
-        
+
         /// <summary>
         /// Maximum number of iterations for splitting the space.
         /// </summary>
@@ -35,9 +39,11 @@ namespace BSPGeneration
         /// A smaller value will result in fewer splits, creating fewer but larger rooms.
         /// A larger value will result in more splits, creating more but smaller rooms.
         /// </remarks>
-        [SerializeField, Tooltip("Maximum number of iterations for splitting the space. Smaller values result in fewer splits, creating fewer but larger rooms. Larger values result in more splits, creating more but smaller rooms.")] 
+        [SerializeField,
+         Tooltip(
+             "Maximum number of iterations for splitting the space. Smaller values result in fewer splits, creating fewer but larger rooms. Larger values result in more splits, creating more but smaller rooms.")]
         private int maxIterations = 5;
-        
+
         /// <summary>
         /// Aspect ratio threshold for deciding split direction.
         /// </summary>
@@ -45,7 +51,9 @@ namespace BSPGeneration
         /// A smaller value will make the algorithm more likely to split nodes in both directions.
         /// A larger value will make the algorithm more likely to split nodes in one direction, creating more elongated rooms.
         /// </remarks>
-        [SerializeField, Tooltip("Aspect ratio threshold for deciding split direction. Smaller values make the algorithm more likely to split nodes in both directions. Larger values make the algorithm more likely to split nodes in one direction, creating more elongated rooms.")] 
+        [SerializeField,
+         Tooltip(
+             "Aspect ratio threshold for deciding split direction. Smaller values make the algorithm more likely to split nodes in both directions. Larger values make the algorithm more likely to split nodes in one direction, creating more elongated rooms.")]
         private float aspectProportion = 1.5f;
 
         /// <summary>
@@ -75,7 +83,7 @@ namespace BSPGeneration
                 }
             }
 
-            CreateCorridors(rootNode, walkableTiles);
+            CreateCorridors(rootNode, walkableTiles, rooms);
 
             tilemapPainter.PaintWalkableTiles(walkableTiles);
             WallGenerator.GenerateWalls(walkableTiles, tilemapPainter);
@@ -155,7 +163,8 @@ namespace BSPGeneration
         /// </summary>
         /// <param name="node">The current node in the BSP tree.</param>
         /// <param name="walkableTiles">The set of walkable tiles to update.</param>
-        private void CreateCorridors(BspNode node, HashSet<Vector2Int> walkableTiles)
+        /// <param name="rooms">The list of rooms to ensure connectivity.</param>
+        private static void CreateCorridors(BspNode node, HashSet<Vector2Int> walkableTiles, List<RectInt> rooms)
         {
             if (node.Left == null || node.Right == null) return;
 
@@ -167,8 +176,10 @@ namespace BSPGeneration
 
             CreateCorridor(start, end, walkableTiles);
 
-            CreateCorridors(node.Left, walkableTiles);
-            CreateCorridors(node.Right, walkableTiles);
+            CreateCorridors(node.Left, walkableTiles, rooms);
+            CreateCorridors(node.Right, walkableTiles, rooms);
+
+            EnsureAllRoomsConnected(rooms, walkableTiles);
         }
 
         /// <summary>
@@ -193,6 +204,46 @@ namespace BSPGeneration
                 }
 
                 walkableTiles.Add(current);
+            }
+        }
+
+        /// <summary>
+        /// Ensures all rooms are connected by creating additional corridors if necessary.
+        /// </summary>
+        /// <param name="rooms">The list of rooms to connect.</param>
+        /// <param name="walkableTiles">The set of walkable tiles to update.</param>
+        private static void EnsureAllRoomsConnected(List<RectInt> rooms, HashSet<Vector2Int> walkableTiles)
+        {
+            var connectedRooms = new HashSet<RectInt> { rooms[0] };
+            var remainingRooms = new HashSet<RectInt>(rooms);
+            remainingRooms.Remove(rooms[0]);
+
+            while (remainingRooms.Count > 0)
+            {
+                RectInt closestRoom = default;
+                RectInt connectedRoom = default;
+                var closestDistance = float.MaxValue;
+
+                foreach (var room in connectedRooms)
+                {
+                    foreach (var otherRoom in remainingRooms)
+                    {
+                        var distance = Vector2Int.Distance(Vector2Int.RoundToInt(room.center),
+                            Vector2Int.RoundToInt(otherRoom.center));
+                        
+                        if (!(distance < closestDistance)) continue;
+                        closestDistance = distance;
+                        closestRoom = otherRoom;
+                        connectedRoom = room;
+                    }
+                }
+
+                CreateCorridor(new Vector2Int((int)connectedRoom.center.x, (int)connectedRoom.center.y),
+                    new Vector2Int((int)closestRoom.center.x, (int)closestRoom.center.y),
+                    walkableTiles);
+
+                connectedRooms.Add(closestRoom);
+                remainingRooms.Remove(closestRoom);
             }
         }
     }
