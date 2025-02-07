@@ -103,10 +103,12 @@ namespace RandomWalkGeneration
         /// </summary>
         /// <param name="floorPositions">Set of floor positions.</param>
         /// <returns>List of dead end positions.</returns>
-        private static List<Vector2Int> FindAllDeadEnds(HashSet<Vector2Int> floorPositions)
+        private List<Vector2Int> FindAllDeadEnds(HashSet<Vector2Int> floorPositions)
         {
             return floorPositions
-                .Where(pos => Utils.Directions.Count(direction => floorPositions.Contains(pos + direction)) == 1)
+                .Where(pos => Utils.Directions.Count(direction =>
+                    Enumerable.Range(0, corridorWidth).All(offset =>
+                        floorPositions.Contains(pos + direction * offset))) == 1)
                 .ToList();
         }
 
@@ -143,7 +145,7 @@ namespace RandomWalkGeneration
 
             for (var i = 0; i < corridorCount; i++)
             {
-                var corridor = RandomWalkCorridor(currentPos, corridorLength, corridorWidth);
+                var corridor = RandomWalkCorridor(currentPos, corridorLength);
                 currentPos = corridor[^1];
                 roomsPotentialPositions.Add(currentPos);
                 floorPositions.UnionWith(corridor);
@@ -156,7 +158,7 @@ namespace RandomWalkGeneration
         /// <param name="startPos">Starting position of the corridor.</param>
         /// <param name="length">Length of the corridor.</param>
         /// <returns>List of positions forming the corridor.</returns>
-        private static List<Vector2Int> RandomWalkCorridor(Vector2Int startPos, int length, int width)
+        private List<Vector2Int> RandomWalkCorridor(Vector2Int startPos, int length)
         {
             var currentPos = startPos;
             var direction = Utils.GetRandomCardinalDirection();
@@ -169,7 +171,7 @@ namespace RandomWalkGeneration
                 path.Add(currentPos);
         
                 // Add width to the corridor
-                for (var w = 1; w < width; w++)
+                for (var w = 1; w < corridorWidth; w++)
                 {
                     path.Add(currentPos + Utils.GetPerpendicularDirection(direction) * w);
                 }
