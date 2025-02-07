@@ -32,34 +32,26 @@ namespace BSPGeneration
         {
             if (resetTilemap) tilemapPainter.ResetAllTiles();
 
-            // Create the root node with a rectangle starting at startPoint and size maxRoomSize * 2
             var rootNode = new BspNode(new RectInt(startPoint.x, startPoint.y, maxRoomSize * 2, maxRoomSize * 2));
-            // Split the root node recursively
             SplitNode(rootNode, maxIterations);
 
-            // List to store the created rooms
             var rooms = new List<RectInt>();
-            // Create rooms in the split nodes
-            CreateRooms(rootNode, rooms);
+            CollectRooms(rootNode, rooms);
 
-            // Set to store walkable tile positions
-            var walkableTilesPositions = new HashSet<Vector2Int>();
-            // Add all room tiles to the walkable tiles set
+            var walkableTiles = new HashSet<Vector2Int>();
             foreach (var room in rooms)
             {
                 for (var x = room.xMin; x < room.xMax; x++)
                 {
                     for (var y = room.yMin; y < room.yMax; y++)
                     {
-                        walkableTilesPositions.Add(new Vector2Int(x, y));
+                        walkableTiles.Add(new Vector2Int(x, y));
                     }
                 }
             }
 
-            // Paint the walkable tiles on the tilemap
-            tilemapPainter.PaintWalkableTiles(walkableTilesPositions);
-            // Generate walls around the walkable tiles
-            WallGenerator.GenerateWalls(walkableTilesPositions, tilemapPainter);
+            tilemapPainter.PaintWalkableTiles(walkableTiles);
+            WallGenerator.GenerateWalls(walkableTiles, tilemapPainter);
         }
 
         /// <summary>
@@ -71,69 +63,67 @@ namespace BSPGeneration
         {
             while (true)
             {
-                // Stop splitting if iterations are zero or the node is too small
                 if (iterations <= 0 || node.Width <= minRoomSize * 2 || node.Height <= minRoomSize * 2) return;
 
-                // Decide whether to split horizontally or vertically
-                var splitHorizontally = Random.value > 0.5f;
-                //if the node is too wide, split vertically
-                if (node.Width > node.Height && node.Width / node.Height >= 1.25f)
-                    splitHorizontally = false;
-                else if (node.Height > node.Width && node.Height / node.Width >= 1.25f) splitHorizontally = true;
+                var splitHorizontally = ShouldSplitHorizontally(node);
+                var splitPos = splitHorizontally
+                    ? Random.Range(minRoomSize, node.Height - minRoomSize)
+                    : Random.Range(minRoomSize, node.Width - minRoomSize);
 
-                // Create left and right child nodes based on the split direction
                 if (splitHorizontally)
                 {
-                    var splitY = Random.Range(minRoomSize, node.Height - minRoomSize);
-                    node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, node.Width, splitY));
-                    node.Right = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin + splitY, node.Width, node.Height - splitY));
+                    node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, node.Width, splitPos));
+                    node.Right = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin + splitPos, node.Width,
+                        node.Height - splitPos));
                 }
                 else
                 {
-                    var splitX = Random.Range(minRoomSize, node.Width - minRoomSize);
-                    node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, splitX, node.Height));
-                    node.Right = new BspNode(new RectInt(node.Rect.xMin + splitX, node.Rect.yMin, node.Width - splitX, node.Height));
+                    node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, splitPos, node.Height));
+                    node.Right = new BspNode(new RectInt(node.Rect.xMin + splitPos, node.Rect.yMin,
+                        node.Width - splitPos, node.Height));
                 }
 
-                // Recursively split the left child node
                 SplitNode(node.Left, iterations - 1);
-                // Continue with the right child node
                 node = node.Right;
                 iterations -= 1;
             }
         }
 
         /// <summary>
-        /// Creates rooms in the leaf nodes (nodes without children).
+        /// Determines whether to split the node horizontally.
         /// </summary>
-        /// <param name="node">The node to create rooms in.</param>
-        /// <param name="rooms">The list to store the created rooms.</param>
-        private void CreateRooms(BspNode node, List<RectInt> rooms)
+        /// <param name="node">The node to check.</param>
+        /// <returns>True if the node should be split horizontally, otherwise false.</returns>
+        private static bool ShouldSplitHorizontally(BspNode node)
         {
-            while (true)
-            {
-                // If the node is a leaf node, create a room
-                if (node.Left == null && node.Right == null)
-                {
-                    var roomWidth = Random.Range(minRoomSize, node.Width);
-                    var roomHeight = Random.Range(minRoomSize, node.Height);
-                    var roomX = Random.Range(node.Rect.xMin, node.Rect.xMax - roomWidth);
-                    var roomY = Random.Range(node.Rect.yMin, node.Rect.yMax - roomHeight);
-                    node.Room = new RectInt(roomX, roomY, roomWidth, roomHeight);
-                    rooms.Add(node.Room);
-                }
-                else
-                {
-                    // Recursively create rooms in the left and right child nodes
-                    if (node.Left != null) CreateRooms(node.Left, rooms);
-                    if (node.Right != null)
-                    {
-                        node = node.Right;
-                        continue;
-                    }
-                }
+            if (node.Width > node.Height && node.Width / node.Height >= 1.25f) return false;
+            if (node.Height > node.Width && node.Height / node.Width >= 1.25f) return true;
+            return Random.value > 0.5f;
+        }
 
-                break;
+        /// <summary>
+        /// Collects rooms from the BSP tree.
+        /// </summary>
+        /// <param name="node">The node to collect rooms from.</param>
+        /// <param name="rooms">The list to store the collected rooms.</param>
+        private void CollectRooms(BspNode node, List<RectInt> rooms)
+        {
+            if (node == null) return;
+
+            if (node.Left == null && node.Right == null)
+            {
+                var roomWidth = Random.Range(minRoomSize, node.Width);
+                var roomHeight = Random.Range(minRoomSize, node.Height);
+                var roomX = Random.Range(node.Rect.xMin, node.Rect.xMax - roomWidth);
+                var roomY = Random.Range(node.Rect.yMin, node.Rect.yMax - roomHeight);
+
+                node.Room = new RectInt(roomX, roomY, roomWidth, roomHeight);
+                rooms.Add(node.Room);
+            }
+            else
+            {
+                CollectRooms(node.Left, rooms);
+                CollectRooms(node.Right, rooms);
             }
         }
     }
@@ -177,9 +167,6 @@ namespace BSPGeneration
         /// Initializes a new instance of the BspNode class.
         /// </summary>
         /// <param name="rect">The rectangle representing the node's area.</param>
-        public BspNode(RectInt rect)
-        {
-            Rect = rect;
-        }
+        public BspNode(RectInt rect) => Rect = rect;
     }
 }
