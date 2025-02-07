@@ -36,6 +36,10 @@ namespace RandomWalkGeneration
         /// </summary>
         [ConditionalField("generateCorridors")]
         [SerializeField, Range(0f, 1f)] private float roomPercentage = 0.8f;
+        
+        [ConditionalField("generateCorridors")]
+        [SerializeField, Range(1f,4f)]
+        private int corridorWidth = 1;
 
         /// <summary>
         /// Runs the dungeon generation process.
@@ -139,7 +143,7 @@ namespace RandomWalkGeneration
 
             for (var i = 0; i < corridorCount; i++)
             {
-                var corridor = RandomWalkCorridor(currentPos, corridorLength);
+                var corridor = RandomWalkCorridor(currentPos, corridorLength, corridorWidth);
                 currentPos = corridor[^1];
                 roomsPotentialPositions.Add(currentPos);
                 floorPositions.UnionWith(corridor);
@@ -152,19 +156,25 @@ namespace RandomWalkGeneration
         /// <param name="startPos">Starting position of the corridor.</param>
         /// <param name="length">Length of the corridor.</param>
         /// <returns>List of positions forming the corridor.</returns>
-        private static List<Vector2Int> RandomWalkCorridor(Vector2Int startPos, int length)
+        private static List<Vector2Int> RandomWalkCorridor(Vector2Int startPos, int length, int width)
         {
             var currentPos = startPos;
             var direction = Utils.GetRandomCardinalDirection();
-
+        
             List<Vector2Int> path = new() { startPos };
-
+        
             for (var i = 0; i < length; i++)
             {
                 currentPos += direction;
                 path.Add(currentPos);
+        
+                // Add width to the corridor
+                for (var w = 1; w < width; w++)
+                {
+                    path.Add(currentPos + Utils.GetPerpendicularDirection(direction) * w);
+                }
             }
-
+        
             return path;
         }
 

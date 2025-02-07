@@ -27,4 +27,15 @@ public static class Utils
             _ => Vector2Int.left,
         };
     }
+
+    public static Vector2Int GetPerpendicularDirection(Vector2Int direction)
+    {
+        return direction switch
+        {
+            _ when direction == Vector2Int.up => Vector2Int.right,
+            _ when direction == Vector2Int.right => Vector2Int.down,
+            _ when direction == Vector2Int.down => Vector2Int.left,
+            _ => Vector2Int.up
+        };
+    }
 }
