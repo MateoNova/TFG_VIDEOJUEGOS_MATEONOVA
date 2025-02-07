@@ -19,6 +19,7 @@ namespace Editor
         private int _selectedGeneratorIndex;
         private BaseGenerator _currentGenerator;
         private bool _clearDungeon = true;
+        private bool _isInitialized;
 
         private List<string> _cachedGeneratorNames = new();
         private GameObject _cachedGenerationManager;
@@ -48,6 +49,7 @@ namespace Editor
         {
             _cachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
             FindAllGenerators();
+            _isInitialized = true;
             SelectGenerator(0);
         }
 
@@ -101,7 +103,10 @@ namespace Editor
         {
             _selectedGeneratorIndex = EditorGUILayout.Popup("Select Generator", _selectedGeneratorIndex,
                 _cachedGeneratorNames.ToArray());
-            SelectGenerator(_selectedGeneratorIndex);
+            if (_isInitialized)
+            {
+                SelectGenerator(_selectedGeneratorIndex);
+            }
         }
 
         /// <summary>
@@ -154,9 +159,12 @@ namespace Editor
         /// </summary>
         private void DrawDungeonActions()
         {
-            _clearDungeon = EditorGUILayout.Toggle("Clear all tiles", _clearDungeon);
+            _clearDungeon =
+                EditorGUILayout.Toggle(
+                    new GUIContent("Clear all tiles", "This will clear all tiles before generating the dungeon"),
+                    _clearDungeon);
             EditorGUILayout.Space();
-            
+
             if (GUILayout.Button("Generate Dungeon"))
             {
                 Generate();
@@ -260,7 +268,7 @@ namespace Editor
         {
             if (_currentGenerator)
             {
-                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.getOrigin()); 
+                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.getOrigin());
             }
             else
             {
@@ -358,6 +366,7 @@ namespace Editor
             _cachedGeneratorNames.Clear();
             _generators.Clear();
             _selectedGeneratorIndex = 0;
+            _isInitialized = false;
 
             EditorApplication.delayCall += Repaint;
         }
