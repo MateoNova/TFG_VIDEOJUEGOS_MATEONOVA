@@ -34,6 +34,7 @@ namespace RandomWalkGeneration
         /// <summary>
         /// Percentage of potential room positions to convert into rooms.
         /// </summary>
+        [ConditionalField("generateCorridors")]
         [SerializeField, Range(0f, 1f)] private float roomPercentage = 0.8f;
 
         /// <summary>
