@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using UnityEngine;
 
 public class GenerationManager : MonoBehaviour
@@ -20,7 +20,7 @@ public class GenerationManager : MonoBehaviour
     {
         if (currentGenerator)
         {
-            currentGenerator.GenerateDungeon();
+            currentGenerator.RunGeneration();
         }
         else
         {
@@ -66,4 +66,4 @@ public class GenerationManager : MonoBehaviour
         return names;
     }
     
-}
+}*/

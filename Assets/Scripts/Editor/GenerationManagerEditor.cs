@@ -213,7 +213,7 @@ namespace Editor
         {
             if (_currentGenerator)
             {
-                _currentGenerator.GenerateDungeon();
+                _currentGenerator.RunGeneration();
             }
             else
             {
@@ -227,12 +227,11 @@ namespace Editor
         /// <param name="index">The index of the generator to select.</param>
         private void SelectGenerator(int index)
         {
-            if (index == _selectedGeneratorIndex && _currentGenerator) return;
-
             if (index >= 0 && index < _generators.Count)
             {
                 _selectedGeneratorIndex = index;
                 _currentGenerator = _generators[_selectedGeneratorIndex];
+                Repaint(); // Repaint the window to reflect the changes
             }
             else
             {

@@ -18,23 +18,10 @@ public abstract class BaseGenerator : MonoBehaviour
     protected Vector2Int origin = Vector2Int.zero;
     
     /// <summary>
-    /// Generates the dungeon by resetting the tilemap and running the generation algorithm.
-    /// </summary>
-    public void GenerateDungeon()
-    {
-        if (!tilemapPainter)
-        {
-            Debug.LogError("TilemapVisualizer is not assigned.");
-            return;
-        }
-        tilemapPainter.ResetAllTiles();
-        RunGeneration();
-    }
-    /// <summary>
     /// Abstract method to run the dungeon generation algorithm.
     /// Must be implemented by derived classes.
     /// </summary>
-    protected abstract void RunGeneration();
+    public abstract void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default);
 
     public void ClearDungeon()
     {
