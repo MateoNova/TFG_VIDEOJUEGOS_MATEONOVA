@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f035bf85efb300a4c97f136b1415a2ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilemapPainter: {fileID: 0}
+  tilemapPainter: {fileID: 4841484267194583844}
   origin: {x: 0, y: 0}
   minRoomSize: 5
   maxRoomSize: 20

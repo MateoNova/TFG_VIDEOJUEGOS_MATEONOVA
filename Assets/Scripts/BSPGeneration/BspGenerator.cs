@@ -11,17 +11,42 @@ namespace BSPGeneration
         /// <summary>
         /// Minimum size of the rooms.
         /// </summary>
-        [SerializeField] private int minRoomSize = 5;
-
+        /// <remarks>
+        /// A smaller value will create smaller rooms, which can result in a more complex and dense dungeon layout.
+        /// A larger value will create larger rooms, which can result in a more open and spacious dungeon layout.
+        /// </remarks>
+        [SerializeField, Tooltip("Minimum size of the rooms. Smaller values create smaller rooms, resulting in a more complex and dense dungeon layout. Larger values create larger rooms, resulting in a more open and spacious dungeon layout.")] 
+        private int minRoomSize = 5;
+        
         /// <summary>
         /// Maximum size of the rooms.
         /// </summary>
-        [SerializeField] private int maxRoomSize = 20;
-
+        /// <remarks>
+        /// A smaller value will limit the maximum size of the rooms, leading to a more uniform room size.
+        /// A larger value will allow for larger rooms, creating more variation in room sizes.
+        /// </remarks>
+        [SerializeField, Tooltip("Maximum size of the rooms. Smaller values limit the maximum size of the rooms, leading to a more uniform room size. Larger values allow for larger rooms, creating more variation in room sizes.")] 
+        private int maxRoomSize = 20;
+        
         /// <summary>
         /// Maximum number of iterations for splitting the space.
         /// </summary>
-        [SerializeField] private int maxIterations = 5;
+        /// <remarks>
+        /// A smaller value will result in fewer splits, creating fewer but larger rooms.
+        /// A larger value will result in more splits, creating more but smaller rooms.
+        /// </remarks>
+        [SerializeField, Tooltip("Maximum number of iterations for splitting the space. Smaller values result in fewer splits, creating fewer but larger rooms. Larger values result in more splits, creating more but smaller rooms.")] 
+        private int maxIterations = 5;
+        
+        /// <summary>
+        /// Aspect ratio threshold for deciding split direction.
+        /// </summary>
+        /// <remarks>
+        /// A smaller value will make the algorithm more likely to split nodes in both directions.
+        /// A larger value will make the algorithm more likely to split nodes in one direction, creating more elongated rooms.
+        /// </remarks>
+        [SerializeField, Tooltip("Aspect ratio threshold for deciding split direction. Smaller values make the algorithm more likely to split nodes in both directions. Larger values make the algorithm more likely to split nodes in one direction, creating more elongated rooms.")] 
+        private float aspectProportion = 1.5f;
 
         /// <summary>
         /// Runs the generation process.
@@ -50,6 +75,8 @@ namespace BSPGeneration
                 }
             }
 
+            CreateCorridors(rootNode, walkableTiles);
+
             tilemapPainter.PaintWalkableTiles(walkableTiles);
             WallGenerator.GenerateWalls(walkableTiles, tilemapPainter);
         }
@@ -61,32 +88,28 @@ namespace BSPGeneration
         /// <param name="iterations">The number of iterations left for splitting.</param>
         private void SplitNode(BspNode node, int iterations)
         {
-            while (true)
+            if (iterations <= 0 || node.Width <= minRoomSize * 2 || node.Height <= minRoomSize * 2) return;
+
+            var splitHorizontally = ShouldSplitHorizontally(node);
+            var splitPos = splitHorizontally
+                ? Random.Range(minRoomSize, node.Height - minRoomSize)
+                : Random.Range(minRoomSize, node.Width - minRoomSize);
+
+            if (splitHorizontally)
             {
-                if (iterations <= 0 || node.Width <= minRoomSize * 2 || node.Height <= minRoomSize * 2) return;
-
-                var splitHorizontally = ShouldSplitHorizontally(node);
-                var splitPos = splitHorizontally
-                    ? Random.Range(minRoomSize, node.Height - minRoomSize)
-                    : Random.Range(minRoomSize, node.Width - minRoomSize);
-
-                if (splitHorizontally)
-                {
-                    node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, node.Width, splitPos));
-                    node.Right = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin + splitPos, node.Width,
-                        node.Height - splitPos));
-                }
-                else
-                {
-                    node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, splitPos, node.Height));
-                    node.Right = new BspNode(new RectInt(node.Rect.xMin + splitPos, node.Rect.yMin,
-                        node.Width - splitPos, node.Height));
-                }
-
-                SplitNode(node.Left, iterations - 1);
-                node = node.Right;
-                iterations -= 1;
+                node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, node.Width, splitPos));
+                node.Right = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin + splitPos, node.Width,
+                    node.Height - splitPos));
             }
+            else
+            {
+                node.Left = new BspNode(new RectInt(node.Rect.xMin, node.Rect.yMin, splitPos, node.Height));
+                node.Right = new BspNode(new RectInt(node.Rect.xMin + splitPos, node.Rect.yMin, node.Width - splitPos,
+                    node.Height));
+            }
+
+            SplitNode(node.Left, iterations - 1);
+            SplitNode(node.Right, iterations - 1);
         }
 
         /// <summary>
@@ -94,10 +117,10 @@ namespace BSPGeneration
         /// </summary>
         /// <param name="node">The node to check.</param>
         /// <returns>True if the node should be split horizontally, otherwise false.</returns>
-        private static bool ShouldSplitHorizontally(BspNode node)
+        private bool ShouldSplitHorizontally(BspNode node)
         {
-            if (node.Width > node.Height && node.Width / node.Height >= 1.25f) return false;
-            if (node.Height > node.Width && node.Height / node.Width >= 1.25f) return true;
+            if (node.Width > node.Height && node.Width / node.Height >= aspectProportion) return false;
+            if (node.Height > node.Width && node.Height / node.Width >= aspectProportion) return true;
             return Random.value > 0.5f;
         }
 
@@ -124,6 +147,52 @@ namespace BSPGeneration
             {
                 CollectRooms(node.Left, rooms);
                 CollectRooms(node.Right, rooms);
+            }
+        }
+
+        /// <summary>
+        /// Creates corridors between rooms in the BSP tree.
+        /// </summary>
+        /// <param name="node">The current node in the BSP tree.</param>
+        /// <param name="walkableTiles">The set of walkable tiles to update.</param>
+        private void CreateCorridors(BspNode node, HashSet<Vector2Int> walkableTiles)
+        {
+            if (node.Left == null || node.Right == null) return;
+
+            var leftRoom = node.Left.Room;
+            var rightRoom = node.Right.Room;
+
+            var start = new Vector2Int((int)leftRoom.center.x, (int)leftRoom.center.y);
+            var end = new Vector2Int((int)rightRoom.center.x, (int)rightRoom.center.y);
+
+            CreateCorridor(start, end, walkableTiles);
+
+            CreateCorridors(node.Left, walkableTiles);
+            CreateCorridors(node.Right, walkableTiles);
+        }
+
+        /// <summary>
+        /// Creates a corridor between two points.
+        /// </summary>
+        /// <param name="start">The starting point of the corridor.</param>
+        /// <param name="end">The ending point of the corridor.</param>
+        /// <param name="walkableTiles">The set of walkable tiles to update.</param>
+        private static void CreateCorridor(Vector2Int start, Vector2Int end, HashSet<Vector2Int> walkableTiles)
+        {
+            var current = start;
+
+            while (current != end)
+            {
+                if (current.x != end.x)
+                {
+                    current.x += current.x < end.x ? 1 : -1;
+                }
+                else if (current.y != end.y)
+                {
+                    current.y += current.y < end.y ? 1 : -1;
+                }
+
+                walkableTiles.Add(current);
             }
         }
     }
