@@ -75,7 +75,7 @@ namespace Editor
             DrawGeneratorSettings();
 
             EditorGUILayoutExtensions.DrawSectionTitle("Style");
-            DrawTilemapPainterSettings();
+            //DrawTilemapPainterSettings();
 
             EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
             DrawDungeonActions();
@@ -161,7 +161,7 @@ namespace Editor
         /// <summary>
         /// Draws the settings for the TilemapPainter.
         /// </summary>
-        private void DrawTilemapPainterSettings()
+        /*private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
         
@@ -178,7 +178,7 @@ namespace Editor
         
                 painterObject.ApplyModifiedProperties();
             });
-        }
+        }*/
 
         /// <summary>
         /// Draws a preview of the TileBase with a label and allows selection.
@@ -188,6 +188,12 @@ namespace Editor
         /// <param name="controlID">The control ID for the object picker.</param>
         private static void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID)
         {
+            if (tileBaseProperty == null)
+            {
+                Debug.LogError("tileBaseProperty is null");
+                return;
+            }
+        
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 EditorGUILayoutExtensions.Horizontal(() =>
@@ -196,21 +202,22 @@ namespace Editor
                     GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
                     GUILayout.FlexibleSpace();
                 });
-
+        
                 var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
                 if (tileBase)
                 {
                     var previewTexture = AssetPreview.GetAssetPreview(tileBase);
-                    if (!previewTexture) return;
-            
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
+                    if (previewTexture != null)
                     {
-                        EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
+                        GUILayout.BeginHorizontal();
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
+                        {
+                            EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
+                        }
+                        GUILayout.FlexibleSpace();
+                        GUILayout.EndHorizontal();
                     }
-                    GUILayout.FlexibleSpace();
-                    GUILayout.EndHorizontal();
                 }
                 else
                 {
@@ -223,7 +230,7 @@ namespace Editor
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
-
+        
                 if (Event.current.commandName == "ObjectSelectorUpdated" &&
                     EditorGUIUtility.GetObjectPickerControlID() == controlID)
                 {
