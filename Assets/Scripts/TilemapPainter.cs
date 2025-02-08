@@ -29,10 +29,29 @@ public class TilemapPainter : MonoBehaviour
     /// </summary>
     [SerializeField] private bool randomPlacement;
 
+    [SerializeField] private List<float> tileprobs;
+
     /// <summary>
     /// Probabilities for each walkable tile
     /// </summary>
-    [SerializeField] private Dictionary<TileBase, float> tileProbabilities;
+    private Dictionary<TileBase, float> tileProbabilities = new();
+
+    private void InitializeTileProbabilities()
+    {
+        tileProbabilities = new Dictionary<TileBase, float>();
+        for (int i = 0; i < walkableTileBases.Count; i++)
+        {
+            if (i < tileprobs.Count)
+            {
+                tileProbabilities[walkableTileBases[i]] = tileprobs[i];
+            }
+            else
+            {
+                Debug.LogWarning($"No probability defined for tile at index {i}. Defaulting to 0.");
+                tileProbabilities[walkableTileBases[i]] = 0f;
+            }
+        }
+    }
 
     /// <summary>
     /// Renders the walkable tiles at the specified positions.
@@ -40,6 +59,7 @@ public class TilemapPainter : MonoBehaviour
     /// <param name="tilesPositions">The positions of the tiles to render.</param>
     public void PaintWalkableTiles(IEnumerable<Vector2Int> tilesPositions)
     {
+        InitializeTileProbabilities();
         if (randomPlacement)
         {
             PaintTilesRandomly(tilesPositions, walkableTilemap, walkableTileBases);
@@ -55,12 +75,6 @@ public class TilemapPainter : MonoBehaviour
         PaintTiles(positions, wallTilemap, wallTileBase);
     }
 
-    /// <summary>
-    /// Renders tiles at the specified positions on the given Tilemap with the specified TileBase.
-    /// </summary>
-    /// <param name="positions">The positions of the tiles to render.</param>
-    /// <param name="tilemap">The Tilemap to render the tiles on.</param>
-    /// <param name="tileBase">The TileBase to use for the tiles.</param>
     private static void PaintTiles(IEnumerable<Vector2Int> positions, Tilemap tilemap, TileBase tileBase)
     {
         foreach (var pos in positions)
@@ -70,12 +84,6 @@ public class TilemapPainter : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Renders tiles randomly at the specified positions on the given Tilemap with the specified TileBases.
-    /// </summary>
-    /// <param name="positions">The positions of the tiles to render.</param>
-    /// <param name="tilemap">The Tilemap to render the tiles on.</param>
-    /// <param name="tileBases">The TileBases to use for the tiles.</param>
     private static void PaintTilesRandomly(IEnumerable<Vector2Int> positions, Tilemap tilemap, List<TileBase> tileBases)
     {
         var random = new System.Random();
@@ -87,13 +95,6 @@ public class TilemapPainter : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Renders tiles at the specified positions on the given Tilemap with the specified TileBases and probabilities.
-    /// </summary>
-    /// <param name="positions">The positions of the tiles to render.</param>
-    /// <param name="tilemap">The Tilemap to render the tiles on.</param>
-    /// <param name="tileBases">The TileBases to use for the tiles.</param>
-    /// <param name="probabilities">The probabilities for each TileBase.</param>
     private static void PaintTilesWithProbabilities(IEnumerable<Vector2Int> positions, Tilemap tilemap,
         List<TileBase> tileBases, Dictionary<TileBase, float> probabilities)
     {
@@ -103,6 +104,11 @@ public class TilemapPainter : MonoBehaviour
 
         foreach (var tileBase in tileBases)
         {
+            if (!probabilities.ContainsKey(tileBase))
+            {
+                Debug.LogError($"Probability for tile {tileBase.name} is not set.");
+                return;
+            }
             cumulativeProbabilities.Add(probabilities[tileBase] / totalProbability);
         }
 
@@ -124,9 +130,6 @@ public class TilemapPainter : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Clears all tiles from grid.
-    /// </summary>
     public void ResetAllTiles()
     {
         walkableTilemap?.ClearAllTiles();
@@ -183,7 +186,6 @@ public class TilemapPainter : MonoBehaviour
 
     private static TileBase GetTileBaseByName(string tileName)
     {
-        // Find all assets with the specified name
         var guids = AssetDatabase.FindAssets(tileName, new[] { "Assets/Assets/TilemapsDungeonTilesetil" });
         return guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Select(AssetDatabase.LoadAssetAtPath<TileBase>)
             .FirstOrDefault(tile => tile && tile.name == tileName);
