@@ -1,4 +1,5 @@
 using System;
+using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,10 +23,18 @@ namespace Editor
         /// </summary>
         /// <param name="content">The action to execute within the vertical layout group.</param>
         /// <param name="style">The GUIStyle to apply to the vertical layout group. If null, GUIStyle.none is used.</param>
-        public static void Vertical(Action content, GUIStyle style = null)
+        /// <param name="options"> </param>
+        public static void Vertical(Action content, GUIStyle style = null, GUILayoutOption options = null)
         {
             style ??= GUIStyle.none;
-
+            if (options != null)
+            {
+                EditorGUILayout.BeginVertical(style, options);
+                content();
+                EditorGUILayout.EndVertical();
+                return;
+            }
+            
             EditorGUILayout.BeginVertical(style);
             content();
             EditorGUILayout.EndVertical();
