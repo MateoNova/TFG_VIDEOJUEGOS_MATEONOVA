@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Editor
 {
@@ -72,6 +73,9 @@ namespace Editor
 
             EditorGUILayoutExtensions.DrawSectionTitle("Generator Settings");
             DrawGeneratorSettings();
+
+            EditorGUILayoutExtensions.DrawSectionTitle("Style");
+            DrawTilemapPainterSettings();
 
             EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
             DrawDungeonActions();
@@ -151,6 +155,57 @@ namespace Editor
                 }
 
                 generatorObject.ApplyModifiedProperties();
+            }, "box");
+        }
+
+        /// <summary>
+        /// Draws the settings for the TilemapPainter.
+        /// </summary>
+        private void DrawTilemapPainterSettings()
+        {
+            if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
+
+            EditorGUILayoutExtensions.Vertical(() =>
+            {
+                var painterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
+                var property = painterObject.GetIterator();
+                property.NextVisible(true);
+
+                while (property.NextVisible(false))
+                {
+                    if (property.name == "walkableTileBase" || property.name == "wallTileBase")
+                    {
+                        var tileBase = property.objectReferenceValue as TileBase;
+                        if (tileBase != null)
+                        {
+                            var previewTexture = AssetPreview.GetAssetPreview(tileBase);
+                            if (previewTexture != null)
+                            {
+                                GUILayout.Label(property.displayName);
+                                if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
+                                {
+                                    EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", 0);
+                                }
+
+                                if (Event.current.commandName == "ObjectSelectorUpdated")
+                                {
+                                    property.objectReferenceValue =
+                                        EditorGUIUtility.GetObjectPickerObject() as TileBase;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            EditorGUILayout.PropertyField(property, true);
+                        }
+                    }
+                    else
+                    {
+                        EditorGUILayout.PropertyField(property, true);
+                    }
+                }
+
+                painterObject.ApplyModifiedProperties();
             }, "box");
         }
 

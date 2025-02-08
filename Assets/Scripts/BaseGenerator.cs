@@ -57,4 +57,9 @@ public abstract class BaseGenerator : MonoBehaviour
     {
         return origin;
     }
+    
+    public TilemapPainter getTilemapPainter()
+    {
+        return tilemapPainter;
+    }
 }
