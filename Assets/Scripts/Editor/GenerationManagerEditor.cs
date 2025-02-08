@@ -165,48 +165,63 @@ namespace Editor
         {
             if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
 
-            EditorGUILayoutExtensions.Vertical(() =>
+            EditorGUILayoutExtensions.Horizontal(() =>
             {
                 var painterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
-                var property = painterObject.GetIterator();
-                property.NextVisible(true);
+                var walkableTileBaseProperty = painterObject.FindProperty("walkableTileBase");
+                var wallTileBaseProperty = painterObject.FindProperty("wallTileBase");
 
-                while (property.NextVisible(false))
-                {
-                    if (property.name == "walkableTileBase" || property.name == "wallTileBase")
-                    {
-                        var tileBase = property.objectReferenceValue as TileBase;
-                        if (tileBase != null)
-                        {
-                            var previewTexture = AssetPreview.GetAssetPreview(tileBase);
-                            if (previewTexture != null)
-                            {
-                                GUILayout.Label(property.displayName);
-                                if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
-                                {
-                                    EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", 0);
-                                }
-
-                                if (Event.current.commandName == "ObjectSelectorUpdated")
-                                {
-                                    property.objectReferenceValue =
-                                        EditorGUIUtility.GetObjectPickerObject() as TileBase;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            EditorGUILayout.PropertyField(property, true);
-                        }
-                    }
-                    else
-                    {
-                        EditorGUILayout.PropertyField(property, true);
-                    }
-                }
+                DrawTileBasePreview(walkableTileBaseProperty, "Walkable Tile Base", 1);
+                GUILayout.Space(10); // Add space between the previews
+                DrawTileBasePreview(wallTileBaseProperty, "Wall Tile Base", 2);
 
                 painterObject.ApplyModifiedProperties();
-            }, "box");
+            });
+        }
+
+        /// <summary>
+        /// Draws a preview of the TileBase with a label and allows selection.
+        /// </summary>
+        /// <param name="tileBaseProperty">The SerializedProperty of the TileBase.</param>
+        /// <param name="label">The label for the TileBase.</param>
+        /// <param name="controlID">The control ID for the object picker.</param>
+        private static void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID)
+        {
+            EditorGUILayout.BeginVertical(GUILayout.Width(64));
+            EditorGUILayout.LabelField(label, EditorStyles.boldLabel, GUILayout.Width(64), GUILayout.Height(20));
+            var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
+            if (tileBase)
+            {
+                var previewTexture = AssetPreview.GetAssetPreview(tileBase);
+                if (previewTexture)
+                {
+                    if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
+                    {
+                        EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
+                    }
+
+                    if (Event.current.commandName == "ObjectSelectorUpdated" &&
+                        EditorGUIUtility.GetObjectPickerControlID() == controlID)
+                    {
+                        tileBaseProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+                    }
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Select Tile", GUILayout.Width(64), GUILayout.Height(64)))
+                {
+                    EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
+                }
+
+                if (Event.current.commandName == "ObjectSelectorUpdated" &&
+                    EditorGUIUtility.GetObjectPickerControlID() == controlID)
+                {
+                    tileBaseProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+                }
+            }
+
+            EditorGUILayout.EndVertical();
         }
 
         /// <summary>

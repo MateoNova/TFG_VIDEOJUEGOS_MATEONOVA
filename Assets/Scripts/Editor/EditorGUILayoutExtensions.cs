@@ -24,7 +24,7 @@ namespace Editor
         /// <param name="style">The GUIStyle to apply to the vertical layout group. If null, GUIStyle.none is used.</param>
         public static void Vertical(Action content, GUIStyle style = null)
         {
-            if (style == null) style = GUIStyle.none;
+            style ??= GUIStyle.none;
 
             EditorGUILayout.BeginVertical(style);
             content();
