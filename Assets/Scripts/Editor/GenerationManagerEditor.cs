@@ -167,11 +167,11 @@ namespace Editor
         private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
-        
+
             _tilemapPainterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
             var walkableTileBasesProperty = _tilemapPainterObject.FindProperty("walkableTileBases");
             var tilePrioritiesProperty = _tilemapPainterObject.FindProperty("tilePriorities");
-        
+
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 if (GUILayout.Button("Add TileBase"))
@@ -182,23 +182,23 @@ namespace Editor
                     tilePrioritiesProperty.InsertArrayElementAtIndex(tilePrioritiesProperty.arraySize);
                     tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue = 0;
                 }
-        
+
                 if (walkableTileBasesProperty.arraySize > 0)
                 {
                     _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(125));
-        
+
                     EditorGUILayoutExtensions.Horizontal(() =>
                     {
                         for (int i = 0; i < walkableTileBasesProperty.arraySize; i++)
                         {
                             var tileBaseProperty = walkableTileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
-                            DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + 1, priorityProperty);
+                            DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + 1, priorityProperty, i);
                         }
                     });
                     EditorGUILayout.EndScrollView();
                 }
-        
+
                 _tilemapPainterObject.ApplyModifiedProperties();
             });
         }
@@ -209,14 +209,15 @@ namespace Editor
         /// <param name="tileBaseProperty">The serialized property of the TileBase.</param>
         /// <param name="label">The label for the TileBase.</param>
         /// <param name="controlID">The control ID for the object picker.</param>
-        private static void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID, SerializedProperty priorityProperty)
+        private void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID,
+            SerializedProperty priorityProperty, int index)
         {
-            if (tileBaseProperty == null)
+            if (tileBaseProperty == null || priorityProperty == null)
             {
-                Debug.LogError("tileBaseProperty is null");
+                Debug.LogError("tileBaseProperty or priorityProperty is null");
                 return;
             }
-        
+
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 EditorGUILayoutExtensions.Horizontal(() =>
@@ -225,7 +226,7 @@ namespace Editor
                     GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
                     GUILayout.FlexibleSpace();
                 });
-        
+
                 var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
                 if (tileBase)
                 {
@@ -238,6 +239,7 @@ namespace Editor
                         {
                             EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
                         }
+
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();
                     }
@@ -250,242 +252,252 @@ namespace Editor
                     {
                         EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
                     }
+
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
-        
+
                 if (Event.current.commandName == "ObjectSelectorUpdated" &&
                     EditorGUIUtility.GetObjectPickerControlID() == controlID)
                 {
                     tileBaseProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
                 }
-        
+
                 // Display and edit the priority
                 EditorGUILayoutExtensions.Horizontal(() =>
                 {
                     GUILayout.FlexibleSpace();
                     EditorGUILayout.LabelField("Priority:", GUILayout.Width(50));
-                    priorityProperty.intValue = EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
+                    priorityProperty.intValue =
+                        EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
                     GUILayout.FlexibleSpace();
                 });
-            }, null, GUILayout.Width(64));
+
+                if (GUILayout.Button("Delete"))
+                {
+                    _currentGenerator.getTilemapPainter().RemoveTileAtPosition(index);
+                    _tilemapPainterObject.ApplyModifiedProperties();
+                    Repaint();
+                }
+
+            });
         }
 
         /// <summary>
-        /// Draws the actions for generating, clearing, saving, and loading the dungeon.
-        /// </summary>
-        private void DrawDungeonActions()
-        {
-            _clearDungeon =
-                EditorGUILayout.Toggle(
-                    new GUIContent("Clear all tiles", "This will clear all tiles before generating the dungeon"),
-                    _clearDungeon);
-            EditorGUILayout.Space();
-
-            if (GUILayout.Button("Generate Dungeon"))
+            /// Draws the actions for generating, clearing, saving, and loading the dungeon.
+            /// </summary>
+            private void DrawDungeonActions()
             {
-                Generate();
+                _clearDungeon =
+                    EditorGUILayout.Toggle(
+                        new GUIContent("Clear all tiles", "This will clear all tiles before generating the dungeon"),
+                        _clearDungeon);
+                EditorGUILayout.Space();
+
+                if (GUILayout.Button("Generate Dungeon"))
+                {
+                    Generate();
+                }
+
+                if (GUILayout.Button("Clear Dungeon"))
+                {
+                    _currentGenerator.ClearDungeon();
+                }
+
+                if (GUILayout.Button("Save Dungeon"))
+                {
+                    SaveDungeon();
+                }
+
+                if (GUILayout.Button("Load Dungeon"))
+                {
+                    LoadDungeon();
+                }
             }
 
-            if (GUILayout.Button("Clear Dungeon"))
+            /// <summary>
+            /// Loads the dungeon from a file.
+            /// </summary>
+            private void LoadDungeon()
             {
-                _currentGenerator.ClearDungeon();
-            }
-
-            if (GUILayout.Button("Save Dungeon"))
-            {
-                SaveDungeon();
-            }
-
-            if (GUILayout.Button("Load Dungeon"))
-            {
-                LoadDungeon();
-            }
-        }
-
-        /// <summary>
-        /// Loads the dungeon from a file.
-        /// </summary>
-        private void LoadDungeon()
-        {
-            var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
-            if (!string.IsNullOrEmpty(path))
-            {
-                _currentGenerator.LoadDungeon(path);
-            }
-        }
-
-        /// <summary>
-        /// Saves the dungeon to a file.
-        /// </summary>
-        private void SaveDungeon()
-        {
-            var path = EditorPrefs.GetString(SavedDungeonPathKey, string.Empty);
-            if (string.IsNullOrEmpty(path))
-            {
-                path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
+                var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
                 if (!string.IsNullOrEmpty(path))
                 {
-                    EditorPrefs.SetString(SavedDungeonPathKey, path);
+                    _currentGenerator.LoadDungeon(path);
                 }
             }
 
-            if (string.IsNullOrEmpty(path)) return;
-
-            if (System.IO.File.Exists(path))
+            /// <summary>
+            /// Saves the dungeon to a file.
+            /// </summary>
+            private void SaveDungeon()
             {
-                var overwrite = EditorUtility.DisplayDialog("Overwrite Confirmation",
-                    "The file already exists. Do you want to overwrite it?", "Yes", "No");
-
-                if (!overwrite)
+                var path = EditorPrefs.GetString(SavedDungeonPathKey, string.Empty);
+                if (string.IsNullOrEmpty(path))
                 {
-                    return;
+                    path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        EditorPrefs.SetString(SavedDungeonPathKey, path);
+                    }
                 }
-            }
 
-            _currentGenerator.SaveDungeon(path);
-        }
+                if (string.IsNullOrEmpty(path)) return;
 
-        /// <summary>
-        /// Finds all generators in the scene.
-        /// </summary>
-        private void FindAllGenerators()
-        {
-            if (_cachedGenerationManager)
-            {
-                _generators =
-                    new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
-                _cachedGeneratorNames = GetGeneratorNames();
-                if (_cachedGeneratorNames.Count > 0)
+                if (System.IO.File.Exists(path))
                 {
-                    EditorPrefs.SetString(CachedGeneratorNamesKey, string.Join(",", _cachedGeneratorNames));
+                    var overwrite = EditorUtility.DisplayDialog("Overwrite Confirmation",
+                        "The file already exists. Do you want to overwrite it?", "Yes", "No");
+
+                    if (!overwrite)
+                    {
+                        return;
+                    }
                 }
-            }
-            else
-            {
-                Debug.LogWarning("GenerationManager not found in the scene.");
-                ClearGeneratorLists();
-            }
-        }
 
-        /// <summary>
-        /// Clears the generator lists.
-        /// </summary>
-        private void ClearGeneratorLists()
-        {
-            _generators.Clear();
-            _cachedGeneratorNames.Clear();
-            EditorPrefs.DeleteKey(CachedGeneratorNamesKey);
-        }
+                _currentGenerator.SaveDungeon(path);
+            }
 
-        /// <summary>
-        /// Generates the dungeon using the selected generator.
-        /// </summary>
-        private void Generate()
-        {
-            if (_currentGenerator)
+            /// <summary>
+            /// Finds all generators in the scene.
+            /// </summary>
+            private void FindAllGenerators()
             {
-                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.getOrigin());
-            }
-            else
-            {
-                Debug.LogWarning("No generator selected.");
-            }
-        }
-
-        /// <summary>
-        /// Selects a generator by index.
-        /// </summary>
-        /// <param name="index">The index of the generator to select.</param>
-        private void SelectGenerator(int index)
-        {
-            if (index >= 0 && index < _generators.Count)
-            {
-                _selectedGeneratorIndex = index;
-                _currentGenerator = _generators[_selectedGeneratorIndex];
-                Repaint();
-            }
-            else
-            {
-                Debug.LogWarning("Invalid generator index.");
-            }
-        }
-
-        /// <summary>
-        /// Gets the names of all generators.
-        /// </summary>
-        /// <returns>A list of generator names.</returns>
-        private List<string> GetGeneratorNames()
-        {
-            var names = new List<string>();
-            foreach (var generator in _generators)
-            {
-                if (generator)
+                if (_cachedGenerationManager)
                 {
-                    names.Add(generator.name);
+                    _generators =
+                        new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
+                    _cachedGeneratorNames = GetGeneratorNames();
+                    if (_cachedGeneratorNames.Count > 0)
+                    {
+                        EditorPrefs.SetString(CachedGeneratorNamesKey, string.Join(",", _cachedGeneratorNames));
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning("Generator is null.");
+                    Debug.LogWarning("GenerationManager not found in the scene.");
+                    ClearGeneratorLists();
                 }
             }
 
-            return names;
-        }
-
-        /// <summary>
-        /// Retrieves the cached Generation Manager from the EditorPrefs.
-        /// </summary>
-        /// <returns>The cached Generation Manager GameObject.</returns>
-        private static GameObject RetrieveCachedGenerationManager()
-        {
-            var cachedGenerationManagerId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
-            if (cachedGenerationManagerId != -1)
+            /// <summary>
+            /// Clears the generator lists.
+            /// </summary>
+            private void ClearGeneratorLists()
             {
-                return EditorUtility.InstanceIDToObject(cachedGenerationManagerId) as GameObject;
+                _generators.Clear();
+                _cachedGeneratorNames.Clear();
+                EditorPrefs.DeleteKey(CachedGeneratorNamesKey);
             }
 
-            return null;
-        }
-
-        /// <summary>
-        /// Instantiates the Generation Manager prefab.
-        /// </summary>
-        /// <returns>The instantiated Generation Manager GameObject.</returns>
-        private GameObject InstantiateGenerationManager()
-        {
-            if (!_cachedPrefab)
+            /// <summary>
+            /// Generates the dungeon using the selected generator.
+            /// </summary>
+            private void Generate()
             {
-                _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+                if (_currentGenerator)
+                {
+                    _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.getOrigin());
+                }
+                else
+                {
+                    Debug.LogWarning("No generator selected.");
+                }
             }
 
-            if (!_cachedPrefab)
+            /// <summary>
+            /// Selects a generator by index.
+            /// </summary>
+            /// <param name="index">The index of the generator to select.</param>
+            private void SelectGenerator(int index)
             {
+                if (index >= 0 && index < _generators.Count)
+                {
+                    _selectedGeneratorIndex = index;
+                    _currentGenerator = _generators[_selectedGeneratorIndex];
+                    Repaint();
+                }
+                else
+                {
+                    Debug.LogWarning("Invalid generator index.");
+                }
+            }
+
+            /// <summary>
+            /// Gets the names of all generators.
+            /// </summary>
+            /// <returns>A list of generator names.</returns>
+            private List<string> GetGeneratorNames()
+            {
+                var names = new List<string>();
+                foreach (var generator in _generators)
+                {
+                    if (generator)
+                    {
+                        names.Add(generator.name);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Generator is null.");
+                    }
+                }
+
+                return names;
+            }
+
+            /// <summary>
+            /// Retrieves the cached Generation Manager from the EditorPrefs.
+            /// </summary>
+            /// <returns>The cached Generation Manager GameObject.</returns>
+            private static GameObject RetrieveCachedGenerationManager()
+            {
+                var cachedGenerationManagerId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
+                if (cachedGenerationManagerId != -1)
+                {
+                    return EditorUtility.InstanceIDToObject(cachedGenerationManagerId) as GameObject;
+                }
+
                 return null;
             }
 
-            _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
-            EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
-            return _cachedGenerationManager;
-        }
+            /// <summary>
+            /// Instantiates the Generation Manager prefab.
+            /// </summary>
+            /// <returns>The instantiated Generation Manager GameObject.</returns>
+            private GameObject InstantiateGenerationManager()
+            {
+                if (!_cachedPrefab)
+                {
+                    _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+                }
 
-        /// <summary>
-        /// Clears all cached data and resets the state.
-        /// </summary>
-        private void ClearCachedData()
-        {
-            EditorPrefs.DeleteAll();
+                if (!_cachedPrefab)
+                {
+                    return null;
+                }
 
-            DestroyImmediate(_cachedGenerationManager);
-            _cachedGenerationManager = null;
-            _cachedPrefab = null;
-            _currentGenerator = null;
-            _cachedGeneratorNames.Clear();
-            _generators.Clear();
-            _selectedGeneratorIndex = 0;
-            _isInitialized = false;
+                _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
+                EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
+                return _cachedGenerationManager;
+            }
 
-            EditorApplication.delayCall += Repaint;
+            /// <summary>
+            /// Clears all cached data and resets the state.
+            /// </summary>
+            private void ClearCachedData()
+            {
+                EditorPrefs.DeleteAll();
+
+                DestroyImmediate(_cachedGenerationManager);
+                _cachedGenerationManager = null;
+                _cachedPrefab = null;
+                _currentGenerator = null;
+                _cachedGeneratorNames.Clear();
+                _generators.Clear();
+                _selectedGeneratorIndex = 0;
+                _isInitialized = false;
+
+                EditorApplication.delayCall += Repaint;
+            }
         }
     }
-}

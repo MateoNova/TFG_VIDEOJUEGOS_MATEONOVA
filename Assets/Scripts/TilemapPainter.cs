@@ -237,6 +237,35 @@ public class TilemapPainter : MonoBehaviour
         return guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Select(AssetDatabase.LoadAssetAtPath<TileBase>)
             .FirstOrDefault(tile => tile && tile.name == tileName);
     }
+    
+    public void RemoveTileAtPosition(int position)
+    {
+        // Validar que el índice esté dentro del rango
+        if (position < 0 || position >= walkableTileBases.Count)
+        {
+            Debug.LogWarning("Índice fuera de rango.");
+            return;
+        }
+
+        // Obtener el TileBase en la posición indicada
+        TileBase tile = walkableTileBases[position];
+        Debug.Log("Dictionary: " + _tileProbabilities.Count);
+
+        // Si no es nulo, lo remueve del diccionario
+        if (tile != null)
+        {
+            _tileProbabilities.Remove(tile);
+            Debug.Log("Removed");
+            Debug.Log("Dictionary: " + _tileProbabilities.Count);
+
+        }
+
+        // Eliminar el elemento en la posición indicada de ambas listas
+        walkableTileBases.RemoveAt(position);
+        tilePriorities.RemoveAt(position);
+    }
+
+
 }
 
 /// <summary>
