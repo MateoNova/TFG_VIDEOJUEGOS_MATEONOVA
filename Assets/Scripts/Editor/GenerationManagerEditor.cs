@@ -11,23 +11,86 @@ namespace Editor
     /// </summary>
     public class GenerationManagerWindow : EditorWindow
     {
+        #region Constants and Fields
+
+        /// <summary>
+        /// Key for cached generator names in EditorPrefs.
+        /// </summary>
         private const string CachedGeneratorNamesKey = "CachedGeneratorNames";
+
+        /// <summary>
+        /// Key for cached generation manager ID in EditorPrefs.
+        /// </summary>
         private const string CachedGenerationManagerIdKey = "CachedGenerationManagerId";
+
+        /// <summary>
+        /// Path to the Generation Manager prefab.
+        /// </summary>
         private const string PrefabPath = "Assets/Prefabs/GenerationManager.prefab";
+
+        /// <summary>
+        /// Key for saved dungeon path in EditorPrefs.
+        /// </summary>
         private const string SavedDungeonPathKey = "SavedDungeonPath";
 
+        /// <summary>
+        /// List of all generators in the scene.
+        /// </summary>
         private List<BaseGenerator> _generators = new();
+
+        /// <summary>
+        /// Index of the selected generator.
+        /// </summary>
         private int _selectedGeneratorIndex;
+
+        /// <summary>
+        /// Currently selected generator.
+        /// </summary>
         private BaseGenerator _currentGenerator;
+
+        /// <summary>
+        /// Flag to indicate whether to clear the dungeon before generation.
+        /// </summary>
         private bool _clearDungeon = true;
+
+        /// <summary>
+        /// Flag to indicate whether the scene is initialized.
+        /// </summary>
         private bool _isInitialized;
 
+        /// <summary>
+        /// Cached generator names.
+        /// </summary>
         private List<string> _cachedGeneratorNames = new();
+
+        /// <summary>
+        /// Cached Generation Manager GameObject.
+        /// </summary>
         private GameObject _cachedGenerationManager;
+
+        /// <summary>
+        /// Cached prefab of the Generation Manager.
+        /// </summary>
         private static GameObject _cachedPrefab;
 
+        /// <summary>
+        /// Serialized object for the Tilemap Painter.
+        /// </summary>
         private SerializedObject _tilemapPainterObject;
-        private Vector2 _scrollPosition;
+
+        /// <summary>
+        /// Scroll position for the floor tile settings.
+        /// </summary>
+        private Vector2 _floorScrollPosition;
+
+        /// <summary>
+        /// Scroll position for the wall tile settings.
+        /// </summary>
+        private Vector2 _wallScrollPosition;
+
+        #endregion
+
+        #region Initialization
 
         /// <summary>
         /// Shows the Generation Manager window.
@@ -39,7 +102,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Initializes the scene when the window is enabled.
+        /// Called when the window is enabled.
         /// </summary>
         private void OnEnable()
         {
@@ -57,8 +120,12 @@ namespace Editor
             SelectGenerator(0);
         }
 
+        #endregion
+
+        #region GUI Drawing
+
         /// <summary>
-        /// Draws the GUI for the Generation Manager window.
+        /// Draws the GUI for the window.
         /// </summary>
         private void OnGUI()
         {
@@ -85,7 +152,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Draws the buttons for clearing cached data and initializing the scene.
+        /// Draws the buttons for initialization and clearing cached data.
         /// </summary>
         private void DrawButtons()
         {
@@ -125,24 +192,23 @@ namespace Editor
 
             EditorGUILayoutExtensions.Vertical(() =>
             {
-                var generatorObject = new SerializedObject(_currentGenerator);
+                SerializedObject generatorObject = new(_currentGenerator);
                 var property = generatorObject.GetIterator();
                 property.NextVisible(true);
 
                 while (property.NextVisible(false))
                 {
+                    // Validate if the field has the ConditionalFieldAttribute.
                     var field = _currentGenerator.GetType().GetField(property.name,
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     if (field != null)
                     {
                         var conditionalAttribute =
-                            (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field,
-                                typeof(ConditionalFieldAttribute));
+                            (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field, typeof(ConditionalFieldAttribute));
                         if (conditionalAttribute != null)
                         {
-                            var conditionField = _currentGenerator.GetType()
-                                .GetField(conditionalAttribute.ConditionFieldName,
-                                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                            var conditionField = _currentGenerator.GetType().GetField(conditionalAttribute.ConditionFieldName,
+                                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                             if (conditionField != null)
                             {
                                 var conditionValue = (bool)conditionField.GetValue(_currentGenerator);
@@ -162,129 +228,128 @@ namespace Editor
         }
 
         /// <summary>
-        /// Draws the settings for the Tilemap Painter.
+        /// Draws the settings for the Tilemap Painter (floor and wall tiles).
         /// </summary>
         private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
 
-            AddFloorTiles();
-            AddWallTiles();
+            DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities", 
+                "Add floor tile", true, 0);
+            DrawTileGroupSettings(ref _wallScrollPosition, "wallTileBases", "wallTilesPriorities", 
+                "Add wall tile", false, 1001);
         }
 
-        private void AddFloorTiles()
+        /// <summary>
+        /// Draws the actions for generating, clearing, saving, and loading the dungeon.
+        /// </summary>
+        private void DrawDungeonActions()
+        {
+            _clearDungeon = EditorGUILayout.Toggle(
+                new GUIContent("Clear all tiles", "This will clear all tiles before generating the dungeon"),
+                _clearDungeon);
+            EditorGUILayout.Space();
+
+            if (GUILayout.Button("Generate Dungeon"))
+            {
+                Generate();
+            }
+
+            if (GUILayout.Button("Clear Dungeon"))
+            {
+                _currentGenerator?.ClearDungeon();
+            }
+
+            if (GUILayout.Button("Save Dungeon"))
+            {
+                SaveDungeon();
+            }
+
+            if (GUILayout.Button("Load Dungeon"))
+            {
+                LoadDungeon();
+            }
+        }
+
+        #endregion
+
+        #region Tile Group Drawing
+
+        /// <summary>
+        /// Draws the tile group settings (for floor or wall tiles) including buttons and previews.
+        /// </summary>
+        /// <param name="scrollPosition">Scroll position (passed by reference).</param>
+        /// <param name="tileBasesPropName">Serialized property name for the tile bases.</param>
+        /// <param name="tilePrioritiesPropName">Serialized property name for the tile priorities.</param>
+        /// <param name="addTileButtonLabel">Label for the add tile button.</param>
+        /// <param name="isWalkable">Determines if the group corresponds to floor (true) or wall (false) tiles.</param>
+        /// <param name="controlIdOffset">Offset for the object picker control ID.</param>
+        private void DrawTileGroupSettings(ref Vector2 scrollPosition, string tileBasesPropName, string tilePrioritiesPropName,
+            string addTileButtonLabel, bool isWalkable, int controlIdOffset)
         {
             _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
-            var walkableTileBasesProperty = _tilemapPainterObject.FindProperty("walkableTileBases");
-            var tilePrioritiesProperty = _tilemapPainterObject.FindProperty("walkableTilesPriorities");
-
+            var tileBasesProperty = _tilemapPainterObject.FindProperty(tileBasesPropName);
+            var tilePrioritiesProperty = _tilemapPainterObject.FindProperty(tilePrioritiesPropName);
+        
+            var localScrollPosition = scrollPosition;
+        
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 EditorGUILayoutExtensions.Horizontal(() =>
                 {
-                    if (GUILayout.Button("Add floor tile"))
+                    if (GUILayout.Button(addTileButtonLabel))
                     {
-                        walkableTileBasesProperty.InsertArrayElementAtIndex(walkableTileBasesProperty.arraySize);
-                        walkableTileBasesProperty.GetArrayElementAtIndex(walkableTileBasesProperty.arraySize - 1)
-                            .objectReferenceValue = null;
+                        tileBasesProperty.InsertArrayElementAtIndex(tileBasesProperty.arraySize);
+                        tileBasesProperty.GetArrayElementAtIndex(tileBasesProperty.arraySize - 1).objectReferenceValue = null;
                         tilePrioritiesProperty.InsertArrayElementAtIndex(tilePrioritiesProperty.arraySize);
-                        tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue =
-                            0;
+                        tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue = 0;
                     }
-
-                    if (GUILayout.Button("Clear all floor tiles"))
+        
+                    var clearLabel = "Clear all " + (isWalkable ? "floor" : "wall") + " tiles";
+                    if (GUILayout.Button(clearLabel))
                     {
-                        _currentGenerator.TilemapPainter.RemoveAllWalkableTiles();
+                        if (isWalkable)
+                        {
+                            _currentGenerator.TilemapPainter.RemoveAllWalkableTiles();
+                        }
+                        else
+                        {
+                            _currentGenerator.TilemapPainter.RemoveAllWallTiles();
+                        }
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
-
-                    if (GUILayout.Button("Select floor tiles from folder"))
+        
+                    var selectLabel = "Select " + (isWalkable ? "floor" : "wall") + " tiles from folder";
+                    if (GUILayout.Button(selectLabel))
                     {
                         var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
-                        _currentGenerator.TilemapPainter.SelectFromFolder(true, path);
+                        _currentGenerator.TilemapPainter.SelectFromFolder(isWalkable, path);
                         _tilemapPainterObject.Update();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
                 });
-
-                if (walkableTileBasesProperty.arraySize > 0)
+        
+                if (tileBasesProperty.arraySize > 0)
                 {
-                    _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(125));
-
+                    using var scrollScope = new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(125));
+                    localScrollPosition = scrollScope.scrollPosition;
                     EditorGUILayoutExtensions.Horizontal(() =>
                     {
-                        for (var i = 0; i < walkableTileBasesProperty.arraySize; i++)
+                        for (var i = 0; i < tileBasesProperty.arraySize; i++)
                         {
-                            var tileBaseProperty = walkableTileBasesProperty.GetArrayElementAtIndex(i);
+                            var tileBaseProperty = tileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
-                            DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + 1, priorityProperty, i, true);
+                            DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + controlIdOffset, priorityProperty, i, isWalkable);
                         }
                     });
-                    EditorGUILayout.EndScrollView();
                 }
-
+        
                 _tilemapPainterObject.ApplyModifiedProperties();
             });
-        }
-
-        private void AddWallTiles()
-        {
-            _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
-            var wallTileBasesProperty = _tilemapPainterObject.FindProperty("wallTileBases");
-            var tilePrioritiesProperty = _tilemapPainterObject.FindProperty("wallTilesPriorities");
-
-            EditorGUILayoutExtensions.Vertical(() =>
-            {
-                EditorGUILayoutExtensions.Horizontal(() =>
-                {
-                    if (GUILayout.Button("Add wall tile"))
-                    {
-                        wallTileBasesProperty.InsertArrayElementAtIndex(wallTileBasesProperty.arraySize);
-                        wallTileBasesProperty.GetArrayElementAtIndex(wallTileBasesProperty.arraySize - 1)
-                            .objectReferenceValue = null;
-                        tilePrioritiesProperty.InsertArrayElementAtIndex(tilePrioritiesProperty.arraySize);
-                        tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue =
-                            0;
-                    }
-
-                    if (GUILayout.Button("Clear all wall tiles"))
-                    {
-                        _currentGenerator.TilemapPainter.RemoveAllWallTiles();
-                        _tilemapPainterObject.ApplyModifiedProperties();
-                        Repaint();
-                    }
-
-                    if (GUILayout.Button("Select wall tiles from folder"))
-                    {
-                        var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
-                        _currentGenerator.TilemapPainter.SelectFromFolder(false, path);
-                        _tilemapPainterObject.Update();
-                        _tilemapPainterObject.ApplyModifiedProperties();
-                        Repaint();
-                    }
-                });
-
-                if (wallTileBasesProperty.arraySize > 0)
-                {
-                    _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(125));
-
-                    EditorGUILayoutExtensions.Horizontal(() =>
-                    {
-                        for (var i = 0; i < wallTileBasesProperty.arraySize; i++)
-                        {
-                            var tileBaseProperty = wallTileBasesProperty.GetArrayElementAtIndex(i);
-                            var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
-                            DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + 1001, priorityProperty, i,
-                                false);
-                        }
-                    });
-                    EditorGUILayout.EndScrollView();
-                }
-
-                _tilemapPainterObject.ApplyModifiedProperties();
-            });
+        
+            scrollPosition = localScrollPosition; // Assign back to the ref parameter
         }
 
         /// <summary>
@@ -293,6 +358,9 @@ namespace Editor
         /// <param name="tileBaseProperty">The serialized property of the TileBase.</param>
         /// <param name="label">The label for the TileBase.</param>
         /// <param name="controlID">The control ID for the object picker.</param>
+        /// <param name="priorityProperty">The serialized property for the tile priority.</param>
+        /// <param name="index">The index of the tile in the array.</param>
+        /// <param name="isWalkable">Determines if the tile is floor (true) or wall (false).</param>
         private void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID,
             SerializedProperty priorityProperty, int index, bool isWalkable)
         {
@@ -312,42 +380,38 @@ namespace Editor
                     if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
                     {
                         _currentGenerator.TilemapPainter.RemoveTileAtPosition(index, isWalkable);
-
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
-
                     GUILayout.FlexibleSpace();
                 });
 
+                // Show the preview of the TileBase
                 var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
                 if (tileBase)
                 {
-                    var previewTexture = AssetPreview.GetAssetPreview(tileBase);
-                    if (previewTexture)
+                    Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
                         {
                             EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
                         }
-
                         GUILayout.FlexibleSpace();
-                        GUILayout.EndHorizontal();
                     }
                 }
                 else
                 {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Select Tile", GUILayout.Width(64), GUILayout.Height(64)))
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("Select Tile", GUILayout.Width(64), GUILayout.Height(64)))
+                        {
+                            EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
+                        }
+                        GUILayout.FlexibleSpace();
                     }
-
-                    GUILayout.FlexibleSpace();
-                    GUILayout.EndHorizontal();
                 }
 
                 if (Event.current.commandName == "ObjectSelectorUpdated" &&
@@ -356,47 +420,33 @@ namespace Editor
                     tileBaseProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
                 }
 
-                // Display and edit the priority
+                // Show and edit the priority
                 EditorGUILayoutExtensions.Horizontal(() =>
                 {
                     GUILayout.FlexibleSpace();
                     EditorGUILayout.LabelField("Priority:", GUILayout.Width(50));
-                    priorityProperty.intValue =
-                        EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
+                    priorityProperty.intValue = EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
                     GUILayout.FlexibleSpace();
                 });
             });
         }
 
+        #endregion
+
+        #region Dungeon Generation and Data Management
+
         /// <summary>
-        /// Draws the actions for generating, clearing, saving, and loading the dungeon.
+        /// Generates the dungeon using the selected generator.
         /// </summary>
-        private void DrawDungeonActions()
+        private void Generate()
         {
-            _clearDungeon =
-                EditorGUILayout.Toggle(
-                    new GUIContent("Clear all tiles", "This will clear all tiles before generating the dungeon"),
-                    _clearDungeon);
-            EditorGUILayout.Space();
-
-            if (GUILayout.Button("Generate Dungeon"))
+            if (_currentGenerator)
             {
-                Generate();
+                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.Origin);
             }
-
-            if (GUILayout.Button("Clear Dungeon"))
+            else
             {
-                _currentGenerator.ClearDungeon();
-            }
-
-            if (GUILayout.Button("Save Dungeon"))
-            {
-                SaveDungeon();
-            }
-
-            if (GUILayout.Button("Load Dungeon"))
-            {
-                LoadDungeon();
+                Debug.LogWarning("No generator selected.");
             }
         }
 
@@ -427,7 +477,8 @@ namespace Editor
                 }
             }
 
-            if (string.IsNullOrEmpty(path)) return;
+            if (string.IsNullOrEmpty(path))
+                return;
 
             if (System.IO.File.Exists(path))
             {
@@ -448,10 +499,9 @@ namespace Editor
         /// </summary>
         private void FindAllGenerators()
         {
-            if (_cachedGenerationManager)
+            if (_cachedGenerationManager != null)
             {
-                _generators =
-                    new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
+                _generators = new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
                 _cachedGeneratorNames = GetGeneratorNames();
                 if (_cachedGeneratorNames.Count > 0)
                 {
@@ -476,24 +526,9 @@ namespace Editor
         }
 
         /// <summary>
-        /// Generates the dungeon using the selected generator.
-        /// </summary>
-        private void Generate()
-        {
-            if (_currentGenerator)
-            {
-                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.Origin);
-            }
-            else
-            {
-                Debug.LogWarning("No generator selected.");
-            }
-        }
-
-        /// <summary>
         /// Selects a generator by index.
         /// </summary>
-        /// <param name="index">The index of the generator to select.</param>
+        /// <param name="index">Index of the generator to select.</param>
         private void SelectGenerator(int index)
         {
             if (index >= 0 && index < _generators.Count)
@@ -511,10 +546,10 @@ namespace Editor
         /// <summary>
         /// Gets the names of all generators.
         /// </summary>
-        /// <returns>A list of generator names.</returns>
+        /// <returns>List of generator names.</returns>
         private List<string> GetGeneratorNames()
         {
-            var names = new List<string>();
+            List<string> names = new();
             foreach (var generator in _generators)
             {
                 if (generator)
@@ -526,41 +561,41 @@ namespace Editor
                     Debug.LogWarning("Generator is null.");
                 }
             }
-
             return names;
         }
+
+        #endregion
+
+        #region Generation Manager and Cached Data
 
         /// <summary>
         /// Retrieves the cached Generation Manager from the EditorPrefs.
         /// </summary>
-        /// <returns>The cached Generation Manager GameObject.</returns>
+        /// <returns>Cached Generation Manager GameObject.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
-            var cachedGenerationManagerId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
-            if (cachedGenerationManagerId != -1)
+            var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
+            if (cachedId != -1)
             {
-                return EditorUtility.InstanceIDToObject(cachedGenerationManagerId) as GameObject;
+                return EditorUtility.InstanceIDToObject(cachedId) as GameObject;
             }
-
             return null;
         }
 
         /// <summary>
         /// Instantiates the Generation Manager prefab.
         /// </summary>
-        /// <returns>The instantiated Generation Manager GameObject.</returns>
+        /// <returns>Instantiated Generation Manager GameObject.</returns>
         private GameObject InstantiateGenerationManager()
         {
             if (!_cachedPrefab)
             {
                 _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             }
-
             if (!_cachedPrefab)
             {
                 return null;
             }
-
             _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
             EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
             return _cachedGenerationManager;
@@ -573,7 +608,10 @@ namespace Editor
         {
             EditorPrefs.DeleteAll();
 
-            DestroyImmediate(_cachedGenerationManager);
+            if (_cachedGenerationManager)
+            {
+                DestroyImmediate(_cachedGenerationManager);
+            }
             _cachedGenerationManager = null;
             _cachedPrefab = null;
             _currentGenerator = null;
@@ -584,5 +622,7 @@ namespace Editor
 
             EditorApplication.delayCall += Repaint;
         }
+
+        #endregion
     }
 }
