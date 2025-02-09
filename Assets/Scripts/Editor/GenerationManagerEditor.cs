@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 namespace Editor
 {
     /// <summary>
-    /// A custom editor window for managing dungeon generation.
+    /// Editor window for managing dungeon generation.
     /// </summary>
     public class GenerationManagerWindow : EditorWindow
     {
@@ -25,6 +25,9 @@ namespace Editor
         private List<string> _cachedGeneratorNames = new();
         private GameObject _cachedGenerationManager;
         private static GameObject _cachedPrefab;
+
+        private SerializedObject _tilemapPainterObject;
+        private Vector2 _scrollPosition;
 
         /// <summary>
         /// Shows the Generation Manager window.
@@ -75,7 +78,7 @@ namespace Editor
             DrawGeneratorSettings();
 
             EditorGUILayoutExtensions.DrawSectionTitle("Style");
-            //DrawTilemapPainterSettings();
+            DrawTilemapPainterSettings();
 
             EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
             DrawDungeonActions();
@@ -159,31 +162,45 @@ namespace Editor
         }
 
         /// <summary>
-        /// Draws the settings for the TilemapPainter.
+        /// Draws the settings for the Tilemap Painter.
         /// </summary>
-        /*private void DrawTilemapPainterSettings()
+        private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
-        
-            EditorGUILayoutExtensions.Horizontal(() =>
+
+            _tilemapPainterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
+            var walkableTileBasesProperty = _tilemapPainterObject.FindProperty("walkableTileBases");
+
+            EditorGUILayoutExtensions.Vertical(() =>
             {
-                GUILayout.Space(5); // Add padding to the left
-                var painterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
-                var walkableTileBaseProperty = painterObject.FindProperty("walkableTileBase");
-                var wallTileBaseProperty = painterObject.FindProperty("wallTileBase");
-        
-                DrawTileBasePreview(walkableTileBaseProperty, "Floor", 1);
-                GUILayout.Space(5); // Add space between the previews
-                DrawTileBasePreview(wallTileBaseProperty, "Wall", 2);
-        
-                painterObject.ApplyModifiedProperties();
+                if (GUILayout.Button("Add TileBase"))
+                {
+                    walkableTileBasesProperty.InsertArrayElementAtIndex(walkableTileBasesProperty.arraySize);
+                    walkableTileBasesProperty.GetArrayElementAtIndex(walkableTileBasesProperty.arraySize - 1)
+                        .objectReferenceValue = null;
+                }
+
+                _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(110));
+
+
+                EditorGUILayoutExtensions.Horizontal(() =>
+                {
+                    for (var i = 0; i < walkableTileBasesProperty.arraySize; i++)
+                    {
+                        var tileBaseProperty = walkableTileBasesProperty.GetArrayElementAtIndex(i);
+                        DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + 1);
+                    }
+                });
+                EditorGUILayout.EndScrollView();
+
+                _tilemapPainterObject.ApplyModifiedProperties();
             });
-        }*/
+        }
 
         /// <summary>
-        /// Draws a preview of the TileBase with a label and allows selection.
+        /// Draws the preview for a TileBase.
         /// </summary>
-        /// <param name="tileBaseProperty">The SerializedProperty of the TileBase.</param>
+        /// <param name="tileBaseProperty">The serialized property of the TileBase.</param>
         /// <param name="label">The label for the TileBase.</param>
         /// <param name="controlID">The control ID for the object picker.</param>
         private static void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID)
@@ -193,7 +210,7 @@ namespace Editor
                 Debug.LogError("tileBaseProperty is null");
                 return;
             }
-        
+
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 EditorGUILayoutExtensions.Horizontal(() =>
@@ -202,7 +219,7 @@ namespace Editor
                     GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
                     GUILayout.FlexibleSpace();
                 });
-        
+
                 var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
                 if (tileBase)
                 {
@@ -215,6 +232,7 @@ namespace Editor
                         {
                             EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
                         }
+
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();
                     }
@@ -227,10 +245,11 @@ namespace Editor
                     {
                         EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
                     }
+
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
-        
+
                 if (Event.current.commandName == "ObjectSelectorUpdated" &&
                     EditorGUIUtility.GetObjectPickerControlID() == controlID)
                 {
@@ -239,9 +258,8 @@ namespace Editor
             }, null, GUILayout.Width(64));
         }
 
-
         /// <summary>
-        /// Draws the buttons for dungeon generation actions.
+        /// Draws the actions for generating, clearing, saving, and loading the dungeon.
         /// </summary>
         private void DrawDungeonActions()
         {
@@ -273,7 +291,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Loads a dungeon from a file.
+        /// Loads the dungeon from a file.
         /// </summary>
         private void LoadDungeon()
         {
@@ -285,7 +303,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Saves the current dungeon to a file.
+        /// Saves the dungeon to a file.
         /// </summary>
         private void SaveDungeon()
         {
@@ -316,7 +334,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Finds all generators in the scene and caches their names.
+        /// Finds all generators in the scene.
         /// </summary>
         private void FindAllGenerators()
         {
@@ -338,7 +356,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Clears the cached generator lists.
+        /// Clears the generator lists.
         /// </summary>
         private void ClearGeneratorLists()
         {
@@ -348,7 +366,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Runs the generation process for the selected generator.
+        /// Generates the dungeon using the selected generator.
         /// </summary>
         private void Generate()
         {
@@ -381,7 +399,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Gets the names of all generators in the scene.
+        /// Gets the names of all generators.
         /// </summary>
         /// <returns>A list of generator names.</returns>
         private List<string> GetGeneratorNames()
@@ -403,9 +421,9 @@ namespace Editor
         }
 
         /// <summary>
-        /// Retrieves the cached Generation Manager from the editor preferences.
+        /// Retrieves the cached Generation Manager from the EditorPrefs.
         /// </summary>
-        /// <returns>The cached Generation Manager GameObject, or null if not found.</returns>
+        /// <returns>The cached Generation Manager GameObject.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
             var cachedGenerationManagerId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
@@ -439,7 +457,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Clears all cached data and resets the Generation Manager.
+        /// Clears all cached data and resets the state.
         /// </summary>
         private void ClearCachedData()
         {
