@@ -1,53 +1,56 @@
 using System;
-using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 
 namespace Editor
 {
+    /// <summary>
+    /// Extensions to facilitate the creation of layouts in the Editor.
+    /// </summary>
     public static class EditorGUILayoutExtensions
     {
         /// <summary>
-        /// Creates a horizontal layout group and executes the provided content action within it.
+        /// Style used to draw section titles.
         /// </summary>
-        /// <param name="content">The action to execute within the horizontal layout group.</param>
+        private static readonly GUIStyle BoldTitleStyle = new(EditorStyles.boldLabel)
+        {
+            fontSize = 14
+        };
+
+        /// <summary>
+        /// Creates a horizontal group and executes the provided action within it.
+        /// </summary>
+        /// <param name="content">Action to execute within the horizontal group.</param>
         public static void Horizontal(Action content)
         {
-            EditorGUILayout.BeginHorizontal();
-            content();
-            EditorGUILayout.EndHorizontal();
-        }
-
-        /// <summary>
-        /// Creates a vertical layout group with an optional style and executes the provided content action within it.
-        /// </summary>
-        /// <param name="content">The action to execute within the vertical layout group.</param>
-        /// <param name="style">The GUIStyle to apply to the vertical layout group. If null, GUIStyle.none is used.</param>
-        /// <param name="options"> </param>
-        public static void Vertical(Action content, GUIStyle style = null, GUILayoutOption options = null)
-        {
-            style ??= GUIStyle.none;
-            if (options != null)
+            using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUILayout.BeginVertical(style, options);
-                content();
-                EditorGUILayout.EndVertical();
-                return;
+                content?.Invoke();
             }
-            
-            EditorGUILayout.BeginVertical(style);
-            content();
-            EditorGUILayout.EndVertical();
         }
 
         /// <summary>
-        /// Draws a section title with a bold label and some spacing before and after the title.
+        /// Creates a vertical group with an optional style and executes the provided action within it.
         /// </summary>
-        /// <param name="title">The title text to display.</param>
+        /// <param name="content">Action to execute within the vertical group.</param>
+        /// <param name="style">Style to apply to the vertical group. If null, <see cref="GUIStyle.none"/> is used.</param>
+        /// <param name="options">Layout options for the vertical group.</param>
+        public static void Vertical(Action content, GUIStyle style = null, params GUILayoutOption[] options)
+        {
+            using (new EditorGUILayout.VerticalScope(style ?? GUIStyle.none, options))
+            {
+                content?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// Draws a section title with a bold label and adds spaces before and after.
+        /// </summary>
+        /// <param name="title">Text of the title to display.</param>
         public static void DrawSectionTitle(string title)
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField(title, new GUIStyle(EditorStyles.boldLabel) { fontSize = 14 });
+            EditorGUILayout.LabelField(title, BoldTitleStyle);
             EditorGUILayout.Space();
         }
     }
