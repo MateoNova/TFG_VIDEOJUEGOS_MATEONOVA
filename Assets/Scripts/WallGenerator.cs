@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+/// <summary>
+///  Class responsible for generating walls based on the positions of walkable tiles.
+/// </summary>
 public class WallGenerator : MonoBehaviour
 {
     /// <summary>
