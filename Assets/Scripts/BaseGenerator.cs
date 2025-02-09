@@ -1,19 +1,19 @@
 using UnityEngine;
 
 /// <summary>
-/// Clase base abstracta para generadores de mazmorras.
+/// Abstract base class for dungeon generators.
 /// </summary>
 public abstract class BaseGenerator : MonoBehaviour
 {
     #region Inspector Fields
 
     /// <summary>
-    /// El TilemapPainter utilizado para visualizar la mazmorra.
+    /// The TilemapPainter used to visualize the dungeon.
     /// </summary>
     [SerializeField] protected TilemapPainter tilemapPainter;
 
     /// <summary>
-    /// El punto de origen para la generación de la mazmorra.
+    /// The origin point for dungeon generation.
     /// </summary>
     [SerializeField] protected Vector2Int origin = Vector2Int.zero;
 
@@ -22,12 +22,12 @@ public abstract class BaseGenerator : MonoBehaviour
     #region Properties
 
     /// <summary>
-    /// Propiedad de solo lectura para obtener el origen de la generación.
+    /// Read-only property to get the generation origin.
     /// </summary>
     public Vector2Int Origin => origin;
 
     /// <summary>
-    /// Propiedad de solo lectura para obtener el TilemapPainter asignado.
+    /// Read-only property to get the assigned TilemapPainter.
     /// </summary>
     public TilemapPainter TilemapPainter => tilemapPainter;
 
@@ -36,11 +36,11 @@ public abstract class BaseGenerator : MonoBehaviour
     #region Abstract Methods
 
     /// <summary>
-    /// Método abstracto que ejecuta el algoritmo de generación de la mazmorra.
-    /// Debe ser implementado por las clases derivadas.
+    /// Abstract method that executes the dungeon generation algorithm.
+    /// Must be implemented by derived classes.
     /// </summary>
-    /// <param name="resetTilemap">Indica si se debe reiniciar el tilemap.</param>
-    /// <param name="startPoint">Punto de inicio para la generación (valor por defecto: (0,0)).</param>
+    /// <param name="resetTilemap">Indicates whether to reset the tilemap.</param>
+    /// <param name="startPoint">Starting point for generation (default value: (0,0)).</param>
     public abstract void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default);
 
     #endregion
@@ -48,13 +48,13 @@ public abstract class BaseGenerator : MonoBehaviour
     #region Utility Methods
 
     /// <summary>
-    /// Limpia la mazmorra reseteando todos los tiles.
+    /// Clears the dungeon by resetting all tiles.
     /// </summary>
     public void ClearDungeon()
     {
-        if (tilemapPainter == null)
+        if (!tilemapPainter)
         {
-            Debug.LogError("TilemapPainter no está asignado.");
+            Debug.LogError("TilemapPainter is not assigned.");
             return;
         }
 
@@ -62,14 +62,14 @@ public abstract class BaseGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Guarda la mazmorra en la ruta especificada.
+    /// Saves the dungeon to the specified path.
     /// </summary>
-    /// <param name="path">Ruta donde se guardará la mazmorra.</param>
+    /// <param name="path">Path where the dungeon will be saved.</param>
     public void SaveDungeon(string path)
     {
-        if (tilemapPainter == null)
+        if (!tilemapPainter)
         {
-            Debug.LogError("TilemapPainter no está asignado.");
+            Debug.LogError("TilemapPainter is not assigned.");
             return;
         }
 
@@ -77,14 +77,14 @@ public abstract class BaseGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Carga la mazmorra desde la ruta especificada.
+    /// Loads the dungeon from the specified path.
     /// </summary>
-    /// <param name="path">Ruta del archivo que contiene la mazmorra.</param>
+    /// <param name="path">Path of the file containing the dungeon.</param>
     public void LoadDungeon(string path)
     {
-        if (tilemapPainter == null)
+        if (!tilemapPainter)
         {
-            Debug.LogError("TilemapPainter no está asignado.");
+            Debug.LogError("TilemapPainter is not assigned.");
             return;
         }
 
