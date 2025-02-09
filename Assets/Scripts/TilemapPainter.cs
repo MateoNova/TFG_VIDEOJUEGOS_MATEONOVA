@@ -10,45 +10,53 @@ using UnityEngine.Tilemaps;
 public class TilemapPainter : MonoBehaviour
 {
     /// <summary>
-    /// The Tilemap used to render the tiles
+    /// The Tilemap used to render the walkable tiles.
     /// </summary>
     [SerializeField] private Tilemap walkableTilemap, wallTilemap;
 
     /// <summary>
-    /// The TileBases used for the walkable tiles
+    /// The TileBases used for the walkable tiles.
     /// </summary>
     [SerializeField] private List<TileBase> walkableTileBases;
 
     /// <summary>
-    /// The TileBase used for the wall tiles
+    /// The TileBase used for the wall tiles.
     /// </summary>
     [SerializeField] private TileBase wallTileBase;
 
     /// <summary>
-    /// Whether to place walkable tiles randomly
+    /// Whether to place walkable tiles randomly.
     /// </summary>
     [SerializeField] private bool randomPlacement;
 
-    [SerializeField] private List<float> tileprobs;
+    /// <summary>
+    /// Priorities for each walkable tile.
+    /// </summary>
+    [SerializeField] private List<int> tilePriorities;
 
     /// <summary>
-    /// Probabilities for each walkable tile
+    /// Probabilities for each walkable tile.
     /// </summary>
-    private Dictionary<TileBase, float> tileProbabilities = new();
+    private Dictionary<TileBase, float> _tileProbabilities = new();
 
+    /// <summary>
+    /// Initializes the tile probabilities based on the priorities.
+    /// </summary>
     private void InitializeTileProbabilities()
     {
-        tileProbabilities = new Dictionary<TileBase, float>();
-        for (int i = 0; i < walkableTileBases.Count; i++)
+        _tileProbabilities = new Dictionary<TileBase, float>();
+        var totalPriority = tilePriorities.Sum();
+
+        for (var i = 0; i < walkableTileBases.Count; i++)
         {
-            if (i < tileprobs.Count)
+            if (i < tilePriorities.Count)
             {
-                tileProbabilities[walkableTileBases[i]] = tileprobs[i];
+                _tileProbabilities[walkableTileBases[i]] = (float)tilePriorities[i] / totalPriority;
             }
             else
             {
-                Debug.LogWarning($"No probability defined for tile at index {i}. Defaulting to 0.");
-                tileProbabilities[walkableTileBases[i]] = 0f;
+                Debug.LogWarning($"No priority defined for tile at index {i}. Defaulting to 0.");
+                _tileProbabilities[walkableTileBases[i]] = 0f;
             }
         }
     }
@@ -66,15 +74,25 @@ public class TilemapPainter : MonoBehaviour
         }
         else
         {
-            PaintTilesWithProbabilities(tilesPositions, walkableTilemap, walkableTileBases, tileProbabilities);
+            PaintTilesWithProbabilities(tilesPositions, walkableTilemap, walkableTileBases, _tileProbabilities);
         }
     }
 
+    /// <summary>
+    /// Renders the wall tiles at the specified positions.
+    /// </summary>
+    /// <param name="positions">The positions of the tiles to render.</param>
     public void PaintWallTiles(IEnumerable<Vector2Int> positions)
     {
         PaintTiles(positions, wallTilemap, wallTileBase);
     }
 
+    /// <summary>
+    /// Renders tiles at the specified positions on the given Tilemap with the specified TileBase.
+    /// </summary>
+    /// <param name="positions">The positions of the tiles to render.</param>
+    /// <param name="tilemap">The Tilemap to render the tiles on.</param>
+    /// <param name="tileBase">The TileBase to use for the tiles.</param>
     private static void PaintTiles(IEnumerable<Vector2Int> positions, Tilemap tilemap, TileBase tileBase)
     {
         foreach (var pos in positions)
@@ -84,6 +102,12 @@ public class TilemapPainter : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Renders tiles randomly at the specified positions on the given Tilemap with the specified TileBases.
+    /// </summary>
+    /// <param name="positions">The positions of the tiles to render.</param>
+    /// <param name="tilemap">The Tilemap to render the tiles on.</param>
+    /// <param name="tileBases">The TileBases to use for the tiles.</param>
     private static void PaintTilesRandomly(IEnumerable<Vector2Int> positions, Tilemap tilemap, List<TileBase> tileBases)
     {
         var random = new System.Random();
@@ -95,6 +119,13 @@ public class TilemapPainter : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Renders tiles at the specified positions on the given Tilemap with the specified TileBases and probabilities.
+    /// </summary>
+    /// <param name="positions">The positions of the tiles to render.</param>
+    /// <param name="tilemap">The Tilemap to render the tiles on.</param>
+    /// <param name="tileBases">The TileBases to use for the tiles.</param>
+    /// <param name="probabilities">The probabilities for each TileBase.</param>
     private static void PaintTilesWithProbabilities(IEnumerable<Vector2Int> positions, Tilemap tilemap,
         List<TileBase> tileBases, Dictionary<TileBase, float> probabilities)
     {
@@ -109,6 +140,7 @@ public class TilemapPainter : MonoBehaviour
                 Debug.LogError($"Probability for tile {tileBase.name} is not set.");
                 return;
             }
+
             cumulativeProbabilities.Add(probabilities[tileBase] / totalProbability);
         }
 
@@ -121,21 +153,27 @@ public class TilemapPainter : MonoBehaviour
             for (int i = 0; i < tileBases.Count; i++)
             {
                 cumulativeSum += cumulativeProbabilities[i];
-                if (randomValue <= cumulativeSum)
-                {
-                    tilemap.SetTile(tilePosition, tileBases[i]);
-                    break;
-                }
+                if (!(randomValue <= cumulativeSum)) continue;
+                
+                tilemap.SetTile(tilePosition, tileBases[i]);
+                break;
             }
         }
     }
 
+    /// <summary>
+    /// Clears all tiles from the grid.
+    /// </summary>
     public void ResetAllTiles()
     {
         walkableTilemap?.ClearAllTiles();
         wallTilemap?.ClearAllTiles();
     }
 
+    /// <summary>
+    /// Saves the current state of the Tilemap to a file.
+    /// </summary>
+    /// <param name="path">The path to save the Tilemap data.</param>
     public void SaveTilemap(string path)
     {
         var walkableTiles = new List<SerializableTile>();
@@ -164,6 +202,10 @@ public class TilemapPainter : MonoBehaviour
         System.IO.File.WriteAllText(path, json);
     }
 
+    /// <summary>
+    /// Loads the Tilemap state from a file.
+    /// </summary>
+    /// <param name="path">The path to load the Tilemap data from.</param>
     public void LoadTilemap(string path)
     {
         var json = System.IO.File.ReadAllText(path);
@@ -184,6 +226,11 @@ public class TilemapPainter : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Finds a TileBase by its name.
+    /// </summary>
+    /// <param name="tileName">The name of the TileBase to find.</param>
+    /// <returns>The TileBase with the specified name, or null if not found.</returns>
     private static TileBase GetTileBaseByName(string tileName)
     {
         var guids = AssetDatabase.FindAssets(tileName, new[] { "Assets/Assets/TilemapsDungeonTilesetil" });
@@ -192,12 +239,20 @@ public class TilemapPainter : MonoBehaviour
     }
 }
 
+/// <summary>
+/// Serializable data for a Tilemap.
+/// </summary>
 [System.Serializable]
 public class TilemapData
 {
     public List<SerializableTile> walkableTiles;
     public List<SerializableTile> wallTiles;
 
+    /// <summary>
+    /// Initializes a new instance of the TilemapData class.
+    /// </summary>
+    /// <param name="walkableTiles">The list of walkable tiles.</param>
+    /// <param name="wallTiles">The list of wall tiles.</param>
     public TilemapData(List<SerializableTile> walkableTiles, List<SerializableTile> wallTiles)
     {
         this.walkableTiles = walkableTiles;
@@ -205,12 +260,20 @@ public class TilemapData
     }
 }
 
+/// <summary>
+/// Serializable representation of a tile.
+/// </summary>
 [System.Serializable]
 public class SerializableTile
 {
     public Vector3Int position;
     public string tileName;
 
+    /// <summary>
+    /// Initializes a new instance of the SerializableTile class.
+    /// </summary>
+    /// <param name="position">The position of the tile.</param>
+    /// <param name="tileName">The name of the tile.</param>
     public SerializableTile(Vector3Int position, string tileName)
     {
         this.position = position;
