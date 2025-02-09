@@ -272,6 +272,42 @@ public class TilemapPainter : MonoBehaviour
         tilePriorities.Clear();
         _tileProbabilities.Clear();
     }
+
+    public void SelectFromFolder(bool floorTiles, string path)
+    {
+        if (floorTiles)
+        {
+            // Limpiamos ambas listas para mantenerlas sincronizadas.
+            walkableTileBases.Clear();
+            tilePriorities.Clear();
+
+            string[] files = System.IO.Directory.GetFiles(path, "*.asset");
+            Debug.Log($"Found {files.Length} .asset files in path: {path}");
+
+            foreach (string file in files)
+            {
+                // Convertir ruta absoluta a ruta relativa
+                string relativePath = "Assets" + file.Replace(Application.dataPath, "").Replace('\\', '/');
+                var tile = AssetDatabase.LoadAssetAtPath<TileBase>(relativePath);
+                if (tile != null)
+                {
+                    walkableTileBases.Add(tile);
+                    tilePriorities.Add(0); // Agregamos una prioridad por defecto
+                    Debug.Log($"Added tile: {tile.name}");
+                }
+            }
+
+            Debug.Log($"Total walkable tiles added: {walkableTileBases.Count}");
+        }
+        else
+        {
+            // Código para el wall tile...
+            string relativePath = "Assets" + path.Replace(Application.dataPath, "").Replace('\\', '/');
+            wallTileBase = AssetDatabase.LoadAssetAtPath<TileBase>(relativePath);
+            Debug.Log($"Loaded wall tile: {wallTileBase?.name}");
+        }
+    }
+
 }
 
 /// <summary>

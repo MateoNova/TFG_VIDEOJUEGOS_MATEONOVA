@@ -167,16 +167,16 @@ namespace Editor
         private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
-
+        
             _tilemapPainterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
             var walkableTileBasesProperty = _tilemapPainterObject.FindProperty("walkableTileBases");
             var tilePrioritiesProperty = _tilemapPainterObject.FindProperty("tilePriorities");
-
+        
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 EditorGUILayoutExtensions.Horizontal(() =>
                 {
-                    if (GUILayout.Button("Add tile"))
+                    if (GUILayout.Button("Add floor tile"))
                     {
                         walkableTileBasesProperty.InsertArrayElementAtIndex(walkableTileBasesProperty.arraySize);
                         walkableTileBasesProperty.GetArrayElementAtIndex(walkableTileBasesProperty.arraySize - 1)
@@ -184,19 +184,29 @@ namespace Editor
                         tilePrioritiesProperty.InsertArrayElementAtIndex(tilePrioritiesProperty.arraySize);
                         tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue = 0;
                     }
-                    
-                    if (GUILayout.Button("Clear all tiles"))
+        
+                    if (GUILayout.Button("Clear all floor tiles"))
                     {
                         _currentGenerator.getTilemapPainter().RemoveAllTiles();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
+        
+                    if (GUILayout.Button("Select floor tiles from folder"))
+                    {
+                        // let the user select a folder and get the selected folder path
+                        var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
+                        _currentGenerator.getTilemapPainter().SelectFromFolder(true, path);
+                        _tilemapPainterObject.Update();
+                        _tilemapPainterObject.ApplyModifiedProperties();
+                        Repaint();
+                    }
                 });
-
+        
                 if (walkableTileBasesProperty.arraySize > 0)
                 {
-                    _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(145));
-
+                    _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(125));
+        
                     EditorGUILayoutExtensions.Horizontal(() =>
                     {
                         for (int i = 0; i < walkableTileBasesProperty.arraySize; i++)
@@ -208,7 +218,7 @@ namespace Editor
                     });
                     EditorGUILayout.EndScrollView();
                 }
-
+        
                 _tilemapPainterObject.ApplyModifiedProperties();
             });
         }
