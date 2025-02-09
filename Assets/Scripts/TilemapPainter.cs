@@ -22,41 +22,75 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// The TileBase used for the wall tiles.
     /// </summary>
-    [SerializeField] private TileBase wallTileBase;
+    [SerializeField] private List<TileBase> wallTileBases;
 
     /// <summary>
     /// Whether to place walkable tiles randomly.
     /// </summary>
-    [SerializeField] private bool randomPlacement;
+    [SerializeField] private bool randomWalkableTilesPlacement;
 
     /// <summary>
     /// Priorities for each walkable tile.
     /// </summary>
-    [SerializeField] private List<int> tilePriorities;
+    [SerializeField] private List<int> walkableTilesPriorities;
 
     /// <summary>
     /// Probabilities for each walkable tile.
     /// </summary>
-    private Dictionary<TileBase, float> _tileProbabilities = new();
+    private Dictionary<TileBase, float> _walkableTilesProbabilities = new();
+
+    /// <summary>
+    /// Whether to place wall tiles randomly.
+    /// </summary>
+    [SerializeField] private bool randomWallTilesPlacement;
+
+    /// <summary>
+    /// Priorities for each wall tile.
+    /// </summary>
+    [SerializeField] private List<int> wallTilesPriorities;
+
+    /// <summary>
+    /// Probabilities for each wall tile.
+    /// </summary>
+    private Dictionary<TileBase, float> _wallTilesProbabilities = new();
 
     /// <summary>
     /// Initializes the tile probabilities based on the priorities.
     /// </summary>
-    private void InitializeTileProbabilities()
+    private void InitializeWalkableTilesProbabilities()
     {
-        _tileProbabilities = new Dictionary<TileBase, float>();
-        var totalPriority = tilePriorities.Sum();
+        _walkableTilesProbabilities = new Dictionary<TileBase, float>();
+        var totalPriority = walkableTilesPriorities.Sum();
 
         for (var i = 0; i < walkableTileBases.Count; i++)
         {
-            if (i < tilePriorities.Count)
+            if (i < walkableTilesPriorities.Count)
             {
-                _tileProbabilities[walkableTileBases[i]] = (float)tilePriorities[i] / totalPriority;
+                _walkableTilesProbabilities[walkableTileBases[i]] = (float)walkableTilesPriorities[i] / totalPriority;
             }
             else
             {
                 Debug.LogWarning($"No priority defined for tile at index {i}. Defaulting to 0.");
-                _tileProbabilities[walkableTileBases[i]] = 0f;
+                _walkableTilesProbabilities[walkableTileBases[i]] = 0f;
+            }
+        }
+    }
+
+    private void InitializeWallTilesProbabilities()
+    {
+        _wallTilesProbabilities = new Dictionary<TileBase, float>();
+        var totalPriority = wallTilesPriorities.Sum();
+
+        for (var i = 0; i < wallTileBases.Count; i++)
+        {
+            if (i < wallTilesPriorities.Count)
+            {
+                _wallTilesProbabilities[wallTileBases[i]] = (float)wallTilesPriorities[i] / totalPriority;
+            }
+            else
+            {
+                Debug.LogWarning($"No priority defined for tile at index {i}. Defaulting to 0.");
+                _wallTilesProbabilities[walkableTileBases[i]] = 0f;
             }
         }
     }
@@ -67,14 +101,15 @@ public class TilemapPainter : MonoBehaviour
     /// <param name="tilesPositions">The positions of the tiles to render.</param>
     public void PaintWalkableTiles(IEnumerable<Vector2Int> tilesPositions)
     {
-        InitializeTileProbabilities();
-        if (randomPlacement)
+        InitializeWalkableTilesProbabilities();
+        if (randomWalkableTilesPlacement)
         {
             PaintTilesRandomly(tilesPositions, walkableTilemap, walkableTileBases);
         }
         else
         {
-            PaintTilesWithProbabilities(tilesPositions, walkableTilemap, walkableTileBases, _tileProbabilities);
+            PaintTilesWithProbabilities(tilesPositions, walkableTilemap, walkableTileBases,
+                _walkableTilesProbabilities);
         }
     }
 
@@ -82,9 +117,17 @@ public class TilemapPainter : MonoBehaviour
     /// Renders the wall tiles at the specified positions.
     /// </summary>
     /// <param name="positions">The positions of the tiles to render.</param>
-    public void PaintWallTiles(IEnumerable<Vector2Int> positions)
+    public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions)
     {
-        PaintTiles(positions, wallTilemap, wallTileBase);
+        InitializeWallTilesProbabilities();
+        if (randomWallTilesPlacement)
+        {
+            PaintTilesRandomly(tilesPositions, wallTilemap, wallTileBases);
+        }
+        else
+        {
+            PaintTilesWithProbabilities(tilesPositions, wallTilemap, wallTileBases, _wallTilesProbabilities);
+        }
     }
 
     /// <summary>
@@ -154,7 +197,7 @@ public class TilemapPainter : MonoBehaviour
             {
                 cumulativeSum += cumulativeProbabilities[i];
                 if (!(randomValue <= cumulativeSum)) continue;
-                
+
                 tilemap.SetTile(tilePosition, tileBases[i]);
                 break;
             }
@@ -237,8 +280,8 @@ public class TilemapPainter : MonoBehaviour
         return guids.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Select(AssetDatabase.LoadAssetAtPath<TileBase>)
             .FirstOrDefault(tile => tile && tile.name == tileName);
     }
-    
-    public void RemoveTileAtPosition(int position)
+
+    public void RemoveTileAtPosition(int position, bool isWalkable) //todo 
     {
         // Validar que el índice esté dentro del rango
         if (position < 0 || position >= walkableTileBases.Count)
@@ -249,65 +292,90 @@ public class TilemapPainter : MonoBehaviour
 
         // Obtener el TileBase en la posición indicada
         TileBase tile = walkableTileBases[position];
-        Debug.Log("Dictionary: " + _tileProbabilities.Count);
+        Debug.Log("Dictionary: " + _walkableTilesProbabilities.Count);
 
         // Si no es nulo, lo remueve del diccionario
         if (tile != null)
         {
-            _tileProbabilities.Remove(tile);
+            _walkableTilesProbabilities.Remove(tile);
             Debug.Log("Removed");
-            Debug.Log("Dictionary: " + _tileProbabilities.Count);
-
+            Debug.Log("Dictionary: " + _walkableTilesProbabilities.Count);
         }
 
         // Eliminar el elemento en la posición indicada de ambas listas
         walkableTileBases.RemoveAt(position);
-        tilePriorities.RemoveAt(position);
+        walkableTilesPriorities.RemoveAt(position);
     }
 
 
     public void RemoveAllTiles()
     {
         walkableTileBases.Clear();
-        tilePriorities.Clear();
-        _tileProbabilities.Clear();
+        walkableTilesPriorities.Clear();
+        _walkableTilesProbabilities.Clear();
     }
 
     public void SelectFromFolder(bool floorTiles, string path)
     {
         if (floorTiles)
         {
-            // Limpiamos ambas listas para mantenerlas sincronizadas.
             walkableTileBases.Clear();
-            tilePriorities.Clear();
+            walkableTilesPriorities.Clear();
+            _walkableTilesProbabilities.Clear();
 
-            string[] files = System.IO.Directory.GetFiles(path, "*.asset");
+            var files = System.IO.Directory.GetFiles(path, "*.asset");
             Debug.Log($"Found {files.Length} .asset files in path: {path}");
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
-                // Convertir ruta absoluta a ruta relativa
-                string relativePath = "Assets" + file.Replace(Application.dataPath, "").Replace('\\', '/');
+                var relativePath = "Assets" + file.Replace(Application.dataPath, "").Replace('\\', '/');
                 var tile = AssetDatabase.LoadAssetAtPath<TileBase>(relativePath);
-                if (tile != null)
-                {
-                    walkableTileBases.Add(tile);
-                    tilePriorities.Add(0); // Agregamos una prioridad por defecto
-                    Debug.Log($"Added tile: {tile.name}");
-                }
+                if (!tile) continue;
+
+                walkableTileBases.Add(tile);
+                walkableTilesPriorities.Add(0);
+                Debug.Log($"Added tile: {tile.name}");
             }
 
             Debug.Log($"Total walkable tiles added: {walkableTileBases.Count}");
         }
         else
         {
-            // Código para el wall tile...
-            string relativePath = "Assets" + path.Replace(Application.dataPath, "").Replace('\\', '/');
-            wallTileBase = AssetDatabase.LoadAssetAtPath<TileBase>(relativePath);
-            Debug.Log($"Loaded wall tile: {wallTileBase?.name}");
+            wallTileBases.Clear();
+            walkableTilesPriorities.Clear();
+            _walkableTilesProbabilities.Clear();
+
+            var files = System.IO.Directory.GetFiles(path, "*.asset");
+            Debug.Log($"Found {files.Length} .asset files in path: {path}");
+
+            foreach (var file in files)
+            {
+                var relativePath = "Assets" + file.Replace(Application.dataPath, "").Replace('\\', '/');
+                var tile = AssetDatabase.LoadAssetAtPath<TileBase>(relativePath);
+                if (!tile) continue;
+
+                walkableTileBases.Add(tile);
+                walkableTilesPriorities.Add(0);
+                Debug.Log($"Added tile: {tile.name}");
+            }
+
+            Debug.Log($"Total walkable tiles added: {walkableTileBases.Count}");
         }
     }
 
+    public void RemoveAllWalkableTiles()
+    {
+        walkableTileBases.Clear();
+        walkableTilesPriorities.Clear();
+        _walkableTilesProbabilities.Clear();
+    }
+
+    public void RemoveAllWallTiles()
+    {
+        wallTileBases.Clear();
+        wallTilesPriorities.Clear();
+        _wallTilesProbabilities.Clear();
+    }
 }
 
 /// <summary>
