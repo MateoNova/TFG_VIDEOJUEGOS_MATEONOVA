@@ -167,10 +167,11 @@ namespace Editor
         private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
-
+        
             _tilemapPainterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
             var walkableTileBasesProperty = _tilemapPainterObject.FindProperty("walkableTileBases");
-
+            var tilePrioritiesProperty = _tilemapPainterObject.FindProperty("tilePriorities");
+        
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 if (GUILayout.Button("Add TileBase"))
@@ -178,21 +179,26 @@ namespace Editor
                     walkableTileBasesProperty.InsertArrayElementAtIndex(walkableTileBasesProperty.arraySize);
                     walkableTileBasesProperty.GetArrayElementAtIndex(walkableTileBasesProperty.arraySize - 1)
                         .objectReferenceValue = null;
+                    tilePrioritiesProperty.InsertArrayElementAtIndex(tilePrioritiesProperty.arraySize);
+                    tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue = 0;
                 }
-
-                _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(110));
-
-
-                EditorGUILayoutExtensions.Horizontal(() =>
+        
+                if (walkableTileBasesProperty.arraySize > 0)
                 {
-                    for (var i = 0; i < walkableTileBasesProperty.arraySize; i++)
+                    _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(125));
+        
+                    EditorGUILayoutExtensions.Horizontal(() =>
                     {
-                        var tileBaseProperty = walkableTileBasesProperty.GetArrayElementAtIndex(i);
-                        DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + 1);
-                    }
-                });
-                EditorGUILayout.EndScrollView();
-
+                        for (int i = 0; i < walkableTileBasesProperty.arraySize; i++)
+                        {
+                            var tileBaseProperty = walkableTileBasesProperty.GetArrayElementAtIndex(i);
+                            var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
+                            DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + 1, priorityProperty);
+                        }
+                    });
+                    EditorGUILayout.EndScrollView();
+                }
+        
                 _tilemapPainterObject.ApplyModifiedProperties();
             });
         }
@@ -203,14 +209,14 @@ namespace Editor
         /// <param name="tileBaseProperty">The serialized property of the TileBase.</param>
         /// <param name="label">The label for the TileBase.</param>
         /// <param name="controlID">The control ID for the object picker.</param>
-        private static void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID)
+        private static void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID, SerializedProperty priorityProperty)
         {
             if (tileBaseProperty == null)
             {
                 Debug.LogError("tileBaseProperty is null");
                 return;
             }
-
+        
             EditorGUILayoutExtensions.Vertical(() =>
             {
                 EditorGUILayoutExtensions.Horizontal(() =>
@@ -219,7 +225,7 @@ namespace Editor
                     GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
                     GUILayout.FlexibleSpace();
                 });
-
+        
                 var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
                 if (tileBase)
                 {
@@ -232,7 +238,6 @@ namespace Editor
                         {
                             EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
                         }
-
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();
                     }
@@ -245,16 +250,24 @@ namespace Editor
                     {
                         EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
                     }
-
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
-
+        
                 if (Event.current.commandName == "ObjectSelectorUpdated" &&
                     EditorGUIUtility.GetObjectPickerControlID() == controlID)
                 {
                     tileBaseProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
                 }
+        
+                // Display and edit the priority
+                EditorGUILayoutExtensions.Horizontal(() =>
+                {
+                    GUILayout.FlexibleSpace();
+                    EditorGUILayout.LabelField("Priority:", GUILayout.Width(50));
+                    priorityProperty.intValue = EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
+                    GUILayout.FlexibleSpace();
+                });
             }, null, GUILayout.Width(64));
         }
 
