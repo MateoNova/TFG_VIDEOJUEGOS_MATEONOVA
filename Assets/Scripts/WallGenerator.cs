@@ -26,14 +26,16 @@ public class WallGenerator : MonoBehaviour
     private static HashSet<Vector2Int> GetWallsPositions(HashSet<Vector2Int> floorPositions)
     {
         var neighborPositions = new HashSet<Vector2Int>();
-    
+
+        // Iterate through each floor position and its neighboring positions
         foreach (var neighborPos in from position in floorPositions
                  from direction in Utils.Directions
                  select position + direction)
         {
             neighborPositions.Add(neighborPos);
         }
-    
+
+        // Remove positions that are already occupied by floor tiles
         neighborPositions.ExceptWith(floorPositions);
         return neighborPositions;
     }
