@@ -9,35 +9,26 @@ namespace BSPGeneration
     /// </summary>
     public class BspGenerator : BaseGenerator
     {
-        /// <summary>
-        /// Minimum size of the rooms.
-        /// </summary>
+        #region Serialized Fields
+
         [SerializeField, Tooltip("Minimum size of the rooms.")]
         private int minRoomSize = 5;
 
-        /// <summary>
-        /// Maximum size of the rooms.
-        /// </summary>
         [SerializeField, Tooltip("Maximum size of the rooms.")]
         private int maxRoomSize = 20;
 
-        /// <summary>
-        /// Maximum number of iterations for splitting the space.
-        /// </summary>
         [SerializeField, Tooltip("Maximum number of iterations for splitting the space.")]
         private int maxIterations = 5;
 
-        /// <summary>
-        /// Aspect ratio threshold for deciding split direction.
-        /// </summary>
         [SerializeField, Tooltip("Aspect ratio threshold for deciding split direction.")]
         private float aspectProportion = 1.5f;
 
-        /// <summary>
-        /// Width of the corridors.
-        /// </summary>
         [SerializeField, Range(0f, 4f), Tooltip("Width of the corridors.")]
         private int corridorWidth = 1;
+
+        #endregion
+
+        #region Unity Methods
 
         /// <summary>
         /// Unity's Start method, called before the first frame update.
@@ -47,6 +38,10 @@ namespace BSPGeneration
             RunGeneration(true, origin);
         }
 
+        #endregion
+
+        #region Generation Process
+
         /// <summary>
         /// Runs the generation process.
         /// </summary>
@@ -54,14 +49,20 @@ namespace BSPGeneration
         /// <param name="startPoint">The starting point for the generation.</param>
         public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
-            if (resetTilemap) tilemapPainter.ResetAllTiles();
+            if (resetTilemap)
+            {
+                tilemapPainter.ResetAllTiles();
+            }
 
+            // Create the root node for the BSP tree.
             var rootNode = new BspNode(new RectInt(startPoint.x, startPoint.y, maxRoomSize * 2, maxRoomSize * 2));
             SplitNode(rootNode, maxIterations);
 
+            // Collect rooms from the BSP tree.
             var rooms = new List<RectInt>();
             CollectRooms(rootNode, rooms);
 
+            // Fill walkable tiles from all rooms.
             var walkableTiles = new HashSet<Vector2Int>();
             foreach (var room in rooms)
             {
@@ -74,11 +75,17 @@ namespace BSPGeneration
                 }
             }
 
+            // Create corridors connecting rooms.
             CreateCorridors(rootNode, walkableTiles, rooms);
 
+            // Render the dungeon.
             tilemapPainter.PaintWalkableTiles(walkableTiles);
             WallGenerator.GenerateWalls(walkableTiles, tilemapPainter);
         }
+
+        #endregion
+
+        #region BSP Tree Generation
 
         /// <summary>
         /// Recursively splits a node into smaller nodes.
@@ -87,7 +94,8 @@ namespace BSPGeneration
         /// <param name="iterations">The number of iterations left for splitting.</param>
         private void SplitNode(BspNode node, int iterations)
         {
-            if (iterations <= 0 || node.Width <= minRoomSize * 2 || node.Height <= minRoomSize * 2) return;
+            if (iterations <= 0 || node.Width <= minRoomSize * 2 || node.Height <= minRoomSize * 2)
+                return;
 
             var splitHorizontally = ShouldSplitHorizontally(node);
             var splitPos = splitHorizontally
@@ -118,8 +126,15 @@ namespace BSPGeneration
         /// <returns>True if the node should be split horizontally, otherwise false.</returns>
         private bool ShouldSplitHorizontally(BspNode node)
         {
-            if (node.Width > node.Height && node.Width / node.Height >= aspectProportion) return false;
-            if (node.Height > node.Width && node.Height / node.Width >= aspectProportion) return true;
+            // Convert dimensions to float for proper division.
+            float width = node.Width;
+            float height = node.Height;
+
+            if (width > height && (width / height) >= aspectProportion)
+                return false;
+            if (height > width && (height / width) >= aspectProportion)
+                return true;
+
             return Random.value > 0.5f;
         }
 
@@ -130,8 +145,10 @@ namespace BSPGeneration
         /// <param name="rooms">The list to store the collected rooms.</param>
         private void CollectRooms(BspNode node, List<RectInt> rooms)
         {
-            if (node == null) return;
+            if (node == null)
+                return;
 
+            // If the node is a leaf, create a room within it.
             if (node.Left == null && node.Right == null)
             {
                 var roomWidth = Random.Range(minRoomSize, node.Width);
@@ -149,6 +166,10 @@ namespace BSPGeneration
             }
         }
 
+        #endregion
+
+        #region Corridor Generation
+
         /// <summary>
         /// Creates corridors between rooms in the BSP tree.
         /// </summary>
@@ -157,7 +178,8 @@ namespace BSPGeneration
         /// <param name="rooms">The list of rooms to ensure connectivity.</param>
         private void CreateCorridors(BspNode node, HashSet<Vector2Int> walkableTiles, List<RectInt> rooms)
         {
-            if (node.Left == null || node.Right == null) return;
+            if (node.Left == null || node.Right == null)
+                return;
 
             EnsureAllRoomsConnected(node, walkableTiles);
         }
@@ -183,6 +205,7 @@ namespace BSPGeneration
                     current.y += current.y < end.y ? 1 : -1;
                 }
 
+                // Expand the corridor width.
                 for (var i = 0; i < corridorWidth; i++)
                 {
                     walkableTiles.Add(new Vector2Int(current.x + i, current.y));
@@ -192,7 +215,7 @@ namespace BSPGeneration
         }
 
         /// <summary>
-        /// Ensures all rooms are connected using BSP corridor algorithm.
+        /// Ensures all rooms are connected using the BSP corridor algorithm.
         /// </summary>
         /// <param name="node">The root node of the BSP tree.</param>
         /// <param name="walkableTiles">The set of walkable tiles to update.</param>
@@ -207,7 +230,8 @@ namespace BSPGeneration
             var leftRoom = GetRoomFromNode(node.Left);
             var rightRoom = GetRoomFromNode(node.Right);
 
-            if (!leftRoom.HasValue || !rightRoom.HasValue) return;
+            if (!leftRoom.HasValue || !rightRoom.HasValue)
+                return;
 
             var leftCenter = Vector2Int.RoundToInt(leftRoom.Value.center);
             var rightCenter = Vector2Int.RoundToInt(rightRoom.Value.center);
@@ -230,6 +254,8 @@ namespace BSPGeneration
 
             return leftRoom ?? rightRoom;
         }
+
+        #endregion
     }
 
     /// <summary>
@@ -271,6 +297,9 @@ namespace BSPGeneration
         /// Initializes a new instance of the BspNode class.
         /// </summary>
         /// <param name="rect">The rectangle representing the node's area.</param>
-        public BspNode(RectInt rect) => Rect = rect;
+        public BspNode(RectInt rect)
+        {
+            Rect = rect;
+        }
     }
 }
