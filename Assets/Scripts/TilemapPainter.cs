@@ -266,6 +266,12 @@ public class TilemapPainter : MonoBehaviour
     }
 
 
+    public void RemoveAllTiles()
+    {
+        walkableTileBases.Clear();
+        tilePriorities.Clear();
+        _tileProbabilities.Clear();
+    }
 }
 
 /// <summary>
