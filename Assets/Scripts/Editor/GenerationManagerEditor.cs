@@ -166,7 +166,7 @@ namespace Editor
         /// </summary>
         private void DrawTilemapPainterSettings()
         {
-            if (!_currentGenerator || !_currentGenerator.getTilemapPainter()) return;
+            if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
 
             AddFloorTiles();
             AddWallTiles();
@@ -174,7 +174,7 @@ namespace Editor
 
         private void AddFloorTiles()
         {
-            _tilemapPainterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
+            _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
             var walkableTileBasesProperty = _tilemapPainterObject.FindProperty("walkableTileBases");
             var tilePrioritiesProperty = _tilemapPainterObject.FindProperty("walkableTilesPriorities");
 
@@ -194,7 +194,7 @@ namespace Editor
 
                     if (GUILayout.Button("Clear all floor tiles"))
                     {
-                        _currentGenerator.getTilemapPainter().RemoveAllWalkableTiles();
+                        _currentGenerator.TilemapPainter.RemoveAllWalkableTiles();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
@@ -202,7 +202,7 @@ namespace Editor
                     if (GUILayout.Button("Select floor tiles from folder"))
                     {
                         var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
-                        _currentGenerator.getTilemapPainter().SelectFromFolder(true, path);
+                        _currentGenerator.TilemapPainter.SelectFromFolder(true, path);
                         _tilemapPainterObject.Update();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
@@ -215,7 +215,7 @@ namespace Editor
 
                     EditorGUILayoutExtensions.Horizontal(() =>
                     {
-                        for (int i = 0; i < walkableTileBasesProperty.arraySize; i++)
+                        for (var i = 0; i < walkableTileBasesProperty.arraySize; i++)
                         {
                             var tileBaseProperty = walkableTileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
@@ -231,7 +231,7 @@ namespace Editor
 
         private void AddWallTiles()
         {
-            _tilemapPainterObject = new SerializedObject(_currentGenerator.getTilemapPainter());
+            _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
             var wallTileBasesProperty = _tilemapPainterObject.FindProperty("wallTileBases");
             var tilePrioritiesProperty = _tilemapPainterObject.FindProperty("wallTilesPriorities");
 
@@ -251,7 +251,7 @@ namespace Editor
 
                     if (GUILayout.Button("Clear all wall tiles"))
                     {
-                        _currentGenerator.getTilemapPainter().RemoveAllWallTiles();
+                        _currentGenerator.TilemapPainter.RemoveAllWallTiles();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
@@ -259,7 +259,7 @@ namespace Editor
                     if (GUILayout.Button("Select wall tiles from folder"))
                     {
                         var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
-                        _currentGenerator.getTilemapPainter().SelectFromFolder(false, path);
+                        _currentGenerator.TilemapPainter.SelectFromFolder(false, path);
                         _tilemapPainterObject.Update();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
@@ -272,7 +272,7 @@ namespace Editor
 
                     EditorGUILayoutExtensions.Horizontal(() =>
                     {
-                        for (int i = 0; i < wallTileBasesProperty.arraySize; i++)
+                        for (var i = 0; i < wallTileBasesProperty.arraySize; i++)
                         {
                             var tileBaseProperty = wallTileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
@@ -311,7 +311,7 @@ namespace Editor
 
                     if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
                     {
-                        _currentGenerator.getTilemapPainter().RemoveTileAtPosition(index, isWalkable);
+                        _currentGenerator.TilemapPainter.RemoveTileAtPosition(index, isWalkable);
 
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
@@ -324,7 +324,7 @@ namespace Editor
                 if (tileBase)
                 {
                     var previewTexture = AssetPreview.GetAssetPreview(tileBase);
-                    if (previewTexture != null)
+                    if (previewTexture)
                     {
                         GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
@@ -482,7 +482,7 @@ namespace Editor
         {
             if (_currentGenerator)
             {
-                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.getOrigin());
+                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.Origin);
             }
             else
             {
