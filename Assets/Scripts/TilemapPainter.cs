@@ -34,7 +34,7 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// Indicates if the walkable tiles should be placed randomly.
     /// </summary>
-    [SerializeField] private bool randomWalkableTilesPlacement;
+    [SerializeField] public bool randomWalkableTilesPlacement;
 
     /// <summary>
     /// Dictionary of walkable tiles and their probabilities. This is used to select tiles based on their assigned probabilities.
@@ -61,6 +61,11 @@ public class TilemapPainter : MonoBehaviour
     /// </summary>
     private Dictionary<TileBase, float> _wallTilesProbabilities = new();
 
+    public TilemapPainter(bool randomWalkableTilesPlacement)
+    {
+        this.randomWalkableTilesPlacement = randomWalkableTilesPlacement;
+    }
+
     #endregion
 
     #region Probability Initialization
@@ -80,7 +85,6 @@ public class TilemapPainter : MonoBehaviour
         {
             if (i < priorities.Count)
             {
-                
                 probabilities[tileBases[i]] = totalPriority != 0 ? (float)priorities[i] / totalPriority : 0f;
             }
             else

@@ -233,6 +233,10 @@ namespace Editor
         private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
+            
+            _currentGenerator.TilemapPainter.randomWalkableTilesPlacement = EditorGUILayout.Toggle(
+                new GUIContent("Random Walkable Tiles Placement", "Toggle to place walkable tiles randomly or based on probabilities"),
+                _currentGenerator.TilemapPainter.randomWalkableTilesPlacement);
 
             DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities", 
                 "Add floor tile", true, 0);
