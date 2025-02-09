@@ -759,14 +759,14 @@ PrefabInstance:
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'wallTileBases.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: 652712a4c314db94a94d391617af5e55, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'wallTileBases.Array.data[1]'
       value: 
-      objectReference: {fileID: 11400000, guid: 652712a4c314db94a94d391617af5e55, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: walkableTileBases.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallTilesPriorities.Array.size
@@ -775,30 +775,30 @@ PrefabInstance:
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'walkableTileBases.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: 900befe1c27dee24c80d2f82da7d565d, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'walkableTileBases.Array.data[1]'
       value: 
-      objectReference: {fileID: 11400000, guid: bb11b41d4b695954589333d45748a2d9, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'wallTilesPriorities.Array.data[0]'
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'wallTilesPriorities.Array.data[1]'
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: walkableTilesPriorities.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'walkableTilesPriorities.Array.data[0]'
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: 'walkableTilesPriorities.Array.data[1]'
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7209869302509103302, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: m_Size.x

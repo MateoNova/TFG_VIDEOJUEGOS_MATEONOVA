@@ -283,28 +283,49 @@ public class TilemapPainter : MonoBehaviour
 
     public void RemoveTileAtPosition(int position, bool isWalkable) //todo 
     {
-        // Validar que el índice esté dentro del rango
-        if (position < 0 || position >= walkableTileBases.Count)
+        if (isWalkable)
         {
-            Debug.LogWarning("Índice fuera de rango.");
-            return;
-        }
+            if (position < 0 || position >= walkableTileBases.Count)
+            {
+                Debug.LogWarning("Índice fuera de rango.");
+                return;
+            }
 
-        // Obtener el TileBase en la posición indicada
-        TileBase tile = walkableTileBases[position];
-        Debug.Log("Dictionary: " + _walkableTilesProbabilities.Count);
-
-        // Si no es nulo, lo remueve del diccionario
-        if (tile != null)
-        {
-            _walkableTilesProbabilities.Remove(tile);
-            Debug.Log("Removed");
+            TileBase tile = walkableTileBases[position];
             Debug.Log("Dictionary: " + _walkableTilesProbabilities.Count);
-        }
 
-        // Eliminar el elemento en la posición indicada de ambas listas
-        walkableTileBases.RemoveAt(position);
-        walkableTilesPriorities.RemoveAt(position);
+            if (tile != null)
+            {
+                _walkableTilesProbabilities.Remove(tile);
+                Debug.Log("Removed");
+                Debug.Log("Dictionary: " + _walkableTilesProbabilities.Count);
+            }
+
+            walkableTileBases.RemoveAt(position);
+            walkableTilesPriorities.RemoveAt(position);
+        }
+        else
+        {
+            if (position < 0 || position >= wallTileBases.Count)
+            {
+                Debug.LogWarning("Índice fuera de rango.");
+                return;
+            }
+
+            TileBase tile = wallTileBases[position];
+            Debug.Log("Dictionary: " + _wallTilesProbabilities.Count);
+
+            if (tile != null)
+            {
+                _wallTilesProbabilities.Remove(tile);
+                Debug.Log("Removed");
+                Debug.Log("Dictionary: " + _walkableTilesProbabilities.Count);
+            }
+
+            wallTileBases.RemoveAt(position);
+            wallTilesPriorities.RemoveAt(position);
+        }
+        
     }
 
 
