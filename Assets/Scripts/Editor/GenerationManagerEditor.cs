@@ -368,6 +368,7 @@ namespace Editor
                                     if (ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName,
                                             conditionalFieldBindingFlags: System.Reflection.BindingFlags.Public))
                                         continue;
+                                    
                                     GUILayout.FlexibleSpace();
                                     EditorGUILayout.LabelField("Priority:", GUILayout.Width(50));
                                     priorityProperty.intValue = EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
