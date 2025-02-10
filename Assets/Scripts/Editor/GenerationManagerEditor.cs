@@ -198,33 +198,42 @@ namespace Editor
 
                 while (property.NextVisible(false))
                 {
-                    // Validate if the field has the ConditionalFieldAttribute.
-                    var field = _currentGenerator.GetType().GetField(property.name,
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    if (field != null)
+                    if (ShouldDisplayField(generatorObject, property.name))
                     {
-                        var conditionalAttribute =
-                            (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field, typeof(ConditionalFieldAttribute));
-                        if (conditionalAttribute != null)
-                        {
-                            var conditionField = _currentGenerator.GetType().GetField(conditionalAttribute.ConditionFieldName,
-                                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                            if (conditionField != null)
-                            {
-                                var conditionValue = (bool)conditionField.GetValue(_currentGenerator);
-                                if (!conditionValue)
-                                {
-                                    continue;
-                                }
-                            }
-                        }
+                        EditorGUILayout.PropertyField(property, true);
                     }
-
-                    EditorGUILayout.PropertyField(property, true);
                 }
 
                 generatorObject.ApplyModifiedProperties();
             }
+        }
+
+
+        /// <summary>
+        /// Determines whether a field should be displayed based on the presence and value of a ConditionalFieldAttribute.
+        /// </summary>
+        /// <param name="serializedObject">The serialized object containing the field.</param>
+        /// <param name="propertyName">The name of the property to check.</param>
+        /// <returns>True if the field should be displayed; otherwise, false.</returns>
+        private static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName, 
+            System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic, 
+            System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
+        {
+            fieldBindingFlags |= System.Reflection.BindingFlags.Instance;
+            conditionalFieldBindingFlags |= System.Reflection.BindingFlags.Instance;
+            var targetObject = serializedObject.targetObject;
+            var field = targetObject.GetType().GetField(propertyName, fieldBindingFlags );
+        
+            if (field == null) return true;
+            var conditionalAttribute = (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field, typeof(ConditionalFieldAttribute));
+        
+            if (conditionalAttribute == null) return true;
+            var conditionField = targetObject.GetType().GetField(conditionalAttribute.ConditionFieldName, conditionalFieldBindingFlags);
+        
+            if (conditionField == null) return true;
+            var conditionValue = (bool)conditionField.GetValue(targetObject);
+            
+            return conditionValue;
         }
 
         /// <summary>
@@ -233,14 +242,15 @@ namespace Editor
         private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
-            
+
             _currentGenerator.TilemapPainter.randomWalkableTilesPlacement = EditorGUILayout.Toggle(
-                new GUIContent("Random Walkable Tiles Placement", "Toggle to place walkable tiles randomly or based on probabilities"),
+                new GUIContent("Random Walkable Tiles Placement",
+                    "Toggle to place walkable tiles randomly or based on probabilities"),
                 _currentGenerator.TilemapPainter.randomWalkableTilesPlacement);
 
-            DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities", 
+            DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities",
                 "Add floor tile", true, 0);
-            DrawTileGroupSettings(ref _wallScrollPosition, "wallTileBases", "wallTilesPriorities", 
+            DrawTileGroupSettings(ref _wallScrollPosition, "wallTileBases", "wallTilesPriorities",
                 "Add wall tile", false, 1001);
         }
 
@@ -288,15 +298,15 @@ namespace Editor
         /// <param name="addTileButtonLabel">Label for the add tile button.</param>
         /// <param name="isWalkable">Determines if the group corresponds to floor (true) or wall (false) tiles.</param>
         /// <param name="controlIdOffset">Offset for the object picker control ID.</param>
-        private void DrawTileGroupSettings(ref Vector2 scrollPosition, string tileBasesPropName, string tilePrioritiesPropName,
-            string addTileButtonLabel, bool isWalkable, int controlIdOffset)
+        private void DrawTileGroupSettings(ref Vector2 scrollPosition, string tileBasesPropName,
+            string tilePrioritiesPropName, string addTileButtonLabel, bool isWalkable, int controlIdOffset)
         {
             _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
             var tileBasesProperty = _tilemapPainterObject.FindProperty(tileBasesPropName);
             var tilePrioritiesProperty = _tilemapPainterObject.FindProperty(tilePrioritiesPropName);
         
             var localScrollPosition = scrollPosition;
-
+        
             using (new EditorGUILayout.VerticalScope())
             {
                 using (new EditorGUILayout.HorizontalScope())
@@ -307,6 +317,8 @@ namespace Editor
                         tileBasesProperty.GetArrayElementAtIndex(tileBasesProperty.arraySize - 1).objectReferenceValue = null;
                         tilePrioritiesProperty.InsertArrayElementAtIndex(tilePrioritiesProperty.arraySize);
                         tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue = 0;
+                        _tilemapPainterObject.ApplyModifiedProperties();
+                        Repaint();
                     }
         
                     var clearLabel = "Clear all " + (isWalkable ? "floor" : "wall") + " tiles";
@@ -332,7 +344,7 @@ namespace Editor
                         _tilemapPainterObject.Update();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
-                    } 
+                    }
                 }
         
                 if (tileBasesProperty.arraySize > 0)
@@ -345,14 +357,32 @@ namespace Editor
                         {
                             var tileBaseProperty = tileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
-                            DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + controlIdOffset, priorityProperty, i, isWalkable);
+        
+                            using (new EditorGUILayout.VerticalScope())
+                            {
+                                DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + controlIdOffset, priorityProperty, i, isWalkable);
+        
+                                // Show and edit the priority
+                                using (new EditorGUILayout.HorizontalScope())
+                                {
+                                    if (ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName,
+                                            conditionalFieldBindingFlags: System.Reflection.BindingFlags.Public))
+                                        continue;
+                                    GUILayout.FlexibleSpace();
+                                    EditorGUILayout.LabelField("Priority:", GUILayout.Width(50));
+                                    priorityProperty.intValue = EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
+                                    GUILayout.FlexibleSpace();
+                                }
+                            }
                         }
                     }
                 }
         
                 _tilemapPainterObject.ApplyModifiedProperties();
             }
+        
             scrollPosition = localScrollPosition; // Assign back to the ref parameter
+            Repaint();
         }
 
         /// <summary>
@@ -373,64 +403,56 @@ namespace Editor
                 return;
             }
 
-            using (new EditorGUILayout.VerticalScope())
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
+
+                if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
+                {
+                    _currentGenerator.TilemapPainter.RemoveTileAtPosition(index, isWalkable);
+                    _tilemapPainterObject.ApplyModifiedProperties();
+                    Repaint();
+                }
+
+                GUILayout.FlexibleSpace();
+            }
+
+            // Show the preview of the TileBase
+            var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
+            if (tileBase)
+            {
+                Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
+                    {
+                        EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
+                    }
+
+                    GUILayout.FlexibleSpace();
+                }
+            }
+            else
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.FlexibleSpace();
-                    GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
-
-                    if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
+                    if (GUILayout.Button("Select Tile", GUILayout.Width(64), GUILayout.Height(64)))
                     {
-                        _currentGenerator.TilemapPainter.RemoveTileAtPosition(index, isWalkable);
-                        _tilemapPainterObject.ApplyModifiedProperties();
-                        Repaint();
+                        EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
                     }
+
                     GUILayout.FlexibleSpace();
                 }
+            }
 
-                // Show the preview of the TileBase
-                var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
-                if (tileBase)
-                {
-                    Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        GUILayout.FlexibleSpace();
-                        if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
-                        {
-                            EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
-                        }
-                        GUILayout.FlexibleSpace();
-                    }
-                }
-                else
-                {
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("Select Tile", GUILayout.Width(64), GUILayout.Height(64)))
-                        {
-                            EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
-                        }
-                        GUILayout.FlexibleSpace();
-                    }
-                }
-
-                if (Event.current.commandName == "ObjectSelectorUpdated" &&
-                    EditorGUIUtility.GetObjectPickerControlID() == controlID)
-                {
-                    tileBaseProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
-                }
-
-                // Show and edit the priority
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    GUILayout.FlexibleSpace();
-                    EditorGUILayout.LabelField("Priority:", GUILayout.Width(50));
-                    priorityProperty.intValue = EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
-                    GUILayout.FlexibleSpace();
-                }
+            if (Event.current.commandName == "ObjectSelectorUpdated" &&
+                EditorGUIUtility.GetObjectPickerControlID() == controlID)
+            {
+                tileBaseProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
             }
         }
 
@@ -504,7 +526,8 @@ namespace Editor
         {
             if (_cachedGenerationManager != null)
             {
-                _generators = new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
+                _generators =
+                    new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
                 _cachedGeneratorNames = GetGeneratorNames();
                 if (_cachedGeneratorNames.Count > 0)
                 {
@@ -564,6 +587,7 @@ namespace Editor
                     Debug.LogWarning("Generator is null.");
                 }
             }
+
             return names;
         }
 
@@ -582,6 +606,7 @@ namespace Editor
             {
                 return EditorUtility.InstanceIDToObject(cachedId) as GameObject;
             }
+
             return null;
         }
 
@@ -595,10 +620,12 @@ namespace Editor
             {
                 _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             }
+
             if (!_cachedPrefab)
             {
                 return null;
             }
+
             _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
             EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
             return _cachedGenerationManager;
@@ -615,6 +642,7 @@ namespace Editor
             {
                 DestroyImmediate(_cachedGenerationManager);
             }
+
             _cachedGenerationManager = null;
             _cachedPrefab = null;
             _currentGenerator = null;

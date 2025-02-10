@@ -29,7 +29,8 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// List of priorities corresponding to the walkable tiles. The higher the priority, the more likely the tile will be chosen.
     /// </summary>
-    [SerializeField] private List<int> walkableTilesPriorities;
+    [ConditionalField("randomWalkableTilesPlacement"), SerializeField]
+    private List<int> walkableTilesPriorities;
 
     /// <summary>
     /// Indicates if the walkable tiles should be placed randomly.
