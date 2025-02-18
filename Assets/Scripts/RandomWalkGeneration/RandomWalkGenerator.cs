@@ -42,6 +42,11 @@ namespace RandomWalkGeneration
 
         #region Generation Methods
 
+        public void CORRRREEEE()
+        {
+            RunGeneration();
+        }
+
         /// <summary>
         /// Runs the dungeon generation process.
         /// </summary>

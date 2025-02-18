@@ -256,6 +256,11 @@ namespace BSPGeneration
         }
 
         #endregion
+
+        public void RUUUUN()
+        {
+            RunGeneration();
+        }
     }
 
     /// <summary>
