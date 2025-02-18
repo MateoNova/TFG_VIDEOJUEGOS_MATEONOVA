@@ -338,9 +338,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 796312592}
-        m_TargetAssemblyTypeName: RandomWalkGeneration.RandomWalkGenerator, Assembly-CSharp
-        m_MethodName: CORRRREEEE
+      - m_Target: {fileID: 556440316}
+        m_TargetAssemblyTypeName: BSPGeneration.BspGenerator, Assembly-CSharp
+        m_MethodName: RUUUUN
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -490,15 +490,15 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &796312592 stripped
+--- !u!114 &556440316 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3437192369448930041, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
+  m_CorrespondingSourceObject: {fileID: 6783033978706914759, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
   m_PrefabInstance: {fileID: 798722968}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f679d13a80446fd9249f020243a288d, type: 3}
+  m_Script: {fileID: 11500000, guid: f035bf85efb300a4c97f136b1415a2ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &798722968
@@ -1484,7 +1484,7 @@ PrefabInstance:
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallFull
       value: 
-      objectReference: {fileID: 11400000, guid: 652712a4c314db94a94d391617af5e55, type: 2}
+      objectReference: {fileID: 11400000, guid: ce883aa751a78214caff47e94f70721a, type: 2}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallBottom
       value: 
@@ -1508,7 +1508,7 @@ PrefabInstance:
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallDiagonalCornerUpLeft
       value: 
-      objectReference: {fileID: 11400000, guid: d0961ad85959c004a9b04e90b1c52ede, type: 2}
+      objectReference: {fileID: 11400000, guid: fa0034d59c2e8da4ab39a0a0921414ad, type: 2}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallInnerCornerDownRight
       value: 
@@ -1524,7 +1524,7 @@ PrefabInstance:
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallDiagonalCornerUpRight
       value: 
-      objectReference: {fileID: 11400000, guid: d0961ad85959c004a9b04e90b1c52ede, type: 2}
+      objectReference: {fileID: 11400000, guid: 42b9a626a04fd22468c14bcde561b458, type: 2}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallDiagonalCornerDownLeft
       value: 
