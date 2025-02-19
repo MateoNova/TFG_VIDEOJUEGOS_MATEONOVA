@@ -233,6 +233,8 @@ public class WallGenerator : MonoBehaviour
             new BottomRightWallToTripleWallCornerExceptRight(),
             new BottomLeftWallToAllWallCorner(),
             new BottomRightWallToAllWallCorner(),
+            new RightWallAloneToDownCase(),
+            new LeftWallAloneToDownCase(),
         };
 
         // Para no modificar los sets mientras iteramos, guardamos los cambios y luego los aplicamos
