@@ -14,6 +14,12 @@ public enum WallPosition
     BottomRight
 }
 
+public enum SpecialWallPosition
+{
+    TripleWallCornerLeft,
+    DownWall
+}
+
 /// <summary>
 /// Class responsible for generating walls based on the positions of walkable tiles.
 /// </summary>
@@ -46,7 +52,10 @@ public class WallGenerator : MonoBehaviour
             tilemapPainter.PaintWallTiles(wallPosition.Value, wallPosition.Key);
         }
 
-        tilemapPainter.PaintWallTiles(specialWallPositions, WallPosition.BottomLeft); // Ajusta según el caso especial
+        foreach (var specialWallPosition in specialWallPositions)
+        {
+            tilemapPainter.PaintSpecialWallTiles(specialWallPosition.Value, specialWallPosition.Key);
+        }
     }
 
     private static HashSet<Vector2Int> GetWallsPositions(HashSet<Vector2Int> floorPositions)
@@ -73,7 +82,7 @@ public class WallGenerator : MonoBehaviour
     public static HashSet<Vector2Int> GetLeftWallsPositions(HashSet<Vector2Int> floorPositions)
     {
         var leftWallPositions = GetSpecificWallPositions(floorPositions, Vector2Int.left);
-        // caso especial: Si una leftwall tiene una pared a su izquierda, debe ser downwall.
+        // Special case: If a left wall has a wall to its left, it should be a down wall.
         var downWallPositions = new HashSet<Vector2Int>();
 
         foreach (var position in leftWallPositions)
@@ -92,7 +101,7 @@ public class WallGenerator : MonoBehaviour
     public static HashSet<Vector2Int> GetRightWallsPositions(HashSet<Vector2Int> floorPositions)
     {
         var rightWallPositions = GetSpecificWallPositions(floorPositions, Vector2Int.right);
-        // caso especial: Si una rightwall tiene una pared a su derecha, debe ser downwall.
+        // Special case: If a right wall has a wall to its right, it should be a down wall.
         var downWallPositions = new HashSet<Vector2Int>();
 
         foreach (var position in rightWallPositions)
@@ -158,10 +167,14 @@ public class WallGenerator : MonoBehaviour
         return cornerPositions;
     }
 
-    public static HashSet<Vector2Int> GetSpecialWallPositions(HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> wallPositions)
+    public static Dictionary<SpecialWallPosition, HashSet<Vector2Int>> GetSpecialWallPositions(
+        HashSet<Vector2Int> floorPositions, HashSet<Vector2Int> wallPositions)
     {
-        var specialWallPositions = new HashSet<Vector2Int>();
+        var specialWallPositions = new Dictionary<SpecialWallPosition, HashSet<Vector2Int>>
+        {
+            { SpecialWallPosition.TripleWallCornerLeft, new HashSet<Vector2Int>() },
+            { SpecialWallPosition.DownWall, new HashSet<Vector2Int>() }
+        };
 
         foreach (var position in floorPositions)
         {
@@ -170,16 +183,17 @@ public class WallGenerator : MonoBehaviour
             var rightPos = position + Vector2Int.right;
             var upPos = position + Vector2Int.up;
 
+            // Special case: TripleWallCornerLeft
             if (floorPositions.Contains(leftPos) && floorPositions.Contains(downPos) &&
                 wallPositions.Contains(rightPos) && wallPositions.Contains(upPos))
             {
-                specialWallPositions.Add(position);
+                specialWallPositions[SpecialWallPosition.TripleWallCornerLeft].Add(position);
             }
 
-            // Caso especial: triplewallcornerleft:  lo que ahora se pone corner bottom left si tiene una wall debajo pyes tiene que ser triplewallcornerleft
+            // Special case: DownWall
             if (wallPositions.Contains(downPos))
             {
-                specialWallPositions.Add(position);
+                specialWallPositions[SpecialWallPosition.TripleWallCornerLeft].Add(position);
             }
         }
 
