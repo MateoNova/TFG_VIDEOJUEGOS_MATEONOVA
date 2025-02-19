@@ -16,7 +16,8 @@ public enum WallPosition
     TripleWallCornerExceptDown,
     TripleWallCornerExceptLeft,
     TripleWallCornerExceptRight,
-    AllWallCorner
+    AllWallCorner,
+    TripleWallCornerLeft
 }
 
 public enum SpecialWallPosition
@@ -51,26 +52,17 @@ public class WallGenerator : MonoBehaviour
             { WallPosition.TripleWallCornerExceptDown, new HashSet<Vector2Int>() },
             { WallPosition.TripleWallCornerExceptLeft, new HashSet<Vector2Int>() },
             { WallPosition.TripleWallCornerExceptRight, new HashSet<Vector2Int>() },
-            { WallPosition.AllWallCorner, new HashSet<Vector2Int>() }
+            { WallPosition.AllWallCorner, new HashSet<Vector2Int>() },
+            { WallPosition.TripleWallCornerLeft, new HashSet<Vector2Int>() }
         };
 
         // 1) aplicar overrides
         ApplyWallOverrides(wallPositions, walkableTilesPositions);
 
-        // 2) Genera los “specialWallPositions” como siempre
-        var specialWallPositions =
-            GetSpecialWallPositions(walkableTilesPositions, wallPositions.Values.SelectMany(x => x).ToHashSet());
-
         // 3) Pinta primero los muros “normales”
         foreach (var wallPosition in wallPositions)
         {
             tilemapPainter.PaintWallTiles(wallPosition.Value, wallPosition.Key);
-        }
-
-        // 4) Pinta los muros especiales
-        foreach (var specialWallPosition in specialWallPositions)
-        {
-            tilemapPainter.PaintSpecialWallTiles(specialWallPosition.Value, specialWallPosition.Key);
         }
     }
 
@@ -190,8 +182,6 @@ public class WallGenerator : MonoBehaviour
         // Lista de casos especiales implementados
         List<ISpecialWallCase> specialCases = new List<ISpecialWallCase>
         {
-            new TripleWallCornerLeftCase(),
-            new DownWallCase(),
             // Agrega aquí nuevas implementaciones cuando sea necesario
         };
 
@@ -241,7 +231,8 @@ public class WallGenerator : MonoBehaviour
             new BottomLeftWallToTripleWallCornerExceptDown(),
             new BottomLeftWallToTripleWallCornerExceptLeft(),
             new BottomRightWallToTripleWallCornerExceptRight(),
-            new BottomLeftWallToAllWallCorner()
+            new BottomLeftWallToAllWallCorner(),
+            new BottomRightWallToAllWallCorner(),
         };
 
         // Para no modificar los sets mientras iteramos, guardamos los cambios y luego los aplicamos

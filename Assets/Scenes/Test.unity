@@ -338,9 +338,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1898168281}
-        m_TargetAssemblyTypeName: RandomWalkGeneration.RandomWalkGenerator, Assembly-CSharp
-        m_MethodName: CORRRREEEE
+      - m_Target: {fileID: 1214963001}
+        m_TargetAssemblyTypeName: BSPGeneration.BspGenerator, Assembly-CSharp
+        m_MethodName: RUUUUN
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -567,6 +567,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
+--- !u!114 &1214963001 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6783033978706914759, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
+  m_PrefabInstance: {fileID: 798722968}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f035bf85efb300a4c97f136b1415a2ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1743934323
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,17 +657,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1898168281 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3437192369448930041, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
-  m_PrefabInstance: {fileID: 798722968}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f679d13a80446fd9249f020243a288d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

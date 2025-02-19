@@ -198,24 +198,6 @@ public class TilemapPainter : MonoBehaviour
         // }
     }
 
-    public void PaintSpecialWallTiles(IEnumerable<Vector2Int> tilesPositions, SpecialWallPosition position)
-    {
-        TileBase tile = position switch
-        {
-            SpecialWallPosition.TripleWallCornerLeft => tripleWallCornerLeftTile,
-            SpecialWallPosition.DownWall => downWall,
-            _ => null
-        };
-
-        if (tile == null) return;
-
-        foreach (var pos in tilesPositions)
-        {
-            var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
-            wallTilemap.SetTile(tilePosition, tile);
-        }
-    }
-
     /// <summary>
     /// Renders tiles randomly at the specified positions on the given Tilemap.
     /// </summary>

@@ -1,29 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TripleWallCornerLeftCase : ISpecialWallCase
-{
-    public SpecialWallPosition WallPosition => SpecialWallPosition.TripleWallCornerLeft;
-
-    public bool IsMatch(Vector2Int position, HashSet<Vector2Int> floorPositions, HashSet<Vector2Int> wallPositions)
-    {
-        return floorPositions.Contains(position + Vector2Int.left) &&
-               floorPositions.Contains(position + Vector2Int.down) &&
-               wallPositions.Contains(position + Vector2Int.right) &&
-               wallPositions.Contains(position + Vector2Int.up);
-    }
-}
-
-public class DownWallCase : ISpecialWallCase
-{
-    public SpecialWallPosition WallPosition => SpecialWallPosition.DownWall;
-
-    public bool IsMatch(Vector2Int position, HashSet<Vector2Int> floorPositions, HashSet<Vector2Int> wallPositions)
-    {
-        return wallPositions.Contains(position + Vector2Int.down);
-    }
-}
-
 /// <summary>
 /// Caso: si un LeftWall tiene a su izquierda una wall, arriba floor, derecha floor y abajo wall
 /// => se convierte en TopRight.
@@ -42,10 +19,10 @@ public class LeftWallToTopRightCase : IWallOverrideCase
         if (originalWallPosition != WallPosition.Left)
             return false;
 
-        bool leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        bool upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        bool rightIsFloor = floorPositions.Contains(position + Vector2Int.right);
-        bool downIsWall = allWallPositions.Contains(position + Vector2Int.down);
+        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
+        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
+        var rightIsFloor = floorPositions.Contains(position + Vector2Int.right);
+        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
 
         return leftIsWall && upIsFloor && rightIsFloor && downIsWall;
     }
@@ -192,11 +169,15 @@ public class TopRightWallToTripleCornerExceptUp : IWallOverrideCase
         if (originalWallPosition != WallPosition.TopRight)
             return false;
 
-        var diagonalDownLeftIsFloor = floorPositions.Contains(position + Vector2Int.down + Vector2Int.left);
-        var diagonalDownRightIsWall = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
+        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
+        if (!upIsFloor)
+        {
+            var diagonalDownLeftIsFloor = floorPositions.Contains(position + Vector2Int.down + Vector2Int.left);
+            var diagonalDownRightIsWall = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
 
-        if (!(diagonalDownLeftIsFloor && !diagonalDownRightIsWall))
-            return false;
+            if (!(diagonalDownLeftIsFloor && !diagonalDownRightIsWall))
+                return false;
+        }
 
         var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
         var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
@@ -294,6 +275,10 @@ public class BottomRightWallToTripleWallCornerExceptDown : IWallOverrideCase
         if (originalWallPosition != WallPosition.BottomRight)
             return false;
 
+        var downIsFloor = floorPositions.Contains(position + Vector2Int.down);
+
+        if (!downIsFloor) return false;
+
         var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
         var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
         var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
@@ -315,12 +300,17 @@ public class BottomLeftWallToTripleWallCornerExceptDown : IWallOverrideCase
     {
         if (originalWallPosition != WallPosition.BottomLeft)
             return false;
-        
-        var diagonalUpRightIsFloor = floorPositions.Contains(position + Vector2Int.up + Vector2Int.right);
-        var diagonalUpLeftIsWall = allWallPositions.Contains(position + Vector2Int.up + Vector2Int.left);
-        
-        if (!(diagonalUpRightIsFloor && !diagonalUpLeftIsWall))
-            return false;
+
+        var downIsFloor = floorPositions.Contains(position + Vector2Int.down);
+
+        if (!downIsFloor)
+        {
+            var diagonalUpRightIsFloor = floorPositions.Contains(position + Vector2Int.up + Vector2Int.right);
+            var diagonalUpLeftIsWall = allWallPositions.Contains(position + Vector2Int.up + Vector2Int.left);
+
+            if (!(diagonalUpRightIsFloor && !diagonalUpLeftIsWall))
+                return false;
+        }
 
         var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
         var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
@@ -343,12 +333,17 @@ public class BottomLeftWallToTripleWallCornerExceptLeft : IWallOverrideCase
     {
         if (originalWallPosition != WallPosition.BottomLeft)
             return false;
+        
+        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
 
-        var diagonalDownLeft = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.left);
-        var diagonalDownRight = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
+        if (!leftIsWall)
+        {
+            var diagonalDownLeft = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.left);
+            var diagonalDownRight = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
 
-        if (diagonalDownLeft || diagonalDownRight)
-            return false;
+            if (diagonalDownLeft || diagonalDownRight)
+                return false;
+        }
 
         var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
         var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
@@ -358,6 +353,7 @@ public class BottomLeftWallToTripleWallCornerExceptLeft : IWallOverrideCase
         return upIsWall && rightIsWall && downIsWall;
     }
 }
+
 
 public class BottomRightWallToTripleWallCornerExceptRight : IWallOverrideCase
 {
@@ -372,12 +368,17 @@ public class BottomRightWallToTripleWallCornerExceptRight : IWallOverrideCase
     {
         if (originalWallPosition != WallPosition.BottomRight)
             return false;
+        
+        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
+        
+        if (!rightIsWall)
+        {
+            var diagonalDownLeft = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.left);
+            var diagonalDownRight = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
 
-        var diagonalDownLeft = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.left);
-        var diagonalDownRight = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
-
-        if (diagonalDownLeft || diagonalDownRight)
-            return false;
+            if (diagonalDownLeft || diagonalDownRight)
+                return false;
+        }
 
         var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
         var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
@@ -385,6 +386,30 @@ public class BottomRightWallToTripleWallCornerExceptRight : IWallOverrideCase
 
 
         return upIsWall && leftIsWall && downIsWall;
+    }
+}
+
+public class BottomRightWallToAllWallCorner : IWallOverrideCase
+{
+    public WallPosition OverrideWallPosition => WallPosition.AllWallCorner;
+
+    public bool IsMatch(
+        Vector2Int position,
+        HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions,
+        WallPosition originalWallPosition
+    )
+    {
+        if (originalWallPosition != WallPosition.BottomRight)
+            return false;
+
+        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
+        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
+        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
+        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
+
+
+        return upIsWall && rightIsWall && downIsWall && leftIsWall;
     }
 }
 
@@ -406,7 +431,7 @@ public class BottomLeftWallToAllWallCorner : IWallOverrideCase
         var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
         var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
         var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        
+
         return upIsWall && rightIsWall && downIsWall && leftIsWall;
     }
 }
