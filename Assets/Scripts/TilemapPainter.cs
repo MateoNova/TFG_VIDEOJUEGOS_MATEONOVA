@@ -157,24 +157,24 @@ public class TilemapPainter : MonoBehaviour
     /// Renders the wall tiles at the specified positions.
     /// </summary>
     /// <param name="tilesPositions">Positions to render the wall tiles.</param>
-    public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, WallPosition position)
+    public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, Utils.WallPosition position)
     {
         TileBase tile = position switch
         {
-            WallPosition.Up => upWall,
-            WallPosition.Down => downWall,
-            WallPosition.Left => leftWall,
-            WallPosition.Right => rightWall,
-            WallPosition.TopLeft => topLeftWall,
-            WallPosition.BottomLeft => bottomLeftWall,
-            WallPosition.TopRight => topRightWall,
-            WallPosition.BottomRight => bottomRightWall,
+            Utils.WallPosition.Up => upWall,
+            Utils.WallPosition.Down => downWall,
+            Utils.WallPosition.Left => leftWall,
+            Utils.WallPosition.Right => rightWall,
+            Utils.WallPosition.TopLeft => topLeftWall,
+            Utils.WallPosition.BottomLeft => bottomLeftWall,
+            Utils.WallPosition.TopRight => topRightWall,
+            Utils.WallPosition.BottomRight => bottomRightWall,
             
-            WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpTile,
-            WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownTile,
-            WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeft,
-            WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRight,
-            WallPosition.AllWallCorner => allCornersWall,
+            Utils.WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpTile,
+            Utils.WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownTile,
+            Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeft,
+            Utils.WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRight,
+            Utils.WallPosition.AllWallCorner => allCornersWall,
             _ => null
         };
 

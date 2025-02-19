@@ -5,6 +5,26 @@
 /// </summary>
 public static class Utils
 {
+    
+    public enum WallPosition
+    {
+        Up,
+        Down,
+        Left,
+        Right,
+        TopLeft,
+        BottomLeft,
+        TopRight,
+        BottomRight,
+        TripleWallCornerExceptUp,
+        TripleWallCornerExceptDown,
+        TripleWallCornerExceptLeft,
+        TripleWallCornerExceptRight,
+        AllWallCorner,
+        TripleWallCornerLeft
+    }
+    
+    
     /// <summary>
     /// Array of cardinal directions (up, down, left, right).
     /// </summary>
