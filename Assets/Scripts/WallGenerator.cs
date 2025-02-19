@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SpecialCases;
 using UnityEngine;
 
 public enum WallPosition
