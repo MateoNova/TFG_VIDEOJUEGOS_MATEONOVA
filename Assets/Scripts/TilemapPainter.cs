@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 /// <summary>
@@ -46,8 +47,24 @@ public class TilemapPainter : MonoBehaviour
     /// List of wall tile bases. This allows for multiple wall tiles to be used.
     /// </summary>
     //[SerializeField] private List<TileBase> wallTileBases;
-    [SerializeField]
-    private TileBase upWall, downWall, leftWall, rightWall, topLeftWall, topRightWall, bottomLeftWall, bottomRightWall, tripleWallCornerLeftTile;
+    [SerializeField] private TileBase upWall,
+        downWall,
+        leftWall,
+        rightWall,
+        topLeftWall,
+        topRightWall,
+        bottomLeftWall,
+        bottomRightWall,
+        tripleWallCornerLeftTile,
+        tripleWallCornerExcetUpTile,
+        tripleWallCornerExcetDownTile,
+        tripleWallCornerExceptLeft,
+        tripleWallCornerExceptRight;
+
+    /// <summary>
+    /// List of wall tile bases. This allows for multiple wall tiles to be used.
+    /// </summary>
+    //[SerializeField] private List<TileBase> wallTileBases;
 
     /// <summary>
     /// List of priorities corresponding to the wall tiles. The higher the priority, the more likely the tile will be chosen.
@@ -151,6 +168,11 @@ public class TilemapPainter : MonoBehaviour
             WallPosition.BottomLeft => bottomLeftWall,
             WallPosition.TopRight => topRightWall,
             WallPosition.BottomRight => bottomRightWall,
+            
+            WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpTile,
+            WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownTile,
+            WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeft,
+            WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRight,
             _ => null
         };
 
@@ -173,7 +195,7 @@ public class TilemapPainter : MonoBehaviour
         //     PaintTilesWithProbabilities(tilesPositions, wallTilemap, wallTileBases, _wallTilesProbabilities);
         // }
     }
-    
+
     public void PaintSpecialWallTiles(IEnumerable<Vector2Int> tilesPositions, SpecialWallPosition position)
     {
         TileBase tile = position switch

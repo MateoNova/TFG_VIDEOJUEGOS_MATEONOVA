@@ -11,7 +11,11 @@ public enum WallPosition
     TopLeft,
     BottomLeft,
     TopRight,
-    BottomRight
+    BottomRight,
+    TripleWallCornerExceptUp,
+    TripleWallCornerExceptDown,
+    TripleWallCornerExceptLeft,
+    TripleWallCornerExceptRight
 }
 
 public enum SpecialWallPosition
@@ -41,7 +45,11 @@ public class WallGenerator : MonoBehaviour
             { WallPosition.TopLeft, GetTopLeftCornerPositions(walkableTilesPositions) },
             { WallPosition.BottomLeft, GetBottomLeftCornerPositions(walkableTilesPositions) },
             { WallPosition.TopRight, GetTopRightCornerPositions(walkableTilesPositions) },
-            { WallPosition.BottomRight, GetBottomRightCornerPositions(walkableTilesPositions) }
+            { WallPosition.BottomRight, GetBottomRightCornerPositions(walkableTilesPositions) },
+            { WallPosition.TripleWallCornerExceptUp, new HashSet<Vector2Int>() },
+            { WallPosition.TripleWallCornerExceptDown, new HashSet<Vector2Int>() },
+            { WallPosition.TripleWallCornerExceptLeft, new HashSet<Vector2Int>() },
+            { WallPosition.TripleWallCornerExceptRight, new HashSet<Vector2Int>() }
         };
 
         // 1) aplicar overrides
@@ -205,7 +213,7 @@ public class WallGenerator : MonoBehaviour
 
         return specialWallPositions;
     }
-    
+
     private static void ApplyWallOverrides(
         Dictionary<WallPosition, HashSet<Vector2Int>> wallPositionsByType,
         HashSet<Vector2Int> floorPositions
@@ -220,7 +228,16 @@ public class WallGenerator : MonoBehaviour
             new LeftWallToTopRightCase(),
             new RightWallToTopLeftCase(),
             new LeftWallToBottomRightCase(),
-            new RightWallToBottomLeftCase()
+            new RightWallToBottomLeftCase(),
+            new RightWallToDownCase(),
+            new LeftWallToDownCase(),
+            new TopRightWallToTripleCornerExceptUp(),
+            new TopLeftWallToTripleCornerCase(),
+            new DownWallToTripleWallCornerExceptUp(),
+            new DownWallToTripleWallCornerExceptDown(),
+            new BottomRightWallToTripleWallCornerExceptDown(),
+            new BottomLeftWallToTripleWallCornerExceptLeft(),
+            new BottomRightWallToTripleWallCornerExceptRight()
         };
 
         // Para no modificar los sets mientras iteramos, guardamos los cambios y luego los aplicamos
@@ -251,6 +268,4 @@ public class WallGenerator : MonoBehaviour
             wallPositionsByType[newType].Add(pos);
         }
     }
-
-
 }
