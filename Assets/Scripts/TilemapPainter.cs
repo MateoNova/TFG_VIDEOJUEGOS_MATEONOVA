@@ -46,7 +46,8 @@ public class TilemapPainter : MonoBehaviour
     /// List of wall tile bases. This allows for multiple wall tiles to be used.
     /// </summary>
     //[SerializeField] private List<TileBase> wallTileBases;
-    [SerializeField] private TileBase upWall, downWall, leftWall, rightWall;
+    [SerializeField]
+    private TileBase upWall, downWall, leftWall, rightWall, topLeftWall, topRightWall, bottomLeftWall, bottomRightWall;
 
     /// <summary>
     /// List of priorities corresponding to the wall tiles. The higher the priority, the more likely the tile will be chosen.
@@ -138,45 +139,29 @@ public class TilemapPainter : MonoBehaviour
     /// Renders the wall tiles at the specified positions.
     /// </summary>
     /// <param name="tilesPositions">Positions to render the wall tiles.</param>
-    public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, string position)
-    {
-        //paint
-        if (position == "down")
+   public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, WallPosition position)
         {
-            foreach (var pos in tilesPositions)
+            TileBase tile = position switch
             {
-                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
-                wallTilemap.SetTile(tilePosition, downWall);
-            }
-        }
-        else if (position == "up")
-        {
-            foreach (var pos in tilesPositions)
-            {
-                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
-                wallTilemap.SetTile(tilePosition, upWall);
-            }
-        }
-        else if (position == "left")
-        {
-            foreach (var pos in tilesPositions)
-            {
-                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
-                wallTilemap.SetTile(tilePosition, leftWall);
-            }
-        }
-        else if (position == "right")
-        {
-            foreach (var pos in tilesPositions)
-            {
-                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
-                wallTilemap.SetTile(tilePosition, rightWall);
-            }
-        }
-       
+                WallPosition.Up => upWall,
+                WallPosition.Down => downWall,
+                WallPosition.Left => leftWall,
+                WallPosition.Right => rightWall,
+                WallPosition.TopLeft => topLeftWall,
+                WallPosition.BottomLeft => bottomLeftWall,
+                WallPosition.TopRight => topRightWall,
+                WallPosition.BottomRight => bottomRightWall,
+                _ => null
+            };
         
+            if (tile == null) return;
         
-        
+            foreach (var pos in tilesPositions)
+            {
+                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
+                wallTilemap.SetTile(tilePosition, tile);
+            }
+
         // InitializeWallTilesProbabilities();
         //
         // if (randomWallTilesPlacement)
