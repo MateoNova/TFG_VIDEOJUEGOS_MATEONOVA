@@ -15,7 +15,8 @@ public enum WallPosition
     TripleWallCornerExceptUp,
     TripleWallCornerExceptDown,
     TripleWallCornerExceptLeft,
-    TripleWallCornerExceptRight
+    TripleWallCornerExceptRight,
+    AllWallCorner
 }
 
 public enum SpecialWallPosition
@@ -49,7 +50,8 @@ public class WallGenerator : MonoBehaviour
             { WallPosition.TripleWallCornerExceptUp, new HashSet<Vector2Int>() },
             { WallPosition.TripleWallCornerExceptDown, new HashSet<Vector2Int>() },
             { WallPosition.TripleWallCornerExceptLeft, new HashSet<Vector2Int>() },
-            { WallPosition.TripleWallCornerExceptRight, new HashSet<Vector2Int>() }
+            { WallPosition.TripleWallCornerExceptRight, new HashSet<Vector2Int>() },
+            { WallPosition.AllWallCorner, new HashSet<Vector2Int>() }
         };
 
         // 1) aplicar overrides
@@ -236,8 +238,10 @@ public class WallGenerator : MonoBehaviour
             new DownWallToTripleWallCornerExceptUp(),
             new DownWallToTripleWallCornerExceptDown(),
             new BottomRightWallToTripleWallCornerExceptDown(),
+            new BottomLeftWallToTripleWallCornerExceptDown(),
             new BottomLeftWallToTripleWallCornerExceptLeft(),
-            new BottomRightWallToTripleWallCornerExceptRight()
+            new BottomRightWallToTripleWallCornerExceptRight(),
+            new BottomLeftWallToAllWallCorner()
         };
 
         // Para no modificar los sets mientras iteramos, guardamos los cambios y luego los aplicamos

@@ -59,7 +59,8 @@ public class TilemapPainter : MonoBehaviour
         tripleWallCornerExcetUpTile,
         tripleWallCornerExcetDownTile,
         tripleWallCornerExceptLeft,
-        tripleWallCornerExceptRight;
+        tripleWallCornerExceptRight,
+        allCornersWall;
 
     /// <summary>
     /// List of wall tile bases. This allows for multiple wall tiles to be used.
@@ -173,6 +174,7 @@ public class TilemapPainter : MonoBehaviour
             WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownTile,
             WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeft,
             WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRight,
+            WallPosition.AllWallCorner => allCornersWall,
             _ => null
         };
 
