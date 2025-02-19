@@ -1,11 +1,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#region TopRight Wall Cases
+#region Interface and Base Classes
 
-public class TopRightWallToTripleCornerExceptUp : IWallOverrideCase
+/// <summary>
+/// Base class to centralize the validation of the original wall position.
+/// </summary>
+public abstract class BaseWallOverrideCase : IWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptUp;
+    /// <summary>
+    /// The expected original wall type for this override to apply.
+    /// </summary>
+    protected abstract WallPosition ExpectedOriginalWall { get; }
+
+    /// <summary>
+    /// The new wall position to assign if the condition is met.
+    /// </summary>
+    public abstract WallPosition OverrideWallPosition { get; }
+
+    /// <summary>
+    /// Method to check the specific conditions for the override.
+    /// </summary>
+    /// <param name="position">The position to check.</param>
+    /// <param name="floorPositions">The set of floor positions.</param>
+    /// <param name="allWallPositions">The set of all wall positions.</param>
+    /// <returns>True if the conditions are met, otherwise false.</returns>
+    protected abstract bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions);
 
     public bool IsMatch(
         Vector2Int position,
@@ -14,24 +35,74 @@ public class TopRightWallToTripleCornerExceptUp : IWallOverrideCase
         WallPosition originalWallPosition
     )
     {
-        if (originalWallPosition != WallPosition.TopRight)
+        if (originalWallPosition != ExpectedOriginalWall)
             return false;
 
-        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        if (!upIsFloor)
-        {
-            var diagonalDownLeftIsFloor = floorPositions.Contains(position + Vector2Int.down + Vector2Int.left);
-            var diagonalDownRightIsWall = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
+        return Matches(position, floorPositions, allWallPositions);
+    }
+}
 
+/// <summary>
+/// Helper class for tile-related methods to improve readability.
+/// </summary>
+public static class TileHelper
+{
+    public static bool IsWall(this HashSet<Vector2Int> wallPositions, Vector2Int pos)
+        => wallPositions.Contains(pos);
+
+    public static bool IsFloor(this HashSet<Vector2Int> floorPositions, Vector2Int pos)
+        => floorPositions.Contains(pos);
+
+    public static bool AreWalls(Vector2Int position, HashSet<Vector2Int> wallPositions, params Vector2Int[] offsets)
+    {
+        foreach (var offset in offsets)
+        {
+            if (!wallPositions.Contains(position + offset))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool AreFloors(Vector2Int position, HashSet<Vector2Int> floorPositions, params Vector2Int[] offsets)
+    {
+        foreach (var offset in offsets)
+        {
+            if (!floorPositions.Contains(position + offset))
+                return false;
+        }
+
+        return true;
+    }
+}
+
+#endregion
+
+#region TopRight Wall Cases
+
+/// <summary>
+/// Override case for converting a TopRight wall to a TripleWallCornerExceptUp.
+/// </summary>
+public class TopRightWallToTripleCornerExceptUp : BaseWallOverrideCase
+{
+    protected override WallPosition ExpectedOriginalWall => WallPosition.TopRight;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptUp;
+
+    protected override bool Matches(
+        Vector2Int position,
+        HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions
+    )
+    {
+        if (!floorPositions.IsFloor(position + Vector2Int.up))
+        {
+            var diagonalDownLeftIsFloor = floorPositions.IsFloor(position + Vector2Int.down + Vector2Int.left);
+            var diagonalDownRightIsWall = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right);
             if (!(diagonalDownLeftIsFloor && !diagonalDownRightIsWall))
                 return false;
         }
 
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-
-        return leftIsWall && rightIsWall && downIsWall;
+        return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.right, Vector2Int.down);
     }
 }
 
@@ -39,26 +110,24 @@ public class TopRightWallToTripleCornerExceptUp : IWallOverrideCase
 
 #region TopLeft Wall Cases
 
-public class TopLeftWallToTripleCornerCase : IWallOverrideCase
+/// <summary>
+/// Override case for converting a TopLeft wall to a TripleWallCornerExceptUp.
+/// </summary>
+public class TopLeftWallToTripleCornerCase : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptUp;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.TopLeft;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptUp;
 
-    public bool IsMatch(
+    protected override bool Matches(
         Vector2Int position,
         HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
+        HashSet<Vector2Int> allWallPositions
     )
     {
-        if (originalWallPosition != WallPosition.TopLeft)
-            return false;
-
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-
-        return leftIsWall && upIsFloor && rightIsWall && downIsWall;
+        return allWallPositions.IsWall(position + Vector2Int.left) &&
+               floorPositions.IsFloor(position + Vector2Int.up) &&
+               allWallPositions.IsWall(position + Vector2Int.right) &&
+               allWallPositions.IsWall(position + Vector2Int.down);
     }
 }
 
@@ -66,87 +135,72 @@ public class TopLeftWallToTripleCornerCase : IWallOverrideCase
 
 #region BottomRight Wall Cases
 
-public class BottomRightWallToTripleWallCornerExceptRight : IWallOverrideCase
+/// <summary>
+/// Override case for converting a BottomRight wall to a TripleWallCornerExceptRight.
+/// </summary>
+public class BottomRightWallToTripleWallCornerExceptRight : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptRight;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.BottomRight;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptRight;
 
-    public bool IsMatch(
+    protected override bool Matches(
         Vector2Int position,
         HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
+        HashSet<Vector2Int> allWallPositions
     )
     {
-        if (originalWallPosition != WallPosition.BottomRight)
-            return false;
-
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-
+        var rightIsWall = allWallPositions.IsWall(position + Vector2Int.right);
         if (!rightIsWall)
         {
-            var diagonalDownLeft = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.left);
-            var diagonalDownRight = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
-
+            var diagonalDownLeft = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.left);
+            var diagonalDownRight = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right);
             if (diagonalDownLeft || diagonalDownRight)
                 return false;
         }
 
-        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-
-
-        return upIsWall && leftIsWall && downIsWall;
+        return allWallPositions.IsWall(position + Vector2Int.up) &&
+               allWallPositions.IsWall(position + Vector2Int.left) &&
+               allWallPositions.IsWall(position + Vector2Int.down);
     }
 }
 
-public class BottomRightWallToTripleWallCornerExceptDown : IWallOverrideCase
+/// <summary>
+/// Override case for converting a BottomRight wall to a TripleWallCornerExceptDown.
+/// </summary>
+public class BottomRightWallToTripleWallCornerExceptDown : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptDown;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.BottomRight;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptDown;
 
-    public bool IsMatch(
+    protected override bool Matches(
         Vector2Int position,
         HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
+        HashSet<Vector2Int> allWallPositions
     )
     {
-        if (originalWallPosition != WallPosition.BottomRight)
+        if (!floorPositions.IsFloor(position + Vector2Int.down))
             return false;
 
-        var downIsFloor = floorPositions.Contains(position + Vector2Int.down);
-
-        if (!downIsFloor) return false;
-
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-
-        return leftIsWall && upIsWall && rightIsWall;
+        return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.up, Vector2Int.right);
     }
 }
 
-public class BottomRightWallToAllWallCorner : IWallOverrideCase
+/// <summary>
+/// Override case for converting a BottomRight wall to an AllWallCorner.
+/// </summary>
+public class BottomRightWallToAllWallCorner : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.AllWallCorner;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.BottomRight;
+    public override WallPosition OverrideWallPosition => WallPosition.AllWallCorner;
 
-    public bool IsMatch(
+    protected override bool Matches(
         Vector2Int position,
         HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
+        HashSet<Vector2Int> allWallPositions
     )
     {
-        if (originalWallPosition != WallPosition.BottomRight)
-            return false;
-
-        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-
-
-        return upIsWall && rightIsWall && downIsWall && leftIsWall;
+        return TileHelper.AreWalls(position, allWallPositions, Vector2Int.up, Vector2Int.right, Vector2Int.down,
+            Vector2Int.left);
     }
 }
 
@@ -154,93 +208,74 @@ public class BottomRightWallToAllWallCorner : IWallOverrideCase
 
 #region BottomLeft Wall Cases
 
-public class BottomLeftWallToTripleWallCornerExceptDown : IWallOverrideCase
+/// <summary>
+/// Override case for converting a BottomLeft wall to a TripleWallCornerExceptDown.
+/// </summary>
+public class BottomLeftWallToTripleWallCornerExceptDown : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptDown;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.BottomLeft;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptDown;
 
-    public bool IsMatch(
+    protected override bool Matches(
         Vector2Int position,
         HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
+        HashSet<Vector2Int> allWallPositions
     )
     {
-        if (originalWallPosition != WallPosition.BottomLeft)
-            return false;
-
-        var downIsFloor = floorPositions.Contains(position + Vector2Int.down);
-
-        if (!downIsFloor)
+        if (!floorPositions.IsFloor(position + Vector2Int.down))
         {
-            var diagonalUpRightIsFloor = floorPositions.Contains(position + Vector2Int.up + Vector2Int.right);
-            var diagonalUpLeftIsWall = allWallPositions.Contains(position + Vector2Int.up + Vector2Int.left);
-
+            var diagonalUpRightIsFloor = floorPositions.IsFloor(position + Vector2Int.up + Vector2Int.right);
+            var diagonalUpLeftIsWall = allWallPositions.IsWall(position + Vector2Int.up + Vector2Int.left);
             if (!(diagonalUpRightIsFloor && !diagonalUpLeftIsWall))
                 return false;
         }
 
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-
-        return leftIsWall && upIsWall && rightIsWall;
+        return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.up, Vector2Int.right);
     }
 }
 
-public class BottomLeftWallToTripleWallCornerExceptLeft : IWallOverrideCase
+/// <summary>
+/// Override case for converting a BottomLeft wall to a TripleWallCornerExceptLeft.
+/// </summary>
+public class BottomLeftWallToTripleWallCornerExceptLeft : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptLeft;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.BottomLeft;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptLeft;
 
-    public bool IsMatch(
+    protected override bool Matches(
         Vector2Int position,
         HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
+        HashSet<Vector2Int> allWallPositions
     )
     {
-        if (originalWallPosition != WallPosition.BottomLeft)
-            return false;
-
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-
-        if (!leftIsWall)
+        if (!allWallPositions.IsWall(position + Vector2Int.left))
         {
-            var diagonalDownLeft = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.left);
-            var diagonalDownRight = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
-
+            var diagonalDownLeft = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.left);
+            var diagonalDownRight = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right);
             if (diagonalDownLeft || diagonalDownRight)
                 return false;
         }
 
-        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-
-
-        return upIsWall && rightIsWall && downIsWall;
+        return TileHelper.AreWalls(position, allWallPositions, Vector2Int.up, Vector2Int.right, Vector2Int.down);
     }
 }
 
-public class BottomLeftWallToAllWallCorner : IWallOverrideCase
+/// <summary>
+/// Override case for converting a BottomLeft wall to an AllWallCorner.
+/// </summary>
+public class BottomLeftWallToAllWallCorner : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.AllWallCorner;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.BottomLeft;
+    public override WallPosition OverrideWallPosition => WallPosition.AllWallCorner;
 
-    public bool IsMatch(
+    protected override bool Matches(
         Vector2Int position,
         HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
+        HashSet<Vector2Int> allWallPositions
     )
     {
-        if (originalWallPosition != WallPosition.BottomLeft)
-            return false;
-
-        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-
-        return upIsWall && rightIsWall && downIsWall && leftIsWall;
+        return TileHelper.AreWalls(position, allWallPositions, Vector2Int.up, Vector2Int.right, Vector2Int.down,
+            Vector2Int.left);
     }
 }
 
@@ -248,78 +283,63 @@ public class BottomLeftWallToAllWallCorner : IWallOverrideCase
 
 #region Up Wall Cases
 
-//None
+// None
 
 #endregion
 
 #region Right Wall Cases
 
-public class RightWallToTopLeftCase : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Right wall to a TopLeft wall.
+/// </summary>
+public class RightWallToTopLeftCase : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TopLeft;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Right;
+    public override WallPosition OverrideWallPosition => WallPosition.TopLeft;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Right)
-            return false;
-
-        bool leftIsFloor = floorPositions.Contains(position + Vector2Int.left);
-        bool upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        bool rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        bool downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-
-        return leftIsFloor && upIsFloor && rightIsWall && downIsWall;
+        return floorPositions.IsFloor(position + Vector2Int.left) &&
+               floorPositions.IsFloor(position + Vector2Int.up) &&
+               allWallPositions.IsWall(position + Vector2Int.right) &&
+               allWallPositions.IsWall(position + Vector2Int.down);
     }
 }
 
-public class RightWallToDownCase : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Right wall to a Down wall.
+/// </summary>
+public class RightWallToDownCase : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.Down;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Right;
+    public override WallPosition OverrideWallPosition => WallPosition.Down;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Right)
-            return false;
-
-        var leftIsFloor = floorPositions.Contains(position + Vector2Int.left);
-        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        var downIsFloor = floorPositions.Contains(position + Vector2Int.down);
-
-        return leftIsFloor && upIsFloor && rightIsWall && downIsFloor;
+        return floorPositions.IsFloor(position + Vector2Int.left) &&
+               floorPositions.IsFloor(position + Vector2Int.up) &&
+               allWallPositions.IsWall(position + Vector2Int.right) &&
+               floorPositions.IsFloor(position + Vector2Int.down);
     }
 }
 
-public class RightWallToBottomLeftCase : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Right wall to a BottomLeft wall.
+/// </summary>
+public class RightWallToBottomLeftCase : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.BottomLeft;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Right;
+    public override WallPosition OverrideWallPosition => WallPosition.BottomLeft;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Right)
-            return false;
-
-        bool leftIsFloor = floorPositions.Contains(position + Vector2Int.left);
-        bool upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        bool rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        bool downIsFloor = floorPositions.Contains(position + Vector2Int.down);
-
-        return leftIsFloor && upIsWall && rightIsWall && downIsFloor;
+        return floorPositions.IsFloor(position + Vector2Int.left) &&
+               allWallPositions.IsWall(position + Vector2Int.up) &&
+               allWallPositions.IsWall(position + Vector2Int.right) &&
+               floorPositions.IsFloor(position + Vector2Int.down);
     }
 }
 
@@ -327,54 +347,42 @@ public class RightWallToBottomLeftCase : IWallOverrideCase
 
 #region Down Wall Cases
 
-public class DownWallToTripleWallCornerExceptUp : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Down wall to a TripleWallCornerExceptUp.
+/// </summary>
+public class DownWallToTripleWallCornerExceptUp : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptUp;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Down;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptUp;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Down)
+        if (allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.left) ||
+            allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right))
             return false;
 
-        var diagonalDownLeft = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.left);
-        var diagonalDownRight = allWallPositions.Contains(position + Vector2Int.down + Vector2Int.right);
-
-        if (diagonalDownLeft || diagonalDownRight)
-            return false;
-
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-
-        return leftIsWall && upIsFloor && rightIsWall && downIsWall;
+        return allWallPositions.IsWall(position + Vector2Int.left) &&
+               floorPositions.IsFloor(position + Vector2Int.up) &&
+               allWallPositions.IsWall(position + Vector2Int.right) &&
+               allWallPositions.IsWall(position + Vector2Int.down);
     }
 }
 
-public class DownWallToTripleWallCornerExceptDown : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Down wall to a TripleWallCornerExceptDown.
+/// </summary>
+public class DownWallToTripleWallCornerExceptDown : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptDown;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Down;
+    public override WallPosition OverrideWallPosition => WallPosition.TripleWallCornerExceptDown;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Down)
-            return false;
-
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        var rightIsWall = allWallPositions.Contains(position + Vector2Int.right);
-
-        return leftIsWall && upIsWall && rightIsWall;
+        return allWallPositions.IsWall(position + Vector2Int.left) &&
+               allWallPositions.IsWall(position + Vector2Int.up) &&
+               allWallPositions.IsWall(position + Vector2Int.right);
     }
 }
 
@@ -382,72 +390,57 @@ public class DownWallToTripleWallCornerExceptDown : IWallOverrideCase
 
 #region Left Wall Cases
 
-public class LeftWallToTopRightCase : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Left wall to a TopRight wall.
+/// </summary>
+public class LeftWallToTopRightCase : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.TopRight;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Left;
+    public override WallPosition OverrideWallPosition => WallPosition.TopRight;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Left)
-            return false;
-
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        var rightIsFloor = floorPositions.Contains(position + Vector2Int.right);
-        var downIsWall = allWallPositions.Contains(position + Vector2Int.down);
-
-        return leftIsWall && upIsFloor && rightIsFloor && downIsWall;
+        return allWallPositions.IsWall(position + Vector2Int.left) &&
+               floorPositions.IsFloor(position + Vector2Int.up) &&
+               floorPositions.IsFloor(position + Vector2Int.right) &&
+               allWallPositions.IsWall(position + Vector2Int.down);
     }
 }
 
-public class LeftWallToBottomRightCase : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Left wall to a BottomRight wall.
+/// </summary>
+public class LeftWallToBottomRightCase : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.BottomRight;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Left;
+    public override WallPosition OverrideWallPosition => WallPosition.BottomRight;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Left)
-            return false;
-
-        bool leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        bool upIsWall = allWallPositions.Contains(position + Vector2Int.up);
-        bool rightIsFloor = floorPositions.Contains(position + Vector2Int.right);
-        bool downIsFloor = floorPositions.Contains(position + Vector2Int.down);
-
-        return leftIsWall && upIsWall && rightIsFloor && downIsFloor;
+        return allWallPositions.IsWall(position + Vector2Int.left) &&
+               allWallPositions.IsWall(position + Vector2Int.up) &&
+               floorPositions.IsFloor(position + Vector2Int.right) &&
+               floorPositions.IsFloor(position + Vector2Int.down);
     }
 }
 
-public class LeftWallToDownCase : IWallOverrideCase
+/// <summary>
+/// Override case for converting a Left wall to a Down wall.
+/// </summary>
+public class LeftWallToDownCase : BaseWallOverrideCase
 {
-    public WallPosition OverrideWallPosition => WallPosition.Down;
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Left;
+    public override WallPosition OverrideWallPosition => WallPosition.Down;
 
-    public bool IsMatch(
-        Vector2Int position,
-        HashSet<Vector2Int> floorPositions,
-        HashSet<Vector2Int> allWallPositions,
-        WallPosition originalWallPosition
-    )
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
     {
-        if (originalWallPosition != WallPosition.Left)
-            return false;
-
-        var leftIsWall = allWallPositions.Contains(position + Vector2Int.left);
-        var upIsFloor = floorPositions.Contains(position + Vector2Int.up);
-        var rightIsFloor = floorPositions.Contains(position + Vector2Int.right);
-        var downIsFloor = floorPositions.Contains(position + Vector2Int.down);
-
-        return leftIsWall && upIsFloor && rightIsFloor && downIsFloor;
+        return allWallPositions.IsWall(position + Vector2Int.left) &&
+               floorPositions.IsFloor(position + Vector2Int.up) &&
+               floorPositions.IsFloor(position + Vector2Int.right) &&
+               floorPositions.IsFloor(position + Vector2Int.down);
     }
 }
 
