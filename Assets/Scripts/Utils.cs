@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Utility class providing helper methods.
@@ -11,27 +10,7 @@ public static class Utils
     /// </summary>
     public static readonly Vector2Int[] Directions =
     {
-        Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left
-    };
-
-    public static readonly Vector2Int[] DiagonalDirections =
-    {
-        new(1, 1),
-        new(1, -1),
-        new(-1, -1),
-        new(-1, 1)
-    };
-
-    public static List<Vector2Int> eightDirectionsList = new()
-    {
-        Vector2Int.up, 
-        new(1, 1),
-        Vector2Int.right, 
-        new(1, -1),
-        Vector2Int.down, 
-        new(-1, -1),
-        Vector2Int.left,
-        new(-1, 1)
+        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
     };
 
     /// <summary>

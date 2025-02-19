@@ -42,19 +42,11 @@ public class TilemapPainter : MonoBehaviour
     /// </summary>
     private Dictionary<TileBase, float> _walkableTilesProbabilities = new();
 
-
+    /// <summary>
+    /// List of wall tile bases. This allows for multiple wall tiles to be used.
+    /// </summary>
     //[SerializeField] private List<TileBase> wallTileBases;
-    [SerializeField] private TileBase wallTop,
-        wallSideLeft,
-        wallSideRight,
-        wallBottom,
-        wallFull,
-        wallInnerCornerDownLeft,
-        wallInnerCornerDownRight,
-        wallDiagonalCornerDownLeft,
-        wallDiagonalCornerDownRight,
-        wallDiagonalCornerUpLeft,
-        wallDiagonalCornerUpRight;
+    [SerializeField] private TileBase upWall, downWall, leftWall, rightWall;
 
     /// <summary>
     /// List of priorities corresponding to the wall tiles. The higher the priority, the more likely the tile will be chosen.
@@ -116,8 +108,8 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// Initializes the probabilities for wall tiles.
     /// </summary>
-    /*private void InitializeWallTilesProbabilities() =>
-        _wallTilesProbabilities = InitializeProbabilities(wallTileBases, wallTilesPriorities);*/
+    // private void InitializeWallTilesProbabilities() =>
+    //     _wallTilesProbabilities = InitializeProbabilities(wallTileBases, wallTilesPriorities);
 
     #endregion
 
@@ -145,54 +137,56 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// Renders the wall tiles at the specified positions.
     /// </summary>
-    /// <param name="tilePosition">Positions to render the wall tiles.</param>
-    /// <param name="neighborBinaryType"></param>
-    public void PaintSingleBasicWall(Vector2Int tilePosition, string neighborBinaryType)
+    /// <param name="tilesPositions">Positions to render the wall tiles.</param>
+    public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, string position)
     {
-        int typeAsInt = System.Convert.ToInt32(neighborBinaryType, 2);
-
-        TileBase wallTile = null;
-
-        if (WallTypesHelper.wallTop.Contains(typeAsInt))
+        //paint
+        if (position == "down")
         {
-            wallTile = wallTop;
+            foreach (var pos in tilesPositions)
+            {
+                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
+                wallTilemap.SetTile(tilePosition, downWall);
+            }
         }
-        else if (WallTypesHelper.wallSideLeft.Contains(typeAsInt))
+        else if (position == "up")
         {
-            wallTile = wallSideLeft;
+            foreach (var pos in tilesPositions)
+            {
+                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
+                wallTilemap.SetTile(tilePosition, upWall);
+            }
         }
-        else if (WallTypesHelper.wallSideRight.Contains(typeAsInt))
+        else if (position == "left")
         {
-            wallTile = wallSideRight;
+            foreach (var pos in tilesPositions)
+            {
+                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
+                wallTilemap.SetTile(tilePosition, leftWall);
+            }
         }
-        else if (WallTypesHelper.wallBottm.Contains(typeAsInt))
+        else if (position == "right")
         {
-            wallTile = wallBottom;
+            foreach (var pos in tilesPositions)
+            {
+                var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
+                wallTilemap.SetTile(tilePosition, rightWall);
+            }
         }
-        else if (WallTypesHelper.wallFull.Contains(typeAsInt))
-        {
-            wallTile = wallFull;
-        }
-
-        if (wallTile != null) PaintSingleTile(wallTilemap, wallTile, tilePosition);
-
-
-        /*InitializeWallTilesProbabilities();
-
-        if (randomWallTilesPlacement)
-        {
-            PaintTilesRandomly(tilesPositions, wallTilemap, wallTileBases);
-        }
-        else
-        {
-            PaintTilesWithProbabilities(tilesPositions, wallTilemap, wallTileBases, _wallTilesProbabilities);
-        }*/
-    }
-
-    private void PaintSingleTile(Tilemap tilemap, TileBase tile, Vector2Int position)
-    {
-        var tilePosition = tilemap.WorldToCell((Vector3Int)position);
-        tilemap.SetTile(tilePosition, tile);
+       
+        
+        
+        
+        // InitializeWallTilesProbabilities();
+        //
+        // if (randomWallTilesPlacement)
+        // {
+        //     PaintTilesRandomly(tilesPositions, wallTilemap, wallTileBases);
+        // }
+        // else
+        // {
+        //     PaintTilesWithProbabilities(tilesPositions, wallTilemap, wallTileBases, _wallTilesProbabilities);
+        // }
     }
 
     /// <summary>
@@ -376,8 +370,7 @@ public class TilemapPainter : MonoBehaviour
         }
         else
         {
-            //TODO ARREGLAR
-            //RemoveTileAtIndex(position, wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
+            // RemoveTileAtIndex(position, wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
         }
     }
 
@@ -404,9 +397,8 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// Removes all wall tiles from the collection.
     /// </summary>
-    /// TODO ARREGLAR CON LAS WALLS
-    public void RemoveAllWallTiles() =>
-        ClearTileCollections(walkableTileBases, wallTilesPriorities, _wallTilesProbabilities);
+    // public void RemoveAllWallTiles() =>
+    //     ClearTileCollections(wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
 
     /// <summary>
     /// Loads tiles from .asset files located in a directory, updating the corresponding collection.
@@ -449,54 +441,11 @@ public class TilemapPainter : MonoBehaviour
         }
         else
         {
-            //TODO ARREGLAR CON LAS WALLS BASES
-            //SelectTilesFromFolder(wallTileBases, wallTilesPriorities, _wallTilesProbabilities, path);
+            // SelectTilesFromFolder(wallTileBases, wallTilesPriorities, _wallTilesProbabilities, path);
         }
     }
 
     #endregion
-
-    public void PaintSingleCornerWall(Vector2Int pos, string bynaryType)
-    {
-        var typeAsInt = System.Convert.ToInt32(bynaryType, 2);
-        TileBase tile = null;
-        
-        if (WallTypesHelper.wallInnerCornerDownLeft.Contains(typeAsInt))
-        {
-            tile = wallInnerCornerDownLeft;
-        }
-        else if (WallTypesHelper.wallInnerCornerDownRight.Contains(typeAsInt))
-        {
-            tile = wallInnerCornerDownRight;
-        }
-        else if (WallTypesHelper.wallDiagonalCornerDownLeft.Contains(typeAsInt))
-        {
-            tile = wallDiagonalCornerDownLeft;
-        }
-        else if (WallTypesHelper.wallDiagonalCornerDownRight.Contains(typeAsInt))
-        {
-            tile = wallDiagonalCornerDownRight;
-        }
-        else if (WallTypesHelper.wallDiagonalCornerUpLeft.Contains(typeAsInt))
-        {
-            tile = wallDiagonalCornerUpLeft;
-        }
-        else if (WallTypesHelper.wallDiagonalCornerUpRight.Contains(typeAsInt))
-        {
-            tile = wallDiagonalCornerUpRight;
-        }
-        else if (WallTypesHelper.wallFullEightDirections.Contains(typeAsInt))
-        {
-            tile = wallFull;
-        }
-        else if (WallTypesHelper.wallBottmEightDirections.Contains(typeAsInt))
-        {
-            tile = wallBottom;
-        }
-        
-        if (tile != null) PaintSingleTile(wallTilemap, tile, pos);
-
-    }
 }
 
 /// <summary>

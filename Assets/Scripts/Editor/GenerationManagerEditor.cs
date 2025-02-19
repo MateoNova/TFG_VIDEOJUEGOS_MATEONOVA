@@ -330,7 +330,8 @@ namespace Editor
                         }
                         else
                         {
-                            _currentGenerator.TilemapPainter.RemoveAllWallTiles();
+                            //todo 
+                            //_currentGenerator.TilemapPainter.RemoveAllWallTiles();
                         }
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
