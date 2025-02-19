@@ -1538,6 +1538,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
+      propertyPath: tripleWallCornerLeftTile
+      value: 
+      objectReference: {fileID: 11400000, guid: b2ccbe3ff2aab604eba0e65b7c33dfea, type: 2}
+    - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: wallDiagonalCornerUpLeft
       value: 
       objectReference: {fileID: 11400000, guid: fa0034d59c2e8da4ab39a0a0921414ad, type: 2}
