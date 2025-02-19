@@ -44,19 +44,26 @@ public class WallGenerator : MonoBehaviour
             { WallPosition.BottomRight, GetBottomRightCornerPositions(walkableTilesPositions) }
         };
 
+        // 1) aplicar overrides
+        ApplyWallOverrides(wallPositions, walkableTilesPositions);
+
+        // 2) Genera los “specialWallPositions” como siempre
         var specialWallPositions =
             GetSpecialWallPositions(walkableTilesPositions, wallPositions.Values.SelectMany(x => x).ToHashSet());
 
+        // 3) Pinta primero los muros “normales”
         foreach (var wallPosition in wallPositions)
         {
             tilemapPainter.PaintWallTiles(wallPosition.Value, wallPosition.Key);
         }
 
+        // 4) Pinta los muros especiales
         foreach (var specialWallPosition in specialWallPositions)
         {
             tilemapPainter.PaintSpecialWallTiles(specialWallPosition.Value, specialWallPosition.Key);
         }
     }
+
 
     private static HashSet<Vector2Int> GetWallsPositions(HashSet<Vector2Int> floorPositions)
     {
@@ -170,33 +177,80 @@ public class WallGenerator : MonoBehaviour
     public static Dictionary<SpecialWallPosition, HashSet<Vector2Int>> GetSpecialWallPositions(
         HashSet<Vector2Int> floorPositions, HashSet<Vector2Int> wallPositions)
     {
-        var specialWallPositions = new Dictionary<SpecialWallPosition, HashSet<Vector2Int>>
+        // Lista de casos especiales implementados
+        List<ISpecialWallCase> specialCases = new List<ISpecialWallCase>
         {
-            { SpecialWallPosition.TripleWallCornerLeft, new HashSet<Vector2Int>() },
-            { SpecialWallPosition.DownWall, new HashSet<Vector2Int>() }
+            new TripleWallCornerLeftCase(),
+            new DownWallCase(),
+            // Agrega aquí nuevas implementaciones cuando sea necesario
         };
 
+        // Inicializar el diccionario con los tipos de casos especiales
+        var specialWallPositions = specialCases
+            .Select(sc => sc.WallPosition)
+            .Distinct()
+            .ToDictionary(key => key, key => new HashSet<Vector2Int>());
+
+        // Recorrer cada posición del piso y aplicar cada caso especial
         foreach (var position in floorPositions)
         {
-            var leftPos = position + Vector2Int.left;
-            var downPos = position + Vector2Int.down;
-            var rightPos = position + Vector2Int.right;
-            var upPos = position + Vector2Int.up;
-
-            // Special case: TripleWallCornerLeft
-            if (floorPositions.Contains(leftPos) && floorPositions.Contains(downPos) &&
-                wallPositions.Contains(rightPos) && wallPositions.Contains(upPos))
+            foreach (var specialCase in specialCases)
             {
-                specialWallPositions[SpecialWallPosition.TripleWallCornerLeft].Add(position);
-            }
-
-            // Special case: DownWall
-            if (wallPositions.Contains(downPos))
-            {
-                specialWallPositions[SpecialWallPosition.TripleWallCornerLeft].Add(position);
+                if (specialCase.IsMatch(position, floorPositions, wallPositions))
+                {
+                    specialWallPositions[specialCase.WallPosition].Add(position);
+                }
             }
         }
 
         return specialWallPositions;
     }
+    
+    private static void ApplyWallOverrides(
+        Dictionary<WallPosition, HashSet<Vector2Int>> wallPositionsByType,
+        HashSet<Vector2Int> floorPositions
+    )
+    {
+        // Unimos todos los muros en un solo set para comprobar “allWallPositions.Contains(...)”
+        var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
+
+        // Lista de reglas de override que creamos arriba
+        List<IWallOverrideCase> overrides = new List<IWallOverrideCase>
+        {
+            new LeftWallToTopRightCase(),
+            new RightWallToTopLeftCase(),
+            new LeftWallToBottomRightCase(),
+            new RightWallToBottomLeftCase()
+        };
+
+        // Para no modificar los sets mientras iteramos, guardamos los cambios y luego los aplicamos
+        var changes = new List<(Vector2Int pos, WallPosition oldType, WallPosition newType)>();
+
+        // Recorremos cada tipo (Up, Down, Left, Right, etc.)
+        foreach (var wallType in wallPositionsByType.Keys.ToList())
+        {
+            // Recorremos cada posición que fue clasificada con ese tipo
+            foreach (var pos in wallPositionsByType[wallType])
+            {
+                // Probamos cada override
+                foreach (var overrideCase in overrides)
+                {
+                    if (overrideCase.IsMatch(pos, floorPositions, allWallPositions, wallType))
+                    {
+                        changes.Add((pos, wallType, overrideCase.OverrideWallPosition));
+                        break; // si ya matcheó una regla, no revisamos más
+                    }
+                }
+            }
+        }
+
+        // Aplicamos los cambios: quitamos la posición del set viejo y la agregamos al set nuevo
+        foreach (var (pos, oldType, newType) in changes)
+        {
+            wallPositionsByType[oldType].Remove(pos);
+            wallPositionsByType[newType].Add(pos);
+        }
+    }
+
+
 }
