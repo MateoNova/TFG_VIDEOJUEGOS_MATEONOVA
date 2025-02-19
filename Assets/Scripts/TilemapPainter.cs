@@ -62,25 +62,6 @@ public class TilemapPainter : MonoBehaviour
         tripleWallCornerExceptRight,
         allCornersWall;
 
-    /// <summary>
-    /// List of wall tile bases. This allows for multiple wall tiles to be used.
-    /// </summary>
-    //[SerializeField] private List<TileBase> wallTileBases;
-
-    /// <summary>
-    /// List of priorities corresponding to the wall tiles. The higher the priority, the more likely the tile will be chosen.
-    /// </summary>
-    [SerializeField] private List<int> wallTilesPriorities;
-
-    /// <summary>
-    /// Indicates if the wall tiles should be placed randomly.
-    /// </summary>
-    [SerializeField] private bool randomWallTilesPlacement;
-
-    /// <summary>
-    /// Dictionary of wall tiles and their probabilities. This is used to select tiles based on their assigned probabilities.
-    /// </summary>
-    private Dictionary<TileBase, float> _wallTilesProbabilities = new();
 
     public TilemapPainter(bool randomWalkableTilesPlacement)
     {
@@ -124,12 +105,6 @@ public class TilemapPainter : MonoBehaviour
     private void InitializeWalkableTilesProbabilities() =>
         _walkableTilesProbabilities = InitializeProbabilities(walkableTileBases, walkableTilesPriorities);
 
-    /// <summary>
-    /// Initializes the probabilities for wall tiles.
-    /// </summary>
-    // private void InitializeWallTilesProbabilities() =>
-    //     _wallTilesProbabilities = InitializeProbabilities(wallTileBases, wallTilesPriorities);
-
     #endregion
 
     #region Painting Methods
@@ -159,7 +134,7 @@ public class TilemapPainter : MonoBehaviour
     /// <param name="tilesPositions">Positions to render the wall tiles.</param>
     public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, Utils.WallPosition position)
     {
-        TileBase tile = position switch
+        var tile = position switch
         {
             Utils.WallPosition.Up => upWall,
             Utils.WallPosition.Down => downWall,
@@ -169,7 +144,7 @@ public class TilemapPainter : MonoBehaviour
             Utils.WallPosition.BottomLeft => bottomLeftWall,
             Utils.WallPosition.TopRight => topRightWall,
             Utils.WallPosition.BottomRight => bottomRightWall,
-            
+
             Utils.WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpTile,
             Utils.WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownTile,
             Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeft,
@@ -178,24 +153,13 @@ public class TilemapPainter : MonoBehaviour
             _ => null
         };
 
-        if (tile == null) return;
+        if (!tile) return;
 
         foreach (var pos in tilesPositions)
         {
             var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
             wallTilemap.SetTile(tilePosition, tile);
         }
-
-        // InitializeWallTilesProbabilities();
-        //
-        // if (randomWallTilesPlacement)
-        // {
-        //     PaintTilesRandomly(tilesPositions, wallTilemap, wallTileBases);
-        // }
-        // else
-        // {
-        //     PaintTilesWithProbabilities(tilesPositions, wallTilemap, wallTileBases, _wallTilesProbabilities);
-        // }
     }
 
     /// <summary>
@@ -379,6 +343,7 @@ public class TilemapPainter : MonoBehaviour
         }
         else
         {
+            //todo 
             // RemoveTileAtIndex(position, wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
         }
     }
@@ -406,8 +371,10 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// Removes all wall tiles from the collection.
     /// </summary>
-    // public void RemoveAllWallTiles() =>
-    //     ClearTileCollections(wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
+    public void RemoveAllWallTiles()
+    {
+        //todo 
+    }
 
     /// <summary>
     /// Loads tiles from .asset files located in a directory, updating the corresponding collection.
@@ -450,6 +417,7 @@ public class TilemapPainter : MonoBehaviour
         }
         else
         {
+            //todo 
             // SelectTilesFromFolder(wallTileBases, wallTilesPriorities, _wallTilesProbabilities, path);
         }
     }

@@ -137,7 +137,7 @@ public class WallGenerator : MonoBehaviour
             new BottomLeftWallToAllWallCorner(),
             new BottomRightWallToAllWallCorner(),
             new RightWallAloneToDownCase(),
-            new LeftWallAloneToDownCase(),
+            new LeftWallAloneToDownCase()
         };
 
         // Store changes without modifying sets while iterating.

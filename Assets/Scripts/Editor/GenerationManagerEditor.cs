@@ -250,8 +250,9 @@ namespace Editor
 
             DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities",
                 "Add floor tile", true, 0);
-            DrawTileGroupSettings(ref _wallScrollPosition, "wallTileBases", "wallTilesPriorities",
-                "Add wall tile", false, 1001);
+            //todo 
+            /*DrawTileGroupSettings(ref _wallScrollPosition, "wallTileBases", "wallTilesPriorities",
+                "Add wall tile", false, 1001);*/
         }
 
         /// <summary>
@@ -330,8 +331,8 @@ namespace Editor
                         }
                         else
                         {
-                            //todo 
-                            //_currentGenerator.TilemapPainter.RemoveAllWallTiles();
+                            
+                            _currentGenerator.TilemapPainter.RemoveAllWallTiles();
                         }
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
