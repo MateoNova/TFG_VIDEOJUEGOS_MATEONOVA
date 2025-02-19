@@ -365,6 +365,22 @@ public class RightWallAloneToDownCase : BaseWallOverrideCase
 #region Down Wall Cases
 
 /// <summary>
+/// Override case for converting a Down wall to a Up wall.
+/// </summary>
+public class DownWallToUpCase : BaseWallOverrideCase
+{
+    protected override WallPosition ExpectedOriginalWall => WallPosition.Down;
+    public override WallPosition OverrideWallPosition => WallPosition.Up;
+
+    protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+        HashSet<Vector2Int> allWallPositions)
+    {
+        return floorPositions.IsFloor(position + Vector2Int.down);
+    }
+}
+
+
+/// <summary>
 /// Override case for converting a Down wall to a TripleWallCornerExceptUp.
 /// </summary>
 public class DownWallToTripleWallCornerExceptUp : BaseWallOverrideCase

@@ -217,6 +217,7 @@ public class WallGenerator : MonoBehaviour
         // Lista de reglas de override que creamos arriba
         List<IWallOverrideCase> overrides = new List<IWallOverrideCase>
         {
+            new DownWallToUpCase(),
             new LeftWallToTopRightCase(),
             new RightWallToTopLeftCase(),
             new LeftWallToBottomRightCase(),
