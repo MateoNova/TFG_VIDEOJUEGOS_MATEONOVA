@@ -562,6 +562,14 @@ PrefabInstance:
       propertyPath: tripleWallCornerExcetDownTile
       value: 
       objectReference: {fileID: 11400000, guid: fe32bb20afcacdf47bd536ea17ad6367, type: 2}
+    - target: {fileID: 6783033978706914759, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
+      propertyPath: maxRoomSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6783033978706914759, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
+      propertyPath: maxIterations
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
