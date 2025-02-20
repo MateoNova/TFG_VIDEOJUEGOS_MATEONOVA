@@ -303,6 +303,7 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions)
         {
             return floorPositions.IsFloor(position + Vector2Int.left) &&
+                   floorPositions.IsFloor(position + Vector2Int.up) &&
                    allWallPositions.IsWall(position + Vector2Int.right) &&
                    allWallPositions.IsWall(position + Vector2Int.down);
         }
@@ -339,7 +340,8 @@ namespace SpecialCases
         {
             return floorPositions.IsFloor(position + Vector2Int.left) &&
                    allWallPositions.IsWall(position + Vector2Int.up) &&
-                   allWallPositions.IsWall(position + Vector2Int.right);
+                   allWallPositions.IsWall(position + Vector2Int.right) &&
+                   floorPositions.IsFloor(position + Vector2Int.down);
         }
     }
 
@@ -452,6 +454,7 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions)
         {
             return allWallPositions.IsWall(position + Vector2Int.left) &&
+                   floorPositions.IsFloor(position + Vector2Int.up) &&
                    floorPositions.IsFloor(position + Vector2Int.right) &&
                    allWallPositions.IsWall(position + Vector2Int.down);
         }
@@ -470,7 +473,8 @@ namespace SpecialCases
         {
             return allWallPositions.IsWall(position + Vector2Int.left) &&
                    allWallPositions.IsWall(position + Vector2Int.up) &&
-                   floorPositions.IsFloor(position + Vector2Int.right);
+                   floorPositions.IsFloor(position + Vector2Int.right) &&
+                   floorPositions.IsFloor(position + Vector2Int.down);
         }
     }
 
