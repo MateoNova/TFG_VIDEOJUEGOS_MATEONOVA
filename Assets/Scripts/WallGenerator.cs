@@ -52,7 +52,12 @@ public class WallGenerator : MonoBehaviour
             { Utils.WallPosition.TripleWallCornerExceptLeft, new HashSet<Vector2Int>() },
             { Utils.WallPosition.TripleWallCornerExceptRight, new HashSet<Vector2Int>() },
             { Utils.WallPosition.AllWallCorner, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.TripleWallCornerLeft, new HashSet<Vector2Int>() }
+            { Utils.WallPosition.TripleWallCornerLeft, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TopLeftInner, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TopRightInner, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.BottomLeftInner, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.BottomRightInner, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.Alone, new HashSet<Vector2Int>() }
         };
 
         return wallPositions;
@@ -120,10 +125,10 @@ public class WallGenerator : MonoBehaviour
         var overrideRules = new List<IWallOverrideCase>
         {
             new DownWallToUpCase(),
-            new LeftWallToTopRightCase(),
-            new RightWallToTopLeftCase(),
-            new LeftWallToBottomRightCase(),
-            new RightWallToBottomLeftCase(),
+            new LeftWallToTopRightInnerCase(),
+            new RightWallToTopLeftInnerCase(),
+            new LeftWallToBottomRightInnerCase(),
+            new RightWallToBottomLeftInnerCase(),
             new RightWallToDownCase(),
             new LeftWallToDownCase(),
             new TopRightWallToTripleCornerExceptUp(),
@@ -137,7 +142,8 @@ public class WallGenerator : MonoBehaviour
             new BottomLeftWallToAllWallCorner(),
             new BottomRightWallToAllWallCorner(),
             new RightWallAloneToDownCase(),
-            new LeftWallAloneToDownCase()
+            new LeftWallAloneToDownCase(),
+            new RightWallToAloneCase()
         };
 
         // Store changes without modifying sets while iterating.

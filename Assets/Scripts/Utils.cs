@@ -21,7 +21,12 @@ public static class Utils
         TripleWallCornerExceptLeft,
         TripleWallCornerExceptRight,
         AllWallCorner,
-        TripleWallCornerLeft
+        TripleWallCornerLeft,
+        TopLeftInner,
+        TopRightInner,
+        BottomLeftInner,
+        BottomRightInner,
+        Alone
     }
     
     

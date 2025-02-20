@@ -60,7 +60,12 @@ public class TilemapPainter : MonoBehaviour
         tripleWallCornerExcetDownTile,
         tripleWallCornerExceptLeft,
         tripleWallCornerExceptRight,
-        allCornersWall;
+        allCornersWall,
+        topLeftInnerWall,
+        topRightInner,
+        bottomLeftInnerWall,
+        bottomRightInnerWall,
+        aloneWall;
 
 
     public TilemapPainter(bool randomWalkableTilesPlacement)
@@ -150,6 +155,11 @@ public class TilemapPainter : MonoBehaviour
             Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeft,
             Utils.WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRight,
             Utils.WallPosition.AllWallCorner => allCornersWall,
+            Utils.WallPosition.TopLeftInner => topLeftInnerWall,
+            Utils.WallPosition.TopRightInner => topRightInner,
+            Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
+            Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
+            Utils.WallPosition.Alone => aloneWall,
             _ => null
         };
 

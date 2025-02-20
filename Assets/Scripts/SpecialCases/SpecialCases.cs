@@ -294,10 +294,10 @@ namespace SpecialCases
     /// <summary>
     /// Override case for converting a Right wall to a TopLeft wall.
     /// </summary>
-    public class RightWallToTopLeftCase : BaseWallOverrideCase
+    public class RightWallToTopLeftInnerCase : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TopLeft;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TopLeftInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -330,10 +330,10 @@ namespace SpecialCases
     /// <summary>
     /// Override case for converting a Right wall to a BottomLeft wall.
     /// </summary>
-    public class RightWallToBottomLeftCase : BaseWallOverrideCase
+    public class RightWallToBottomLeftInnerCase : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.BottomLeft;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.BottomLeftInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -360,6 +360,22 @@ namespace SpecialCases
                    floorPositions.IsFloor(position + Vector2Int.up) &&
                    floorPositions.IsFloor(position + Vector2Int.right) &&
                    floorPositions.IsFloor(position + Vector2Int.down);
+        }
+    }
+
+    /// <summary>
+    /// Override case for converting a Right wall to an Alone wall.
+    /// </summary>
+    public class RightWallToAloneCase : BaseWallOverrideCase
+    {
+        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.Alone;
+
+        protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
+            HashSet<Vector2Int> allWallPositions)
+        {
+            return floorPositions.IsFloor(position + Vector2Int.left) &&
+                   floorPositions.IsFloor(position + Vector2Int.right);
         }
     }
 
@@ -429,10 +445,10 @@ namespace SpecialCases
     /// <summary>
     /// Override case for converting a Left wall to a TopRight wall.
     /// </summary>
-    public class LeftWallToTopRightCase : BaseWallOverrideCase
+    public class LeftWallToTopRightInnerCase : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Left;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TopRight;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TopRightInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -447,10 +463,10 @@ namespace SpecialCases
     /// <summary>
     /// Override case for converting a Left wall to a BottomRight wall.
     /// </summary>
-    public class LeftWallToBottomRightCase : BaseWallOverrideCase
+    public class LeftWallToBottomRightInnerCase : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Left;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.BottomRight;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.BottomRightInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
