@@ -97,15 +97,31 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
-            if (!floorPositions.IsFloor(position + Vector2Int.up))
+            if (!floorPositions.IsFloor(position + Vector2Int.up) || allWallPositions.IsWall(position + Vector2Int.up))
             {
                 var diagonalDownLeftIsFloor = floorPositions.IsFloor(position + Vector2Int.down + Vector2Int.left);
                 var diagonalDownRightIsWall = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right);
-                if (!(diagonalDownLeftIsFloor && !diagonalDownRightIsWall))
+                if (diagonalDownLeftIsFloor && diagonalDownRightIsWall)
                     return false;
             }
 
             return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.right, Vector2Int.down);
+        }
+    }
+    
+    public class TopRightWallToTripleCornerExceptRightInner : BaseWallOverrideCase
+    {
+        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopRight;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptRightInner;
+
+        protected override bool Matches(
+            Vector2Int position,
+            HashSet<Vector2Int> floorPositions,
+            HashSet<Vector2Int> allWallPositions
+        )
+        {
+            return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.down, Vector2Int.up) && 
+                   floorPositions.IsFloor(position + Vector2Int.right);
         }
     }
 
@@ -120,10 +136,18 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
+            var allDiagonalsAreFloor = TileHelper.AreFloors(position, floorPositions, Vector2Int.up + Vector2Int.left,
+                Vector2Int.up + Vector2Int.right, Vector2Int.down + Vector2Int.left,
+                Vector2Int.down + Vector2Int.right);
+            if (!allDiagonalsAreFloor)
+                return false;
+
             return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.up, Vector2Int.right,
                 Vector2Int.down);
         }
     }
+    
+    
 
     #endregion
 
@@ -145,9 +169,9 @@ namespace SpecialCases
         {
             var leftdowndiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.left + Vector2Int.down);
             var leftupdiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.left + Vector2Int.up);
-            if (!leftdowndiagonalisfloor || !leftupdiagonalisfloor)
+            if (!leftdowndiagonalisfloor && !leftupdiagonalisfloor)
                 return false;
-                
+
 
             return allWallPositions.IsWall(position + Vector2Int.left) &&
                    floorPositions.IsFloor(position + Vector2Int.up) &&
@@ -167,6 +191,13 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
+            
+            var allDiagonalsAreFloor = TileHelper.AreFloors(position, floorPositions, Vector2Int.up + Vector2Int.left,
+                Vector2Int.up + Vector2Int.right, Vector2Int.down + Vector2Int.left,
+                Vector2Int.down + Vector2Int.right);
+            if (!allDiagonalsAreFloor)
+                return false;
+            
             return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.up, Vector2Int.right,
                 Vector2Int.down);
         }
@@ -215,15 +246,25 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
-            /*var rightIsWall = allWallPositions.IsWall(position + Vector2Int.right);
+            if (!floorPositions.IsFloor(position + Vector2Int.right))
+                return false;
+            
+            var leftupdiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.left + Vector2Int.up);
+            var leftdowndiagonalisFloor = floorPositions.IsFloor(position + Vector2Int.left + Vector2Int.down);
+
+            if (!(leftupdiagonalisfloor || leftdowndiagonalisFloor)) return false;
+            
+            var rightIsWall = allWallPositions.IsWall(position + Vector2Int.right);
 
             if (!rightIsWall)
             {
-                var diagonalDownLeft = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.left);
-                var diagonalDownRight = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right);
-                if (diagonalDownLeft || diagonalDownRight)
+                var diagonalDownLeftisFloor = floorPositions.IsFloor(position + Vector2Int.down + Vector2Int.left);
+                var diagonalDownRightisFloor = floorPositions.IsFloor(position + Vector2Int.down + Vector2Int.right);
+                var diagonalDownLeftisWall = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.left);
+                var diagonalDownRightisWall = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right);
+                if (!(diagonalDownLeftisFloor || diagonalDownRightisFloor || (!diagonalDownLeftisWall && diagonalDownRightisWall)))
                     return false;
-            }*/
+            }
 
             return TileHelper.AreWalls(position, allWallPositions, Vector2Int.left, Vector2Int.up, Vector2Int.down);
         }
@@ -243,6 +284,9 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
+            if (allWallPositions.IsWall(position + Vector2Int.down))
+                return false;
+            
             if (!floorPositions.IsFloor(position + Vector2Int.down))
                 return false;
 
@@ -264,6 +308,14 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
+            var leftUpIsFloor = floorPositions.IsFloor(position + Vector2Int.left + Vector2Int.up);
+            var leftDownIsFloor = floorPositions.IsFloor(position + Vector2Int.left + Vector2Int.down);
+            var rightUpIsFloor = floorPositions.IsFloor(position + Vector2Int.right + Vector2Int.up);
+            var rightDownIsFloor = floorPositions.IsFloor(position + Vector2Int.right + Vector2Int.down);
+
+            if (!(leftUpIsFloor && leftDownIsFloor && rightUpIsFloor && rightDownIsFloor))
+                return false;
+
             return TileHelper.AreWalls(position, allWallPositions, Vector2Int.up, Vector2Int.right, Vector2Int.down,
                 Vector2Int.left);
         }
@@ -287,6 +339,11 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
+            var leftupdiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.left + Vector2Int.up);
+            var rightupdiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.right + Vector2Int.up);
+            if (!(leftupdiagonalisfloor || rightupdiagonalisfloor))
+                return false;
+
             if (!floorPositions.IsFloor(position + Vector2Int.down))
             {
                 var diagonalUpRightIsFloor = floorPositions.IsFloor(position + Vector2Int.up + Vector2Int.right);
@@ -313,13 +370,25 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
-            /*if (!allWallPositions.IsWall(position + Vector2Int.left))
+            var downrightdiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.down + Vector2Int.right);
+            var downLeftdiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.down + Vector2Int.left);
+            var uprightdiagonalisfloor = floorPositions.IsFloor(position + Vector2Int.up + Vector2Int.right);
+            var leftisfloor = floorPositions.IsFloor(position + Vector2Int.left);
+            var downIsFloot = floorPositions.IsFloor(position + Vector2Int.down);
+            
+            if (!downrightdiagonalisfloor && !downLeftdiagonalisfloor && !leftisfloor && !downIsFloot)
+                return false;
+            
+            if (!downrightdiagonalisfloor && !uprightdiagonalisfloor)
+                return false; 
+            
+            if (!allWallPositions.IsWall(position + Vector2Int.left))
             {
                 var diagonalDownLeft = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.left);
                 var diagonalDownRight = allWallPositions.IsWall(position + Vector2Int.down + Vector2Int.right);
-                if (diagonalDownLeft || diagonalDownRight)
+                if ((diagonalDownLeft || diagonalDownRight) && !leftisfloor)
                     return false;
-            }*/
+            }
 
             return TileHelper.AreWalls(position, allWallPositions, Vector2Int.up, Vector2Int.right, Vector2Int.down);
         }
@@ -339,6 +408,12 @@ namespace SpecialCases
             HashSet<Vector2Int> allWallPositions
         )
         {
+            var alldiagonalsarefloor = TileHelper.AreFloors(position, floorPositions, Vector2Int.up + Vector2Int.left,
+                Vector2Int.up + Vector2Int.right, Vector2Int.down + Vector2Int.left,
+                Vector2Int.down + Vector2Int.right);
+            if (!alldiagonalsarefloor)
+                return false;
+            
             return TileHelper.AreWalls(position, allWallPositions, Vector2Int.up, Vector2Int.right, Vector2Int.down,
                 Vector2Int.left);
         }

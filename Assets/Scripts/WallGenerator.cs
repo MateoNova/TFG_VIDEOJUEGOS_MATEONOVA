@@ -151,6 +151,7 @@ public class WallGenerator : MonoBehaviour
             new RightWallToTripleWallCornerExceptLeftInnerCase(),
             new RightWallToTripleWallCornerExceptRightInnerCase(),
             new TopLeftWallAllCornerCase(),
+            new TopRightWallToTripleCornerExceptRightInner()
         };
 
         // Store changes without modifying sets while iterating.
