@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 /// </summary>
 public static class Utils
 {
-    
     public enum WallPosition
     {
         Up,
@@ -33,8 +32,8 @@ public static class Utils
         TripleWallCornerExceptLeftInner,
         TripleWallCornerExceptRightInner
     }
-    
-    
+
+
     /// <summary>
     /// Array of cardinal directions (up, down, left, right).
     /// </summary>
@@ -96,5 +95,14 @@ public static class Utils
         var conditionValue = (bool)conditionField.GetValue(targetObject);
 
         return conditionValue;
+    }
+
+    public static GUIStyle getSectionTitleStyle()
+    {
+        return new GUIStyle(EditorStyles.foldout)
+        {
+            fontSize = 16,
+            fontStyle = FontStyle.Bold
+        };
     }
 }
