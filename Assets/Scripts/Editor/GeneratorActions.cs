@@ -99,10 +99,10 @@ namespace Editor
         /// </summary>
         private void Generate()
         {
-            if (_generatorSelection._currentGenerator)
+            if (_generatorSelection.CurrentGenerator)
             {
-                _generatorSelection._currentGenerator.RunGeneration(_clearDungeon,
-                    _generatorSelection._currentGenerator.Origin);
+                _generatorSelection.CurrentGenerator.RunGeneration(_clearDungeon,
+                    _generatorSelection.CurrentGenerator.Origin);
             }
             else
             {
@@ -115,7 +115,7 @@ namespace Editor
         /// </summary>
         private void ClearDungeon()
         {
-            _generatorSelection._currentGenerator?.ClearDungeon();
+            _generatorSelection.CurrentGenerator?.ClearDungeon();
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Editor
             if (string.IsNullOrEmpty(path))
                 return;
 
-            _generatorSelection._currentGenerator.SaveDungeon(path);
+            _generatorSelection.CurrentGenerator.SaveDungeon(path);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Editor
             var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
             if (!string.IsNullOrEmpty(path))
             {
-                _generatorSelection._currentGenerator.LoadDungeon(path);
+                _generatorSelection.CurrentGenerator.LoadDungeon(path);
             }
         }
 

@@ -1,55 +1,46 @@
-﻿using Editor;
-using UnityEditor;
+﻿using UnityEditor;
 
-public class GeneratorSettings
+namespace Editor
 {
-    
-    private bool _showGeneratorSettings = true;
-
-    private GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
-
-    private static GeneratorSettings _instance;
-    public static GeneratorSettings Instance
+    public class GeneratorSettings
     {
-        get
+        private bool _showGeneratorSettings = true;
+
+        private readonly GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
+
+        private static GeneratorSettings _instance;
+
+        public static GeneratorSettings Instance => _instance ??= new GeneratorSettings();
+
+        public void Draw()
         {
-            if (_instance == null)
+            _showGeneratorSettings = EditorGUILayout.Foldout(_showGeneratorSettings, "Generator Settings", true);
+            if (_showGeneratorSettings)
             {
-                _instance = new GeneratorSettings();
+                DrawGeneratorSettings();
             }
-
-            return _instance;
         }
-    }
 
-    public void Draw()
-    {
-        _showGeneratorSettings = EditorGUILayout.Foldout(_showGeneratorSettings, "Generator Settings", true);
-        if (_showGeneratorSettings)
+        private void DrawGeneratorSettings()
         {
-            DrawGeneratorSettings();
-        }
-    }
+            if (!_generatorSelection.CurrentGenerator) return;
 
-    private void DrawGeneratorSettings()
-    {
-        if (!_generatorSelection._currentGenerator) return;
-
-        using (new EditorGUILayout.VerticalScope("box"))
-        {
-            SerializedObject generatorObject = new(_generatorSelection._currentGenerator);
-            var property = generatorObject.GetIterator();
-            property.NextVisible(true);
-
-            while (property.NextVisible(false))
+            using (new EditorGUILayout.VerticalScope("box"))
             {
-                if (Utils.ShouldDisplayField(generatorObject, property.name))
+                SerializedObject generatorObject = new(_generatorSelection.CurrentGenerator);
+                var property = generatorObject.GetIterator();
+                property.NextVisible(true);
+
+                while (property.NextVisible(false))
                 {
-                    EditorGUILayout.PropertyField(property, true);
+                    if (Utils.ShouldDisplayField(generatorObject, property.name))
+                    {
+                        EditorGUILayout.PropertyField(property, true);
+                    }
                 }
-            }
 
-            generatorObject.ApplyModifiedProperties();
+                generatorObject.ApplyModifiedProperties();
+            }
         }
     }
 }

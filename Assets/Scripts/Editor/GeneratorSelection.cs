@@ -9,18 +9,8 @@ namespace Editor
         
         private static GeneratorSelection _instance;
 
-        public static GeneratorSelection Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new GeneratorSelection();
-                }
-                return _instance;
-            }
-        }
-        
+        public static GeneratorSelection Instance => _instance ??= new GeneratorSelection();
+
         private GeneratorSelection()
         {
             // Constructor privado para evitar instanciación externa
@@ -62,12 +52,12 @@ namespace Editor
         /// <summary>
         /// Currently selected generator.
         /// </summary>
-        public BaseGenerator _currentGenerator;
+        public BaseGenerator CurrentGenerator;
         
         /// <summary>
         /// Cached Generation Manager GameObject.
         /// </summary>
-        internal GameObject _cachedGenerationManager;
+        internal GameObject CachedGenerationManager;
         
         /// <summary>
         /// Cached generator names.
@@ -98,7 +88,7 @@ namespace Editor
             if (index >= 0 && index < _generators.Count)
             {
                 _selectedGeneratorIndex = index;
-                _currentGenerator = _generators[_selectedGeneratorIndex];
+                CurrentGenerator = _generators[_selectedGeneratorIndex];
                 //Repaint();
             }
             else
@@ -109,10 +99,10 @@ namespace Editor
 
         internal void FindAllGenerators()
         {
-            if (_cachedGenerationManager != null)
+            if (CachedGenerationManager != null)
             {
                 _generators =
-                    new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
+                    new List<BaseGenerator>(CachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
                 _cachedGeneratorNames = GetGeneratorNames();
                 if (_cachedGeneratorNames.Count > 0)
                 {
@@ -153,7 +143,7 @@ namespace Editor
 
         public void RetrieveOrInitializeCachedGenerationManager()
         {
-            _cachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
+            CachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
         }
         
         private static GameObject RetrieveCachedGenerationManager()
@@ -179,21 +169,21 @@ namespace Editor
                 return null;
             }
 
-            _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
-            EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
-            return _cachedGenerationManager;
+            CachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
+            EditorPrefs.SetInt(CachedGenerationManagerIdKey, CachedGenerationManager.GetInstanceID());
+            return CachedGenerationManager;
         }
 
         public void ClearCacheData()
         {
-            if (_cachedGenerationManager)
+            if (CachedGenerationManager)
             {
-                EditorApplication.delayCall += () => Object.DestroyImmediate(_cachedGenerationManager);
+                EditorApplication.delayCall += () => Object.DestroyImmediate(CachedGenerationManager);
             }
 
-            _cachedGenerationManager = null;
+            CachedGenerationManager = null;
             _cachedPrefab = null;
-            _currentGenerator = null;
+            CurrentGenerator = null;
             _cachedGeneratorNames.Clear();
             _generators.Clear();
             _selectedGeneratorIndex = 0;

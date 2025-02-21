@@ -10,11 +10,11 @@ namespace Editor
     {
         #region Constants and Fields
 
-        private InitializationManager _initializationManager = InitializationManager.Instance;
-        private GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
-        private GeneratorSettings _generatorSettings = GeneratorSettings.Instance;
-        private StyleManager _styleManager = StyleManager.Instance;
-        private GenerationActions _generationActions = GenerationActions.Instance;
+        private readonly InitializationManager _initializationManager = InitializationManager.Instance;
+        private readonly GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
+        private readonly GeneratorSettings _generatorSettings = GeneratorSettings.Instance;
+        private readonly StyleManager _styleManager = StyleManager.Instance;
+        private readonly GenerationActions _generationActions = GenerationActions.Instance;
 
 
         /// <summary>
@@ -31,15 +31,6 @@ namespace Editor
         #endregion
 
 
-        private void InitScene()
-        {
-            _generatorSelection.RetrieveOrInitializeCachedGenerationManager();
-            _generatorSelection.FindAllGenerators();
-            //_isInitialized = true;
-            _generatorSelection.SelectGenerator(0);
-        }
-
-
         #region Initialization
 
         [MenuItem("Window/Generation Manager")]
@@ -51,7 +42,7 @@ namespace Editor
 
         private void OnEnable()
         {
-            InitScene();
+            _initializationManager.InitScene();
         }
 
         #endregion
