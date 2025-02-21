@@ -3,12 +3,12 @@ using UnityEditor;
 
 public class GeneratorSettings
 {
-    private static GeneratorSettings _instance;
+    
     private bool _showGeneratorSettings = true;
 
     private GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
 
-
+    private static GeneratorSettings _instance;
     public static GeneratorSettings Instance
     {
         get
