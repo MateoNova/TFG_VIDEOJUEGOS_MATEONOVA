@@ -1,3 +1,4 @@
+using Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ public class InitializationManager
         }
     }
     private bool _showInitialization = true;
+    
+    private GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
 
     public void Draw()
     {
@@ -34,7 +37,7 @@ public class InitializationManager
         {
             if (GUILayout.Button("Clear and delete"))
             {
-                //ClearCachedData();
+                ClearCachedData();
             }
 
             if (GUILayout.Button("Initialize Scene"))
@@ -42,5 +45,13 @@ public class InitializationManager
                 //InitScene();
             }
         }
+    }
+    
+    private void ClearCachedData()
+    {
+        EditorPrefs.DeleteAll();
+
+        _generatorSelection.ClearCacheData();
+        //EditorApplication.delayCall += Repaint;
     }
 }

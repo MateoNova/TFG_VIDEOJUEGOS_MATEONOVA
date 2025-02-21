@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class GenerationActions
 {
-    
     private GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
 
     private bool _showGenerationActions = true;
 
     private static GenerationActions _instance;
+
     public static GenerationActions Instance
     {
         get
@@ -22,12 +22,12 @@ public class GenerationActions
             return _instance;
         }
     }
-    
+
     /// <summary>
     /// Flag to indicate whether to clear the dungeon before generation.
     /// </summary>
     private bool _clearDungeon = true;
-    
+
     /// <summary>
     /// Key for saved dungeon path in EditorPrefs.
     /// </summary>
@@ -42,7 +42,7 @@ public class GenerationActions
             DrawDungeonActions();
         }
     }
-    
+
     private void DrawDungeonActions()
     {
         _clearDungeon = EditorGUILayout.Toggle(
@@ -70,56 +70,56 @@ public class GenerationActions
             LoadDungeon();
         }
     }
-    
+
     private void Generate()
+    {
+        if (_generatorSelection._currentGenerator)
+        {
+            _generatorSelection._currentGenerator.RunGeneration(_clearDungeon,
+                _generatorSelection._currentGenerator.Origin);
+        }
+        else
+        {
+            Debug.LogWarning("No generator selected.");
+        }
+    }
+
+    private void LoadDungeon()
+    {
+        var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
+        if (!string.IsNullOrEmpty(path))
+        {
+            _generatorSelection._currentGenerator.LoadDungeon(path);
+        }
+    }
+
+
+    private void SaveDungeon()
+    {
+        var path = EditorPrefs.GetString(SavedDungeonPathKey, string.Empty);
+        if (string.IsNullOrEmpty(path))
+        {
+            path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
+            if (!string.IsNullOrEmpty(path))
             {
-                if (_generatorSelection._currentGenerator)
-                {
-                    _generatorSelection._currentGenerator.RunGeneration(_clearDungeon,
-                        _generatorSelection._currentGenerator.Origin);
-                }
-                else
-                {
-                    Debug.LogWarning("No generator selected.");
-                }
+                EditorPrefs.SetString(SavedDungeonPathKey, path);
             }
-    
-            private void LoadDungeon()
+        }
+
+        if (string.IsNullOrEmpty(path))
+            return;
+
+        if (System.IO.File.Exists(path))
+        {
+            var overwrite = EditorUtility.DisplayDialog("Overwrite Confirmation",
+                "The file already exists. Do you want to overwrite it?", "Yes", "No");
+
+            if (!overwrite)
             {
-                var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
-                if (!string.IsNullOrEmpty(path))
-                {
-                    _generatorSelection._currentGenerator.LoadDungeon(path);
-                }
+                return;
             }
-    
-    
-            private void SaveDungeon()
-            {
-                var path = EditorPrefs.GetString(SavedDungeonPathKey, string.Empty);
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
-                    if (!string.IsNullOrEmpty(path))
-                    {
-                        EditorPrefs.SetString(SavedDungeonPathKey, path);
-                    }
-                }
-    
-                if (string.IsNullOrEmpty(path))
-                    return;
-    
-                if (System.IO.File.Exists(path))
-                {
-                    var overwrite = EditorUtility.DisplayDialog("Overwrite Confirmation",
-                        "The file already exists. Do you want to overwrite it?", "Yes", "No");
-    
-                    if (!overwrite)
-                    {
-                        return;
-                    }
-                }
-    
-                _generatorSelection._currentGenerator.SaveDungeon(path);
-            }
+        }
+
+        _generatorSelection._currentGenerator.SaveDungeon(path);
+    }
 }

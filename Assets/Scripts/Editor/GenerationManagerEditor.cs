@@ -35,28 +35,8 @@ namespace Editor
         {
             _generatorSelection.RetrieveOrInitializeCachedGenerationManager();
             _generatorSelection.FindAllGenerators();
-            _isInitialized = true;
+            //_isInitialized = true;
             _generatorSelection.SelectGenerator(0);
-        }
-
-        private void ClearCachedData()
-        {
-            /*EditorPrefs.DeleteAll();
-
-            if (_cachedGenerationManager)
-            {
-                DestroyImmediate(_cachedGenerationManager);
-            }
-
-            _cachedGenerationManager = null;
-            _cachedPrefab = null;
-            //_currentGenerator = null;
-            _cachedGeneratorNames.Clear();
-            //_generators.Clear();
-            //_selectedGeneratorIndex = 0;
-            _isInitialized = false;
-
-            EditorApplication.delayCall += Repaint;*/
         }
 
 

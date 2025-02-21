@@ -67,7 +67,7 @@ namespace Editor
         /// <summary>
         /// Cached Generation Manager GameObject.
         /// </summary>
-        private GameObject _cachedGenerationManager;
+        internal GameObject _cachedGenerationManager;
         
         /// <summary>
         /// Cached generator names.
@@ -183,6 +183,22 @@ namespace Editor
             _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
             EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
             return _cachedGenerationManager;
+        }
+
+        public void ClearCacheData()
+        {
+            if (_cachedGenerationManager)
+            {
+                EditorApplication.delayCall += () => Object.DestroyImmediate(_cachedGenerationManager);
+            }
+
+            _cachedGenerationManager = null;
+            _cachedPrefab = null;
+            _currentGenerator = null;
+            _cachedGeneratorNames.Clear();
+            _generators.Clear();
+            _selectedGeneratorIndex = 0;
+            //_isInitialized = false;
         }
     }
 }
