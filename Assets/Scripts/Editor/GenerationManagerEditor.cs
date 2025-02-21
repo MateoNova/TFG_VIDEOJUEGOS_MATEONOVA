@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Editor
 {
     /// <summary>
-    /// Editor window for managing dungeon generation.
+    /// Ventana del editor para gestionar la generación de mazmorras.
     /// </summary>
     public class GenerationManagerWindow : EditorWindow
     {
@@ -15,7 +15,6 @@ namespace Editor
         private GeneratorSettings _generatorSettings;
         private StyleManager _styleManager;
         private GenerationActions _generationActions;
-
         private Vector2 _globalScrollPosition;
 
         #endregion
@@ -30,21 +29,29 @@ namespace Editor
 
         private void OnEnable()
         {
-            // Se crea la dependencia central
+            InitializeDependencies();
+            _initializationManager.InitScene();
+        }
+
+        /// <summary>
+        /// Initializes the dependencies of the window.
+        /// </summary>
+        private void InitializeDependencies()
+        {
             _generatorSelection = new GeneratorSelection();
-            // Inyección de dependencias en cada clase
             _initializationManager = new InitializationManager(_generatorSelection);
             _generatorSettings = new GeneratorSettings(_generatorSelection);
             _styleManager = new StyleManager(_generatorSelection);
             _generationActions = new GenerationActions(_generatorSelection);
-
-            _initializationManager.InitScene();
         }
 
         #endregion
 
         #region GUI Drawing
 
+        /// <summary>
+        /// Draws the GUI of the window.
+        /// </summary>
         private void OnGUI()
         {
             _globalScrollPosition =
