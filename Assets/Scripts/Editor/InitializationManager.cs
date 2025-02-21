@@ -39,7 +39,7 @@ namespace Editor
         public void Draw()
         {
             _showInitialization = EditorGUILayout.Foldout(_showInitialization, "Initialization", true,
-                Utils.getSectionTitleStyle());
+                Utils.GetSectionTitleStyle());
 
             if (!_showInitialization) return;
             DrawButtons();

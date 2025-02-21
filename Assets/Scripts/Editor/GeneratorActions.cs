@@ -33,7 +33,7 @@ namespace Editor
         public void Draw()
         {
             _showGenerationActions = EditorGUILayout.Foldout(_showGenerationActions, "Generation Actions", true,
-                Utils.getSectionTitleStyle());
+                Utils.GetSectionTitleStyle());
 
             if (_showGenerationActions) DrawDungeonActions();
         }

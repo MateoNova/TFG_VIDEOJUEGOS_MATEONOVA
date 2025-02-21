@@ -38,11 +38,10 @@ namespace Editor
         /// </summary>
         public void Draw()
         {
-            _showStyle = EditorGUILayout.Foldout(_showStyle, "Style", true);
-            if (_showStyle)
-            {
-                DrawTilemapPainterSettings();
-            }
+            _showStyle = EditorGUILayout.Foldout(_showStyle, "Style", true, Utils.GetSectionTitleStyle());
+
+            if (!_showStyle) return;
+            DrawTilemapPainterSettings();
         }
 
         /// <summary>
@@ -50,19 +49,19 @@ namespace Editor
         /// </summary>
         private void DrawTilemapPainterSettings()
         {
-            if (_generatorSelection.CurrentGenerator == null ||
-                _generatorSelection.CurrentGenerator.TilemapPainter == null)
+            if (!_generatorSelection.CurrentGenerator ||
+                !_generatorSelection.CurrentGenerator.TilemapPainter)
             {
                 return;
             }
 
             var tilemapPainter = _generatorSelection.CurrentGenerator.TilemapPainter;
 
-            tilemapPainter.randomWalkableTilesPlacement = EditorGUILayout.Toggle(
-                new GUIContent("Random Walkable Tiles Placement",
-                    "Toggle to place walkable tiles randomly or based on probabilities"),
-                tilemapPainter.randomWalkableTilesPlacement);
-
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("¿Random Placement?", Utils.GetOptionStyle(), GUILayout.ExpandWidth(false));
+            tilemapPainter.randomWalkableTilesPlacement = EditorGUILayout.Toggle(tilemapPainter.randomWalkableTilesPlacement, GUILayout.Width(20));
+            EditorGUILayout.EndHorizontal();
+            
             DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities",
                 "Add floor tile", isWalkable: true, controlIdOffset: 0);
 

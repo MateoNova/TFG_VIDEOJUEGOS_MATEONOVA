@@ -79,7 +79,7 @@ namespace Editor
         public void Draw()
         {
             _showGeneratorSelection = EditorGUILayout.Foldout(_showGeneratorSelection, "Generator Selection", true,
-                Utils.getSectionTitleStyle());
+                Utils.GetSectionTitleStyle());
 
             if (!_showGeneratorSelection) return;
             DrawGeneratorSelection();

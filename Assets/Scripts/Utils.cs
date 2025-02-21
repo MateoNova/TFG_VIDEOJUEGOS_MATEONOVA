@@ -73,7 +73,10 @@ public static class Utils
             _ => Vector2Int.up
         };
     }
-
+    
+    /// <summary>
+    /// Gets the opposite direction to the given direction.
+    /// </summary>
     public static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName,
         System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic,
         System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
@@ -96,12 +99,21 @@ public static class Utils
 
         return conditionValue;
     }
-
-    public static GUIStyle getSectionTitleStyle()
+    
+    public static GUIStyle GetSectionTitleStyle()
     {
         return new GUIStyle(EditorStyles.foldout)
         {
             fontSize = 16,
+            fontStyle = FontStyle.Bold
+        };
+    }
+    
+    public static GUIStyle GetOptionStyle()
+    {
+        return new GUIStyle(EditorStyles.wordWrappedLabel)
+        {
+            fontSize = 14,
             fontStyle = FontStyle.Bold
         };
     }
