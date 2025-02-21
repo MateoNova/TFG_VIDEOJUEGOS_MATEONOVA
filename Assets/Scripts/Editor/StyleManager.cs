@@ -166,30 +166,25 @@ public class StyleManager
     {
         if (!_generatorSelection._currentGenerator || !_generatorSelection._currentGenerator.TilemapPainter) return;
 
-        // Actualiza el SerializedObject del TilemapPainter
         _tilemapPainterObject = new SerializedObject(_generatorSelection._currentGenerator.TilemapPainter);
         _tilemapPainterObject.Update();
 
         EditorGUILayoutExtensions.DrawSectionTitle("Wall Tile Settings");
 
-        // Obtenemos los fields del TilemapPainter de tipo TileBase que tengan el atributo WallTileGroupAttribute
         var wallFields = typeof(TilemapPainter)
             .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
             .Where(f => f.FieldType == typeof(TileBase) && f.IsDefined(typeof(WallTileGroupAttribute), false));
 
-        // Agrupamos por el valor del atributo
         var groupedFields = wallFields.GroupBy(f =>
         {
             var attr = (WallTileGroupAttribute)f.GetCustomAttribute(typeof(WallTileGroupAttribute));
             return attr.GroupName;
         });
 
-        // Para cada grupo, mostramos una fila horizontal con scroll independiente
         foreach (var group in groupedFields)
         {
             string groupName = group.Key;
 
-            // Inicializamos la scroll position para este grupo si no existe
             if (!_wallScrollPositions.ContainsKey(groupName))
                 _wallScrollPositions[groupName] = Vector2.zero;
 
@@ -202,9 +197,8 @@ public class StyleManager
                 SerializedProperty wallProp = _tilemapPainterObject.FindProperty(field.Name);
                 if (wallProp != null)
                 {
-                    // Utilizamos ObjectNames.NicifyVariableName para un label más amigable
                     string label = ObjectNames.NicifyVariableName(field.Name);
-                    // Generamos un controlID único a partir del nombre del campo
+
                     int controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
                     EditorGUILayout.BeginVertical();
                     DrawWallTilePreview(wallProp, label, controlID);

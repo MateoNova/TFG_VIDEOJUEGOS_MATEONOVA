@@ -73,7 +73,7 @@ namespace Editor
             {
                 EditorGUILayout.HelpBox("No generators found in the scene.", MessageType.Warning);
             }
-            else
+            else TODO RECORDAR REFACTORIZAR TODO LO RELACIONADO CON EL EDITOR PQ MUCHA SHIT Q PUEDO MEJORAR XD
             {*/
 
             _generatorSettings.Draw();

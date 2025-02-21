@@ -28,18 +28,6 @@ namespace BSPGeneration
 
         #endregion
 
-        #region Unity Methods
-
-        /// <summary>
-        /// Unity's Start method, called before the first frame update.
-        /// </summary>
-        public void Start()
-        {
-            RunGeneration(true, origin);
-        }
-
-        #endregion
-
         #region Generation Process
 
         /// <summary>
