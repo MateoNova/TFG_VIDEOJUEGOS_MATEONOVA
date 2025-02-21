@@ -57,7 +57,9 @@ public class WallGenerator : MonoBehaviour
             { Utils.WallPosition.TopRightInner, new HashSet<Vector2Int>() },
             { Utils.WallPosition.BottomLeftInner, new HashSet<Vector2Int>() },
             { Utils.WallPosition.BottomRightInner, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.Alone, new HashSet<Vector2Int>() }
+            { Utils.WallPosition.Alone, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TripleWallCornerExceptLeftInner, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TripleWallCornerExceptRightInner, new HashSet<Vector2Int>() }
         };
 
         return wallPositions;
@@ -132,7 +134,7 @@ public class WallGenerator : MonoBehaviour
             new RightWallToDownCase(),
             new LeftWallToDownCase(),
             new TopRightWallToTripleCornerExceptUp(),
-            new TopLeftWallToTripleCornerCase(),
+            new TopLeftWallToTripleCornerExceptUpCase(),
             new DownWallToTripleWallCornerExceptUp(),
             new DownWallToTripleWallCornerExceptDown(),
             new BottomRightWallToTripleWallCornerExceptDown(),
@@ -144,6 +146,11 @@ public class WallGenerator : MonoBehaviour
             new RightWallAloneToDownCase(),
             new LeftWallAloneToDownCase(),
             new RightWallToAloneCase(),
+            new TopLeftWallToAllWallCornerCase(),
+            new TopRightWallToAllWallCornerCase(),
+            new RightWallToTripleWallCornerExceptLeftInnerCase(),
+            new RightWallToTripleWallCornerExceptRightInnerCase(),
+            new TopLeftWallAllCornerCase(),
         };
 
         // Store changes without modifying sets while iterating.

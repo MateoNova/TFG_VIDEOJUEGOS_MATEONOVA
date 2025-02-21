@@ -26,7 +26,9 @@ public static class Utils
         TopRightInner,
         BottomLeftInner,
         BottomRightInner,
-        Alone
+        Alone,
+        TripleWallCornerExceptLeftInner,
+        TripleWallCornerExceptRightInner
     }
     
     
