@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEditor;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// Utility class providing helper methods.
@@ -70,5 +73,28 @@ public static class Utils
             _ when direction == Vector2Int.down => Vector2Int.left,
             _ => Vector2Int.up
         };
+    }
+
+    public static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName,
+        System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic,
+        System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
+    {
+        fieldBindingFlags |= System.Reflection.BindingFlags.Instance;
+        conditionalFieldBindingFlags |= System.Reflection.BindingFlags.Instance;
+        var targetObject = serializedObject.targetObject;
+        var field = targetObject.GetType().GetField(propertyName, fieldBindingFlags);
+
+        if (field == null) return true;
+        var conditionalAttribute =
+            (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field, typeof(ConditionalFieldAttribute));
+
+        if (conditionalAttribute == null) return true;
+        var conditionField = targetObject.GetType()
+            .GetField(conditionalAttribute.ConditionFieldName, conditionalFieldBindingFlags);
+
+        if (conditionField == null) return true;
+        var conditionValue = (bool)conditionField.GetValue(targetObject);
+
+        return conditionValue;
     }
 }

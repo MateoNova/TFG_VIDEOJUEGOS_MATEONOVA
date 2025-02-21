@@ -18,8 +18,9 @@ namespace Editor
         private readonly Dictionary<string, Vector2> _wallScrollPositions = new Dictionary<string, Vector2>();
         private InitializationManager _initializationManager = InitializationManager.Instance;
         private GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
+        private GeneratorSettings _generatorSettings = GeneratorSettings.Instance;
 
-        private bool _showGeneratorSettings = true;
+
         private bool _showStyle = true;
         private bool _showGenerationActions = true;
 
@@ -123,12 +124,9 @@ namespace Editor
             }
             else
             {*/
-            _showGeneratorSettings = EditorGUILayout.Foldout(_showGeneratorSettings, "Generator Settings", true);
-            if (_showGeneratorSettings)
-            {
-                EditorGUILayoutExtensions.DrawSectionTitle("Generator Settings");
-                DrawGeneratorSettings();
-            }
+            
+            _generatorSettings.Draw();
+            
 
             _showStyle = EditorGUILayout.Foldout(_showStyle, "Style", true);
             if (_showStyle)
@@ -149,51 +147,10 @@ namespace Editor
         }
 
 
-        private void DrawGeneratorSettings()
-        {
-            if (!_generatorSelection._currentGenerator) return;
-
-            using (new EditorGUILayout.VerticalScope("box"))
-            {
-                SerializedObject generatorObject = new(_generatorSelection._currentGenerator);
-                var property = generatorObject.GetIterator();
-                property.NextVisible(true);
-
-                while (property.NextVisible(false))
-                {
-                    if (ShouldDisplayField(generatorObject, property.name))
-                    {
-                        EditorGUILayout.PropertyField(property, true);
-                    }
-                }
-
-                generatorObject.ApplyModifiedProperties();
-            }
-        }
+        
 
 
-        private static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName,
-            System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic,
-            System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
-        {
-            fieldBindingFlags |= System.Reflection.BindingFlags.Instance;
-            conditionalFieldBindingFlags |= System.Reflection.BindingFlags.Instance;
-            var targetObject = serializedObject.targetObject;
-            var field = targetObject.GetType().GetField(propertyName, fieldBindingFlags);
-
-            if (field == null) return true;
-            var conditionalAttribute =
-                (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field, typeof(ConditionalFieldAttribute));
-
-            if (conditionalAttribute == null) return true;
-            var conditionField = targetObject.GetType()
-                .GetField(conditionalAttribute.ConditionFieldName, conditionalFieldBindingFlags);
-
-            if (conditionField == null) return true;
-            var conditionValue = (bool)conditionField.GetValue(targetObject);
-
-            return conditionValue;
-        }
+        
 
 
         private void DrawTilemapPainterSettings()
@@ -318,7 +275,7 @@ namespace Editor
                                 // Show and edit the priority
                                 using (new EditorGUILayout.HorizontalScope())
                                 {
-                                    if (ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName,
+                                    if (Utils.ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName,
                                             conditionalFieldBindingFlags: System.Reflection.BindingFlags.Public))
                                         continue;
 
