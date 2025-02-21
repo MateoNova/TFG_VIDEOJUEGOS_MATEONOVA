@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Editor
 {
     /// <summary>
-    /// Ventana del editor para gestionar la generación de mazmorras.
+    /// Manages the Generation Manager window.
     /// </summary>
     public class GenerationManagerWindow : EditorWindow
     {
