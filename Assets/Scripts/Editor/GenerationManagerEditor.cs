@@ -14,48 +14,21 @@ namespace Editor
     public class GenerationManagerWindow : EditorWindow
     {
         #region Constants and Fields
+        
+        private readonly Dictionary<string, Vector2> _wallScrollPositions = new Dictionary<string, Vector2>();
+        private InitializationManager _initializationManager = InitializationManager.Instance;
+        private GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
 
-        private bool _showInitialization = true;
-        private bool _showGeneratorSelection = true;
         private bool _showGeneratorSettings = true;
         private bool _showStyle = true;
         private bool _showGenerationActions = true;
 
 
         /// <summary>
-        /// Key for cached generator names in EditorPrefs.
-        /// </summary>
-        private const string CachedGeneratorNamesKey = "CachedGeneratorNames";
-
-        /// <summary>
-        /// Key for cached generation manager ID in EditorPrefs.
-        /// </summary>
-        private const string CachedGenerationManagerIdKey = "CachedGenerationManagerId";
-
-        /// <summary>
-        /// Path to the Generation Manager prefab.
-        /// </summary>
-        private const string PrefabPath = "Assets/Prefabs/GenerationManager.prefab";
-
-        /// <summary>
         /// Key for saved dungeon path in EditorPrefs.
         /// </summary>
         private const string SavedDungeonPathKey = "SavedDungeonPath";
 
-        /// <summary>
-        /// List of all generators in the scene.
-        /// </summary>
-        private List<BaseGenerator> _generators = new();
-
-        /// <summary>
-        /// Index of the selected generator.
-        /// </summary>
-        private int _selectedGeneratorIndex;
-
-        /// <summary>
-        /// Currently selected generator.
-        /// </summary>
-        private BaseGenerator _currentGenerator;
 
         /// <summary>
         /// Flag to indicate whether to clear the dungeon before generation.
@@ -67,16 +40,6 @@ namespace Editor
         /// </summary>
         private bool _isInitialized;
 
-        /// <summary>
-        /// Cached generator names.
-        /// </summary>
-        private List<string> _cachedGeneratorNames = new();
-
-
-        /// <summary>
-        /// Cached prefab of the Generation Manager.
-        /// </summary>
-        private static GameObject _cachedPrefab;
 
         /// <summary>
         /// Serialized object for the Tilemap Painter.
@@ -94,103 +57,36 @@ namespace Editor
         private Vector2 _wallScrollPosition;
 
         #endregion
-        
-          /// <summary>
-    /// Cached Generation Manager GameObject.
-    /// </summary>
-    private GameObject _cachedGenerationManager;
-    
-    private void DrawButtons()
-    {
-        using (new EditorGUILayout.HorizontalScope())
+
+
+        private void InitScene()
         {
-            if (GUILayout.Button("Clear and delete"))
+            _generatorSelection.RetrieveOrInitializeCachedGenerationManager();
+            _generatorSelection.FindAllGenerators();
+            _isInitialized = true;
+            _generatorSelection.SelectGenerator(0);
+        }
+
+        private void ClearCachedData()
+        {
+            /*EditorPrefs.DeleteAll();
+
+            if (_cachedGenerationManager)
             {
-                ClearCachedData();
+                DestroyImmediate(_cachedGenerationManager);
             }
 
-            if (GUILayout.Button("Initialize Scene"))
-            {
-                InitScene();
-            }
-        }
-    }
-    
-    private void InitScene()
-    {
-        _cachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
-        FindAllGenerators();
-        _isInitialized = true;
-        SelectGenerator(0);
-    }
-    
-    private void ClearCachedData()
-    {
-        EditorPrefs.DeleteAll();
+            _cachedGenerationManager = null;
+            _cachedPrefab = null;
+            //_currentGenerator = null;
+            _cachedGeneratorNames.Clear();
+            //_generators.Clear();
+            //_selectedGeneratorIndex = 0;
+            _isInitialized = false;
 
-        if (_cachedGenerationManager)
-        {
-            DestroyImmediate(_cachedGenerationManager);
+            EditorApplication.delayCall += Repaint;*/
         }
 
-        _cachedGenerationManager = null;
-        _cachedPrefab = null;
-        _currentGenerator = null;
-        _cachedGeneratorNames.Clear();
-        _generators.Clear();
-        _selectedGeneratorIndex = 0;
-        _isInitialized = false;
-
-        EditorApplication.delayCall += Repaint;
-    }
-    
-    private void FindAllGenerators()
-    {
-        if (_cachedGenerationManager != null)
-        {
-            _generators =
-                new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
-            _cachedGeneratorNames = GetGeneratorNames();
-            if (_cachedGeneratorNames.Count > 0)
-            {
-                EditorPrefs.SetString(CachedGeneratorNamesKey, string.Join(",", _cachedGeneratorNames));
-            }
-        }
-        else
-        {
-            Debug.LogWarning("GenerationManager not found in the scene.");
-            ClearGeneratorLists();
-        }
-    }
-    
-    private static GameObject RetrieveCachedGenerationManager()
-    {
-        var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
-        if (cachedId != -1)
-        {
-            return EditorUtility.InstanceIDToObject(cachedId) as GameObject;
-        }
-
-        return null;
-    }
-
-
-    private GameObject InstantiateGenerationManager()
-    {
-        if (!_cachedPrefab)
-        {
-            _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
-        }
-
-        if (!_cachedPrefab)
-        {
-            return null;
-        }
-
-        _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
-        EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
-        return _cachedGenerationManager;
-    }
 
         #region Initialization
 
@@ -217,69 +113,49 @@ namespace Editor
             _globalScrollPosition =
                 EditorGUILayout.BeginScrollView(_globalScrollPosition, true, false, GUILayout.ExpandWidth(true));
 
-            _showInitialization = EditorGUILayout.Foldout(_showInitialization, "Initialization", true);
-            if (_showInitialization)
-            {
-                EditorGUILayoutExtensions.DrawSectionTitle("Initialization");
-                DrawButtons();
-            }
+            _initializationManager.Draw();
 
-            _showGeneratorSelection = EditorGUILayout.Foldout(_showGeneratorSelection, "Generator Selection", true);
-            if (_showGeneratorSelection)
-            {
-                EditorGUILayoutExtensions.DrawSectionTitle("Generator Selection");
-                DrawGeneratorSelection();
-            }
+            _generatorSelection.Draw();
 
-            if (_generators == null || _generators.Count == 0)
+            /*if (_generators == null || _generators.Count == 0)
             {
                 EditorGUILayout.HelpBox("No generators found in the scene.", MessageType.Warning);
             }
             else
+            {*/
+            _showGeneratorSettings = EditorGUILayout.Foldout(_showGeneratorSettings, "Generator Settings", true);
+            if (_showGeneratorSettings)
             {
-                _showGeneratorSettings = EditorGUILayout.Foldout(_showGeneratorSettings, "Generator Settings", true);
-                if (_showGeneratorSettings)
-                {
-                    EditorGUILayoutExtensions.DrawSectionTitle("Generator Settings");
-                    DrawGeneratorSettings();
-                }
-
-                _showStyle = EditorGUILayout.Foldout(_showStyle, "Style", true);
-                if (_showStyle)
-                {
-                    EditorGUILayoutExtensions.DrawSectionTitle("Style");
-                    DrawTilemapPainterSettings();
-                }
-
-                _showGenerationActions = EditorGUILayout.Foldout(_showGenerationActions, "Generation Actions", true);
-                if (_showGenerationActions)
-                {
-                    EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
-                    DrawDungeonActions();
-                }
+                EditorGUILayoutExtensions.DrawSectionTitle("Generator Settings");
+                DrawGeneratorSettings();
             }
+
+            _showStyle = EditorGUILayout.Foldout(_showStyle, "Style", true);
+            if (_showStyle)
+            {
+                EditorGUILayoutExtensions.DrawSectionTitle("Style");
+                DrawTilemapPainterSettings();
+            }
+
+            _showGenerationActions = EditorGUILayout.Foldout(_showGenerationActions, "Generation Actions", true);
+            if (_showGenerationActions)
+            {
+                EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
+                DrawDungeonActions();
+            }
+            //}
 
             EditorGUILayout.EndScrollView();
         }
 
 
-        private void DrawGeneratorSelection()
-        {
-            _selectedGeneratorIndex = EditorGUILayout.Popup("Select Generator", _selectedGeneratorIndex,
-                _cachedGeneratorNames.ToArray());
-            if (_isInitialized)
-            {
-                SelectGenerator(_selectedGeneratorIndex);
-            }
-        }
-
         private void DrawGeneratorSettings()
         {
-            if (!_currentGenerator) return;
+            if (!_generatorSelection._currentGenerator) return;
 
             using (new EditorGUILayout.VerticalScope("box"))
             {
-                SerializedObject generatorObject = new(_currentGenerator);
+                SerializedObject generatorObject = new(_generatorSelection._currentGenerator);
                 var property = generatorObject.GetIterator();
                 property.NextVisible(true);
 
@@ -322,12 +198,12 @@ namespace Editor
 
         private void DrawTilemapPainterSettings()
         {
-            if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
+            if (!_generatorSelection._currentGenerator || !_generatorSelection._currentGenerator.TilemapPainter) return;
 
-            _currentGenerator.TilemapPainter.randomWalkableTilesPlacement = EditorGUILayout.Toggle(
+            _generatorSelection._currentGenerator.TilemapPainter.randomWalkableTilesPlacement = EditorGUILayout.Toggle(
                 new GUIContent("Random Walkable Tiles Placement",
                     "Toggle to place walkable tiles randomly or based on probabilities"),
-                _currentGenerator.TilemapPainter.randomWalkableTilesPlacement);
+                _generatorSelection._currentGenerator.TilemapPainter.randomWalkableTilesPlacement);
 
             DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities",
                 "Add floor tile", true, 0);
@@ -352,7 +228,7 @@ namespace Editor
 
             if (GUILayout.Button("Clear Dungeon"))
             {
-                _currentGenerator?.ClearDungeon();
+                _generatorSelection._currentGenerator?.ClearDungeon();
             }
 
             if (GUILayout.Button("Save Dungeon"))
@@ -373,7 +249,7 @@ namespace Editor
         private void DrawTileGroupSettings(ref Vector2 scrollPosition, string tileBasesPropName,
             string tilePrioritiesPropName, string addTileButtonLabel, bool isWalkable, int controlIdOffset)
         {
-            _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
+            _tilemapPainterObject = new SerializedObject(_generatorSelection._currentGenerator.TilemapPainter);
             var tileBasesProperty = _tilemapPainterObject.FindProperty(tileBasesPropName);
             var tilePrioritiesProperty = _tilemapPainterObject.FindProperty(tilePrioritiesPropName);
 
@@ -400,11 +276,11 @@ namespace Editor
                     {
                         if (isWalkable)
                         {
-                            _currentGenerator.TilemapPainter.RemoveAllWalkableTiles();
+                            _generatorSelection._currentGenerator.TilemapPainter.RemoveAllWalkableTiles();
                         }
                         else
                         {
-                            _currentGenerator.TilemapPainter.RemoveAllWallTiles();
+                            _generatorSelection._currentGenerator.TilemapPainter.RemoveAllWallTiles();
                         }
 
                         _tilemapPainterObject.ApplyModifiedProperties();
@@ -415,7 +291,7 @@ namespace Editor
                     if (GUILayout.Button(selectLabel))
                     {
                         var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
-                        _currentGenerator.TilemapPainter.SelectFromFolder(isWalkable, path);
+                        _generatorSelection._currentGenerator.TilemapPainter.SelectFromFolder(isWalkable, path);
                         _tilemapPainterObject.Update();
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
@@ -482,7 +358,7 @@ namespace Editor
 
                 if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
                 {
-                    _currentGenerator.TilemapPainter.RemoveTileAtPosition(index, isWalkable);
+                    _generatorSelection._currentGenerator.TilemapPainter.RemoveTileAtPosition(index, isWalkable);
                     _tilemapPainterObject.ApplyModifiedProperties();
                     Repaint();
                 }
@@ -533,9 +409,9 @@ namespace Editor
 
         private void Generate()
         {
-            if (_currentGenerator)
+            if (_generatorSelection._currentGenerator)
             {
-                _currentGenerator.RunGeneration(_clearDungeon, _currentGenerator.Origin);
+                _generatorSelection._currentGenerator.RunGeneration(_clearDungeon, _generatorSelection._currentGenerator.Origin);
             }
             else
             {
@@ -548,7 +424,7 @@ namespace Editor
             var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
             if (!string.IsNullOrEmpty(path))
             {
-                _currentGenerator.LoadDungeon(path);
+                _generatorSelection._currentGenerator.LoadDungeon(path);
             }
         }
 
@@ -579,48 +455,7 @@ namespace Editor
                 }
             }
 
-            _currentGenerator.SaveDungeon(path);
-        }
-
-
-        private void ClearGeneratorLists()
-        {
-            _generators.Clear();
-            _cachedGeneratorNames.Clear();
-            EditorPrefs.DeleteKey(CachedGeneratorNamesKey);
-        }
-
-
-        private void SelectGenerator(int index)
-        {
-            if (index >= 0 && index < _generators.Count)
-            {
-                _selectedGeneratorIndex = index;
-                _currentGenerator = _generators[_selectedGeneratorIndex];
-                Repaint();
-            }
-            else
-            {
-                Debug.LogWarning("Invalid generator index.");
-            }
-        }
-
-        private List<string> GetGeneratorNames()
-        {
-            List<string> names = new();
-            foreach (var generator in _generators)
-            {
-                if (generator)
-                {
-                    names.Add(generator.name);
-                }
-                else
-                {
-                    Debug.LogWarning("Generator is null.");
-                }
-            }
-
-            return names;
+            _generatorSelection._currentGenerator.SaveDungeon(path);
         }
 
         #endregion
@@ -629,14 +464,14 @@ namespace Editor
 
         #endregion
 
-        private readonly Dictionary<string, Vector2> _wallScrollPositions = new Dictionary<string, Vector2>();
+        
 
         private void DrawWallTileSettings()
         {
-            if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
+            if (!_generatorSelection._currentGenerator || !_generatorSelection._currentGenerator.TilemapPainter) return;
 
             // Actualiza el SerializedObject del TilemapPainter
-            _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
+            _tilemapPainterObject = new SerializedObject(_generatorSelection._currentGenerator.TilemapPainter);
             _tilemapPainterObject.Update();
 
             EditorGUILayoutExtensions.DrawSectionTitle("Wall Tile Settings");
