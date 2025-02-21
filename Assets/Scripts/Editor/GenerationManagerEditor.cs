@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -12,6 +14,13 @@ namespace Editor
     public class GenerationManagerWindow : EditorWindow
     {
         #region Constants and Fields
+        
+        private bool _showInitialization = true;
+        private bool _showGeneratorSelection = true;
+        private bool _showGeneratorSettings = true;
+        private bool _showStyle = true;
+        private bool _showGenerationActions = true;
+
 
         /// <summary>
         /// Key for cached generator names in EditorPrefs.
@@ -92,26 +101,19 @@ namespace Editor
 
         #region Initialization
 
-        /// <summary>
-        /// Shows the Generation Manager window.
-        /// </summary>
         [MenuItem("Window/Generation Manager")]
         public static void ShowWindow()
         {
             GetWindow<GenerationManagerWindow>("Generation Manager");
         }
 
-        /// <summary>
-        /// Called when the window is enabled.
-        /// </summary>
+
         private void OnEnable()
         {
             InitScene();
         }
 
-        /// <summary>
-        /// Initializes the scene by retrieving or instantiating the Generation Manager and finding all generators.
-        /// </summary>
+
         private void InitScene()
         {
             _cachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
@@ -124,36 +126,59 @@ namespace Editor
 
         #region GUI Drawing
 
-        /// <summary>
-        /// Draws the GUI for the window.
-        /// </summary>
+        private Vector2 _globalScrollPosition;
+
         private void OnGUI()
         {
-            EditorGUILayoutExtensions.DrawSectionTitle("Initialization");
-            DrawButtons();
+            _globalScrollPosition = EditorGUILayout.BeginScrollView(_globalScrollPosition, true, false, GUILayout.ExpandWidth(true));
 
-            EditorGUILayoutExtensions.DrawSectionTitle("Generator Selection");
-            DrawGeneratorSelection();
+            _showInitialization = EditorGUILayout.Foldout(_showInitialization, "Initialization", true);
+            if (_showInitialization)
+            {
+                EditorGUILayoutExtensions.DrawSectionTitle("Initialization");
+                DrawButtons();
+            }
+
+            _showGeneratorSelection = EditorGUILayout.Foldout(_showGeneratorSelection, "Generator Selection", true);
+            if (_showGeneratorSelection)
+            {
+                EditorGUILayoutExtensions.DrawSectionTitle("Generator Selection");
+                DrawGeneratorSelection();
+            }
 
             if (_generators == null || _generators.Count == 0)
             {
                 EditorGUILayout.HelpBox("No generators found in the scene.", MessageType.Warning);
-                return;
+            }
+            else
+            {
+                _showGeneratorSettings = EditorGUILayout.Foldout(_showGeneratorSettings, "Generator Settings", true);
+                if (_showGeneratorSettings)
+                {
+                    EditorGUILayoutExtensions.DrawSectionTitle("Generator Settings");
+                    DrawGeneratorSettings();
+                }
+
+                _showStyle = EditorGUILayout.Foldout(_showStyle, "Style", true);
+                if (_showStyle)
+                {
+                    EditorGUILayoutExtensions.DrawSectionTitle("Style");
+                    DrawTilemapPainterSettings();
+                }
+
+                _showGenerationActions = EditorGUILayout.Foldout(_showGenerationActions, "Generation Actions", true);
+                if (_showGenerationActions)
+                {
+                    EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
+                    DrawDungeonActions();
+                }
             }
 
-            EditorGUILayoutExtensions.DrawSectionTitle("Generator Settings");
-            DrawGeneratorSettings();
-
-            EditorGUILayoutExtensions.DrawSectionTitle("Style");
-            DrawTilemapPainterSettings();
-
-            EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
-            DrawDungeonActions();
+            EditorGUILayout.EndScrollView();
         }
 
-        /// <summary>
-        /// Draws the buttons for initialization and clearing cached data.
-        /// </summary>
+
+
         private void DrawButtons()
         {
             using (new EditorGUILayout.HorizontalScope())
@@ -170,9 +195,7 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// Draws the generator selection dropdown.
-        /// </summary>
+
         private void DrawGeneratorSelection()
         {
             _selectedGeneratorIndex = EditorGUILayout.Popup("Select Generator", _selectedGeneratorIndex,
@@ -183,9 +206,6 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// Draws the settings for the selected generator.
-        /// </summary>
         private void DrawGeneratorSettings()
         {
             if (!_currentGenerator) return;
@@ -209,36 +229,30 @@ namespace Editor
         }
 
 
-        /// <summary>
-        /// Determines whether a field should be displayed based on the presence and value of a ConditionalFieldAttribute.
-        /// </summary>
-        /// <param name="serializedObject">The serialized object containing the field.</param>
-        /// <param name="propertyName">The name of the property to check.</param>
-        /// <returns>True if the field should be displayed; otherwise, false.</returns>
-        private static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName, 
-            System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic, 
+        private static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName,
+            System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic,
             System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
         {
             fieldBindingFlags |= System.Reflection.BindingFlags.Instance;
             conditionalFieldBindingFlags |= System.Reflection.BindingFlags.Instance;
             var targetObject = serializedObject.targetObject;
-            var field = targetObject.GetType().GetField(propertyName, fieldBindingFlags );
-        
+            var field = targetObject.GetType().GetField(propertyName, fieldBindingFlags);
+
             if (field == null) return true;
-            var conditionalAttribute = (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field, typeof(ConditionalFieldAttribute));
-        
+            var conditionalAttribute =
+                (ConditionalFieldAttribute)Attribute.GetCustomAttribute(field, typeof(ConditionalFieldAttribute));
+
             if (conditionalAttribute == null) return true;
-            var conditionField = targetObject.GetType().GetField(conditionalAttribute.ConditionFieldName, conditionalFieldBindingFlags);
-        
+            var conditionField = targetObject.GetType()
+                .GetField(conditionalAttribute.ConditionFieldName, conditionalFieldBindingFlags);
+
             if (conditionField == null) return true;
             var conditionValue = (bool)conditionField.GetValue(targetObject);
-            
+
             return conditionValue;
         }
 
-        /// <summary>
-        /// Draws the settings for the Tilemap Painter (floor and wall tiles).
-        /// </summary>
+
         private void DrawTilemapPainterSettings()
         {
             if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
@@ -253,11 +267,10 @@ namespace Editor
             //todo 
             /*DrawTileGroupSettings(ref _wallScrollPosition, "wallTileBases", "wallTilesPriorities",
                 "Add wall tile", false, 1001);*/
+
+            DrawWallTileSettings();
         }
 
-        /// <summary>
-        /// Draws the actions for generating, clearing, saving, and loading the dungeon.
-        /// </summary>
         private void DrawDungeonActions()
         {
             _clearDungeon = EditorGUILayout.Toggle(
@@ -290,24 +303,15 @@ namespace Editor
 
         #region Tile Group Drawing
 
-        /// <summary>
-        /// Draws the tile group settings (for floor or wall tiles) including buttons and previews.
-        /// </summary>
-        /// <param name="scrollPosition">Scroll position (passed by reference).</param>
-        /// <param name="tileBasesPropName">Serialized property name for the tile bases.</param>
-        /// <param name="tilePrioritiesPropName">Serialized property name for the tile priorities.</param>
-        /// <param name="addTileButtonLabel">Label for the add tile button.</param>
-        /// <param name="isWalkable">Determines if the group corresponds to floor (true) or wall (false) tiles.</param>
-        /// <param name="controlIdOffset">Offset for the object picker control ID.</param>
         private void DrawTileGroupSettings(ref Vector2 scrollPosition, string tileBasesPropName,
             string tilePrioritiesPropName, string addTileButtonLabel, bool isWalkable, int controlIdOffset)
         {
             _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
             var tileBasesProperty = _tilemapPainterObject.FindProperty(tileBasesPropName);
             var tilePrioritiesProperty = _tilemapPainterObject.FindProperty(tilePrioritiesPropName);
-        
+
             var localScrollPosition = scrollPosition;
-        
+
             using (new EditorGUILayout.VerticalScope())
             {
                 using (new EditorGUILayout.HorizontalScope())
@@ -315,13 +319,15 @@ namespace Editor
                     if (GUILayout.Button(addTileButtonLabel))
                     {
                         tileBasesProperty.InsertArrayElementAtIndex(tileBasesProperty.arraySize);
-                        tileBasesProperty.GetArrayElementAtIndex(tileBasesProperty.arraySize - 1).objectReferenceValue = null;
+                        tileBasesProperty.GetArrayElementAtIndex(tileBasesProperty.arraySize - 1).objectReferenceValue =
+                            null;
                         tilePrioritiesProperty.InsertArrayElementAtIndex(tilePrioritiesProperty.arraySize);
-                        tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue = 0;
+                        tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue =
+                            0;
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
-        
+
                     var clearLabel = "Clear all " + (isWalkable ? "floor" : "wall") + " tiles";
                     if (GUILayout.Button(clearLabel))
                     {
@@ -331,13 +337,13 @@ namespace Editor
                         }
                         else
                         {
-                            
                             _currentGenerator.TilemapPainter.RemoveAllWallTiles();
                         }
+
                         _tilemapPainterObject.ApplyModifiedProperties();
                         Repaint();
                     }
-        
+
                     var selectLabel = "Select " + (isWalkable ? "floor" : "wall") + " tiles from folder";
                     if (GUILayout.Button(selectLabel))
                     {
@@ -348,10 +354,11 @@ namespace Editor
                         Repaint();
                     }
                 }
-        
+
                 if (tileBasesProperty.arraySize > 0)
                 {
-                    using var scrollScope = new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(125));
+                    using var scrollScope =
+                        new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(125));
                     localScrollPosition = scrollScope.scrollPosition;
                     using (new EditorGUILayout.HorizontalScope())
                     {
@@ -359,44 +366,38 @@ namespace Editor
                         {
                             var tileBaseProperty = tileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
-        
+
                             using (new EditorGUILayout.VerticalScope())
                             {
-                                DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + controlIdOffset, priorityProperty, i, isWalkable);
-        
+                                DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + controlIdOffset,
+                                    priorityProperty, i, isWalkable);
+
                                 // Show and edit the priority
                                 using (new EditorGUILayout.HorizontalScope())
                                 {
                                     if (ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName,
                                             conditionalFieldBindingFlags: System.Reflection.BindingFlags.Public))
                                         continue;
-                                    
+
                                     GUILayout.FlexibleSpace();
                                     EditorGUILayout.LabelField("Priority:", GUILayout.Width(50));
-                                    priorityProperty.intValue = EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
+                                    priorityProperty.intValue =
+                                        EditorGUILayout.IntField(priorityProperty.intValue, GUILayout.Width(30));
                                     GUILayout.FlexibleSpace();
                                 }
                             }
                         }
                     }
                 }
-        
+
                 _tilemapPainterObject.ApplyModifiedProperties();
             }
-        
+
             scrollPosition = localScrollPosition; // Assign back to the ref parameter
             Repaint();
         }
 
-        /// <summary>
-        /// Draws the preview for a TileBase.
-        /// </summary>
-        /// <param name="tileBaseProperty">The serialized property of the TileBase.</param>
-        /// <param name="label">The label for the TileBase.</param>
-        /// <param name="controlID">The control ID for the object picker.</param>
-        /// <param name="priorityProperty">The serialized property for the tile priority.</param>
-        /// <param name="index">The index of the tile in the array.</param>
-        /// <param name="isWalkable">Determines if the tile is floor (true) or wall (false).</param>
+
         private void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID,
             SerializedProperty priorityProperty, int index, bool isWalkable)
         {
@@ -463,9 +464,6 @@ namespace Editor
 
         #region Dungeon Generation and Data Management
 
-        /// <summary>
-        /// Generates the dungeon using the selected generator.
-        /// </summary>
         private void Generate()
         {
             if (_currentGenerator)
@@ -478,9 +476,6 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// Loads the dungeon from a file.
-        /// </summary>
         private void LoadDungeon()
         {
             var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
@@ -490,9 +485,7 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// Saves the dungeon to a file.
-        /// </summary>
+
         private void SaveDungeon()
         {
             var path = EditorPrefs.GetString(SavedDungeonPathKey, string.Empty);
@@ -522,9 +515,7 @@ namespace Editor
             _currentGenerator.SaveDungeon(path);
         }
 
-        /// <summary>
-        /// Finds all generators in the scene.
-        /// </summary>
+
         private void FindAllGenerators()
         {
             if (_cachedGenerationManager != null)
@@ -544,9 +535,7 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// Clears the generator lists.
-        /// </summary>
+
         private void ClearGeneratorLists()
         {
             _generators.Clear();
@@ -554,10 +543,7 @@ namespace Editor
             EditorPrefs.DeleteKey(CachedGeneratorNamesKey);
         }
 
-        /// <summary>
-        /// Selects a generator by index.
-        /// </summary>
-        /// <param name="index">Index of the generator to select.</param>
+
         private void SelectGenerator(int index)
         {
             if (index >= 0 && index < _generators.Count)
@@ -572,10 +558,6 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// Gets the names of all generators.
-        /// </summary>
-        /// <returns>List of generator names.</returns>
         private List<string> GetGeneratorNames()
         {
             List<string> names = new();
@@ -598,10 +580,6 @@ namespace Editor
 
         #region Generation Manager and Cached Data
 
-        /// <summary>
-        /// Retrieves the cached Generation Manager from the EditorPrefs.
-        /// </summary>
-        /// <returns>Cached Generation Manager GameObject.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
             var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
@@ -613,10 +591,7 @@ namespace Editor
             return null;
         }
 
-        /// <summary>
-        /// Instantiates the Generation Manager prefab.
-        /// </summary>
-        /// <returns>Instantiated Generation Manager GameObject.</returns>
+
         private GameObject InstantiateGenerationManager()
         {
             if (!_cachedPrefab)
@@ -634,9 +609,6 @@ namespace Editor
             return _cachedGenerationManager;
         }
 
-        /// <summary>
-        /// Clears all cached data and resets the state.
-        /// </summary>
         private void ClearCachedData()
         {
             EditorPrefs.DeleteAll();
@@ -658,5 +630,126 @@ namespace Editor
         }
 
         #endregion
+
+        private readonly Dictionary<string, Vector2> _wallScrollPositions = new Dictionary<string, Vector2>();
+
+        private void DrawWallTileSettings()
+        {
+            if (!_currentGenerator || !_currentGenerator.TilemapPainter) return;
+
+            // Actualiza el SerializedObject del TilemapPainter
+            _tilemapPainterObject = new SerializedObject(_currentGenerator.TilemapPainter);
+            _tilemapPainterObject.Update();
+
+            EditorGUILayoutExtensions.DrawSectionTitle("Wall Tile Settings");
+
+            // Obtenemos los fields del TilemapPainter de tipo TileBase que tengan el atributo WallTileGroupAttribute
+            var wallFields = typeof(TilemapPainter)
+                .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Where(f => f.FieldType == typeof(TileBase) && f.IsDefined(typeof(WallTileGroupAttribute), false));
+
+            // Agrupamos por el valor del atributo
+            var groupedFields = wallFields.GroupBy(f =>
+            {
+                var attr = (WallTileGroupAttribute)f.GetCustomAttribute(typeof(WallTileGroupAttribute));
+                return attr.GroupName;
+            });
+
+            // Para cada grupo, mostramos una fila horizontal con scroll independiente
+            foreach (var group in groupedFields)
+            {
+                string groupName = group.Key;
+
+                // Inicializamos la scroll position para este grupo si no existe
+                if (!_wallScrollPositions.ContainsKey(groupName))
+                    _wallScrollPositions[groupName] = Vector2.zero;
+
+                EditorGUILayout.LabelField(groupName, EditorStyles.boldLabel);
+                _wallScrollPositions[groupName] = EditorGUILayout.BeginScrollView(_wallScrollPositions[groupName], GUILayout.Height(100));
+                EditorGUILayout.BeginHorizontal();
+                foreach (var field in group)
+                {
+                    SerializedProperty wallProp = _tilemapPainterObject.FindProperty(field.Name);
+                    if (wallProp != null)
+                    {
+                        // Utilizamos ObjectNames.NicifyVariableName para un label más amigable
+                        string label = ObjectNames.NicifyVariableName(field.Name);
+                        // Generamos un controlID único a partir del nombre del campo
+                        int controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
+                        EditorGUILayout.BeginVertical();
+                        DrawWallTilePreview(wallProp, label, controlID);
+                        EditorGUILayout.EndVertical();
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.EndScrollView();
+            }
+
+            _tilemapPainterObject.ApplyModifiedProperties();
+            Repaint();
+        }
+
+// Función auxiliar para dibujar la preview de cada wall tile
+        private void DrawWallTilePreview(SerializedProperty tileProperty, string label, int controlID)
+        {
+            if (tileProperty == null)
+            {
+                Debug.LogError("tileProperty es null");
+                return;
+            }
+
+            // Dibuja el título y el botón "X" para limpiar el tile
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
+                if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
+                {
+                    // Al pulsar "X" se asigna null al campo del tile
+                    tileProperty.objectReferenceValue = null;
+                    _tilemapPainterObject.ApplyModifiedProperties();
+                    Repaint();
+                }
+
+                GUILayout.FlexibleSpace();
+            }
+
+            // Muestra la preview del TileBase
+            var tileBase = tileProperty.objectReferenceValue as TileBase;
+            if (tileBase)
+            {
+                Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
+                    {
+                        EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
+                    }
+
+                    GUILayout.FlexibleSpace();
+                }
+            }
+            else
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("Select Tile", GUILayout.Width(64), GUILayout.Height(64)))
+                    {
+                        EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
+                    }
+
+                    GUILayout.FlexibleSpace();
+                }
+            }
+
+            // Actualiza el tile seleccionado desde el Object Picker
+            if (Event.current.commandName == "ObjectSelectorUpdated" &&
+                EditorGUIUtility.GetObjectPickerControlID() == controlID)
+            {
+                tileProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+            }
+        }
     }
 }

@@ -47,27 +47,70 @@ public class TilemapPainter : MonoBehaviour
     /// List of wall tile bases. This allows for multiple wall tiles to be used.
     /// </summary>
     //[SerializeField] private List<TileBase> wallTileBases;
-    [SerializeField] private TileBase upWall,
-        downWall,
-        leftWall,
-        rightWall,
-        topLeftWall,
-        topRightWall,
-        bottomLeftWall,
-        bottomRightWall,
-        tripleWallCornerLeftTile,
-        tripleWallCornerExcetUpTile,
-        tripleWallCornerExcetDownTile,
-        tripleWallCornerExceptLeft,
-        tripleWallCornerExceptRight,
-        allCornersWall,
-        topLeftInnerWall,
-        topRightInner,
-        bottomLeftInnerWall,
-        bottomRightInnerWall,
-        aloneWall,
-        tripleWallCornerExceptLeftInner,
-        tripleWallCornerExceptRightInner;
+    // Grupo: Cardinal Directions
+    [SerializeField, WallTileGroup("Cardinal Directions")]
+    private TileBase upWall;
+
+    [SerializeField, WallTileGroup("Cardinal Directions")]
+    private TileBase downWall;
+
+    [SerializeField, WallTileGroup("Cardinal Directions")]
+    private TileBase leftWall;
+
+    [SerializeField, WallTileGroup("Cardinal Directions")]
+    private TileBase rightWall;
+
+    // Grupo: Corners
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase topLeftWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase topRightWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase bottomLeftWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase bottomRightWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase allCornersWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase topLeftInnerWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase topRightInnerWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase bottomLeftInnerWall;
+
+    [SerializeField, WallTileGroup("Corners")]
+    private TileBase bottomRightInnerWall;
+
+    // Grupo: Triple Walls
+
+    [SerializeField, WallTileGroup("Triple Walls")]
+    private TileBase tripleWallCornerExcetUpWall;
+
+    [SerializeField, WallTileGroup("Triple Walls")]
+    private TileBase tripleWallCornerExcetDownWall;
+
+    [SerializeField, WallTileGroup("Triple Walls")]
+    private TileBase tripleWallCornerExceptLeftWall;
+
+    [SerializeField, WallTileGroup("Triple Walls")]
+    private TileBase tripleWallCornerExceptRightWall;
+
+    [SerializeField, WallTileGroup("Triple Walls")]
+    private TileBase tripleWallCornerExceptLeftInnerWall;
+
+    [SerializeField, WallTileGroup("Triple Walls")]
+    private TileBase tripleWallCornerExceptRightInnerWall;
+
+    // Grupo: Alone Walls
+    [SerializeField, WallTileGroup("Alone Walls")]
+    private TileBase aloneWall;
 
 
     public TilemapPainter(bool randomWalkableTilesPlacement)
@@ -152,18 +195,18 @@ public class TilemapPainter : MonoBehaviour
             Utils.WallPosition.TopRight => topRightWall,
             Utils.WallPosition.BottomRight => bottomRightWall,
 
-            Utils.WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpTile,
-            Utils.WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownTile,
-            Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeft,
-            Utils.WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRight,
+            Utils.WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpWall,
+            Utils.WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownWall,
+            Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeftWall,
+            Utils.WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRightWall,
             Utils.WallPosition.AllWallCorner => allCornersWall,
             Utils.WallPosition.TopLeftInner => topLeftInnerWall,
-            Utils.WallPosition.TopRightInner => topRightInner,
+            Utils.WallPosition.TopRightInner => topRightInnerWall,
             Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
             Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
             Utils.WallPosition.Alone => aloneWall,
-            Utils.WallPosition.TripleWallCornerExceptLeftInner => tripleWallCornerExceptLeftInner,
-            Utils.WallPosition.TripleWallCornerExceptRightInner => tripleWallCornerExceptRightInner,
+            Utils.WallPosition.TripleWallCornerExceptLeftInner => tripleWallCornerExceptLeftInnerWall,
+            Utils.WallPosition.TripleWallCornerExceptRightInner => tripleWallCornerExceptRightInnerWall,
             _ => null
         };
 
