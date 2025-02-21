@@ -14,7 +14,7 @@ namespace Editor
     public class GenerationManagerWindow : EditorWindow
     {
         #region Constants and Fields
-        
+
         private bool _showInitialization = true;
         private bool _showGeneratorSelection = true;
         private bool _showGeneratorSettings = true;
@@ -72,10 +72,6 @@ namespace Editor
         /// </summary>
         private List<string> _cachedGeneratorNames = new();
 
-        /// <summary>
-        /// Cached Generation Manager GameObject.
-        /// </summary>
-        private GameObject _cachedGenerationManager;
 
         /// <summary>
         /// Cached prefab of the Generation Manager.
@@ -98,6 +94,103 @@ namespace Editor
         private Vector2 _wallScrollPosition;
 
         #endregion
+        
+          /// <summary>
+    /// Cached Generation Manager GameObject.
+    /// </summary>
+    private GameObject _cachedGenerationManager;
+    
+    private void DrawButtons()
+    {
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("Clear and delete"))
+            {
+                ClearCachedData();
+            }
+
+            if (GUILayout.Button("Initialize Scene"))
+            {
+                InitScene();
+            }
+        }
+    }
+    
+    private void InitScene()
+    {
+        _cachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
+        FindAllGenerators();
+        _isInitialized = true;
+        SelectGenerator(0);
+    }
+    
+    private void ClearCachedData()
+    {
+        EditorPrefs.DeleteAll();
+
+        if (_cachedGenerationManager)
+        {
+            DestroyImmediate(_cachedGenerationManager);
+        }
+
+        _cachedGenerationManager = null;
+        _cachedPrefab = null;
+        _currentGenerator = null;
+        _cachedGeneratorNames.Clear();
+        _generators.Clear();
+        _selectedGeneratorIndex = 0;
+        _isInitialized = false;
+
+        EditorApplication.delayCall += Repaint;
+    }
+    
+    private void FindAllGenerators()
+    {
+        if (_cachedGenerationManager != null)
+        {
+            _generators =
+                new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
+            _cachedGeneratorNames = GetGeneratorNames();
+            if (_cachedGeneratorNames.Count > 0)
+            {
+                EditorPrefs.SetString(CachedGeneratorNamesKey, string.Join(",", _cachedGeneratorNames));
+            }
+        }
+        else
+        {
+            Debug.LogWarning("GenerationManager not found in the scene.");
+            ClearGeneratorLists();
+        }
+    }
+    
+    private static GameObject RetrieveCachedGenerationManager()
+    {
+        var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
+        if (cachedId != -1)
+        {
+            return EditorUtility.InstanceIDToObject(cachedId) as GameObject;
+        }
+
+        return null;
+    }
+
+
+    private GameObject InstantiateGenerationManager()
+    {
+        if (!_cachedPrefab)
+        {
+            _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        }
+
+        if (!_cachedPrefab)
+        {
+            return null;
+        }
+
+        _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
+        EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
+        return _cachedGenerationManager;
+    }
 
         #region Initialization
 
@@ -113,15 +206,6 @@ namespace Editor
             InitScene();
         }
 
-
-        private void InitScene()
-        {
-            _cachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
-            FindAllGenerators();
-            _isInitialized = true;
-            SelectGenerator(0);
-        }
-
         #endregion
 
         #region GUI Drawing
@@ -130,7 +214,8 @@ namespace Editor
 
         private void OnGUI()
         {
-            _globalScrollPosition = EditorGUILayout.BeginScrollView(_globalScrollPosition, true, false, GUILayout.ExpandWidth(true));
+            _globalScrollPosition =
+                EditorGUILayout.BeginScrollView(_globalScrollPosition, true, false, GUILayout.ExpandWidth(true));
 
             _showInitialization = EditorGUILayout.Foldout(_showInitialization, "Initialization", true);
             if (_showInitialization)
@@ -175,24 +260,6 @@ namespace Editor
             }
 
             EditorGUILayout.EndScrollView();
-        }
-
-
-
-        private void DrawButtons()
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                if (GUILayout.Button("Clear and delete"))
-                {
-                    ClearCachedData();
-                }
-
-                if (GUILayout.Button("Initialize Scene"))
-                {
-                    InitScene();
-                }
-            }
         }
 
 
@@ -516,26 +583,6 @@ namespace Editor
         }
 
 
-        private void FindAllGenerators()
-        {
-            if (_cachedGenerationManager != null)
-            {
-                _generators =
-                    new List<BaseGenerator>(_cachedGenerationManager.GetComponentsInChildren<BaseGenerator>());
-                _cachedGeneratorNames = GetGeneratorNames();
-                if (_cachedGeneratorNames.Count > 0)
-                {
-                    EditorPrefs.SetString(CachedGeneratorNamesKey, string.Join(",", _cachedGeneratorNames));
-                }
-            }
-            else
-            {
-                Debug.LogWarning("GenerationManager not found in the scene.");
-                ClearGeneratorLists();
-            }
-        }
-
-
         private void ClearGeneratorLists()
         {
             _generators.Clear();
@@ -580,55 +627,6 @@ namespace Editor
 
         #region Generation Manager and Cached Data
 
-        private static GameObject RetrieveCachedGenerationManager()
-        {
-            var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
-            if (cachedId != -1)
-            {
-                return EditorUtility.InstanceIDToObject(cachedId) as GameObject;
-            }
-
-            return null;
-        }
-
-
-        private GameObject InstantiateGenerationManager()
-        {
-            if (!_cachedPrefab)
-            {
-                _cachedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
-            }
-
-            if (!_cachedPrefab)
-            {
-                return null;
-            }
-
-            _cachedGenerationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
-            EditorPrefs.SetInt(CachedGenerationManagerIdKey, _cachedGenerationManager.GetInstanceID());
-            return _cachedGenerationManager;
-        }
-
-        private void ClearCachedData()
-        {
-            EditorPrefs.DeleteAll();
-
-            if (_cachedGenerationManager)
-            {
-                DestroyImmediate(_cachedGenerationManager);
-            }
-
-            _cachedGenerationManager = null;
-            _cachedPrefab = null;
-            _currentGenerator = null;
-            _cachedGeneratorNames.Clear();
-            _generators.Clear();
-            _selectedGeneratorIndex = 0;
-            _isInitialized = false;
-
-            EditorApplication.delayCall += Repaint;
-        }
-
         #endregion
 
         private readonly Dictionary<string, Vector2> _wallScrollPositions = new Dictionary<string, Vector2>();
@@ -665,7 +663,8 @@ namespace Editor
                     _wallScrollPositions[groupName] = Vector2.zero;
 
                 EditorGUILayout.LabelField(groupName, EditorStyles.boldLabel);
-                _wallScrollPositions[groupName] = EditorGUILayout.BeginScrollView(_wallScrollPositions[groupName], GUILayout.Height(100));
+                _wallScrollPositions[groupName] =
+                    EditorGUILayout.BeginScrollView(_wallScrollPositions[groupName], GUILayout.Height(100));
                 EditorGUILayout.BeginHorizontal();
                 foreach (var field in group)
                 {
@@ -681,6 +680,7 @@ namespace Editor
                         EditorGUILayout.EndVertical();
                     }
                 }
+
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndScrollView();
             }
