@@ -301,11 +301,13 @@ public class TilemapPainter : MonoBehaviour
         {
             var tile = tilemap.GetTile(pos);
             if (!tile) continue;
-            list.Add(new SerializableTile(pos, tile.name));
+            string assetPath = AssetDatabase.GetAssetPath(tile);
+            string guid = AssetDatabase.AssetPathToGUID(assetPath);
+            list.Add(new SerializableTile(pos, guid));
         }
-
         return list;
     }
+
 
     /// <summary>
     /// Saves the current state of both Tilemaps to a file.
@@ -331,16 +333,23 @@ public class TilemapPainter : MonoBehaviour
 
         foreach (var tile in tilemapData.walkableTiles)
         {
-            var tileBase = GetTileBaseByName(tile.tileName);
+            var tileBase = GetTileBaseByGUID(tile.tileGUID);
             walkableTilemap.SetTile(tile.position, tileBase);
         }
 
         foreach (var tile in tilemapData.wallTiles)
         {
-            var tileBase = GetTileBaseByName(tile.tileName);
+            var tileBase = GetTileBaseByGUID(tile.tileGUID);
             wallTilemap.SetTile(tile.position, tileBase);
         }
     }
+
+    private static TileBase GetTileBaseByGUID(string guid)
+    {
+        var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+        return AssetDatabase.LoadAssetAtPath<TileBase>(assetPath);
+    }
+
 
     /// <summary>
     /// Finds a TileBase by its name in the specified directory.
@@ -354,6 +363,7 @@ public class TilemapPainter : MonoBehaviour
             .Select(AssetDatabase.LoadAssetAtPath<TileBase>)
             .FirstOrDefault(tile => tile && tile.name == tileName);
     }
+
 
     #endregion
 
@@ -509,16 +519,11 @@ public class TilemapData
 public class SerializableTile
 {
     public Vector3Int position;
-    public string tileName;
+    public string tileGUID;
 
-    /// <summary>
-    /// Initializes a new instance of the SerializableTile class.
-    /// </summary>
-    /// <param name="position">Position of the tile.</param>
-    /// <param name="tileName">Name of the tile.</param>
-    public SerializableTile(Vector3Int position, string tileName)
+    public SerializableTile(Vector3Int position, string tileGUID)
     {
         this.position = position;
-        this.tileName = tileName;
+        this.tileGUID = tileGUID;
     }
 }
