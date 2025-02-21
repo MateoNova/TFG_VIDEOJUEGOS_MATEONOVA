@@ -8,28 +8,17 @@ namespace Editor
     /// </summary>
     public class GenerationManagerWindow : EditorWindow
     {
-        #region Constants and Fields
+        #region Fields
 
-        private readonly InitializationManager _initializationManager = InitializationManager.Instance;
-        private readonly GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
-        private readonly GeneratorSettings _generatorSettings = GeneratorSettings.Instance;
-        private readonly StyleManager _styleManager = StyleManager.Instance;
-        private readonly GenerationActions _generationActions = GenerationActions.Instance;
+        private InitializationManager _initializationManager;
+        private GeneratorSelection _generatorSelection;
+        private GeneratorSettings _generatorSettings;
+        private StyleManager _styleManager;
+        private GenerationActions _generationActions;
 
-
-        /// <summary>
-        /// Flag to indicate whether the scene is initialized.
-        /// </summary>
-        private bool _isInitialized;
-
-
-        /// <summary>
-        /// Scroll position for the wall tile settings.
-        /// </summary>
-        private Vector2 _wallScrollPosition;
+        private Vector2 _globalScrollPosition;
 
         #endregion
-
 
         #region Initialization
 
@@ -39,9 +28,16 @@ namespace Editor
             GetWindow<GenerationManagerWindow>("Generation Manager");
         }
 
-
         private void OnEnable()
         {
+            // Se crea la dependencia central
+            _generatorSelection = new GeneratorSelection();
+            // Inyección de dependencias en cada clase
+            _initializationManager = new InitializationManager(_generatorSelection);
+            _generatorSettings = new GeneratorSettings(_generatorSelection);
+            _styleManager = new StyleManager(_generatorSelection);
+            _generationActions = new GenerationActions(_generatorSelection);
+
             _initializationManager.InitScene();
         }
 
@@ -49,32 +45,16 @@ namespace Editor
 
         #region GUI Drawing
 
-        private Vector2 _globalScrollPosition;
-
         private void OnGUI()
         {
             _globalScrollPosition =
                 EditorGUILayout.BeginScrollView(_globalScrollPosition, true, false, GUILayout.ExpandWidth(true));
 
             _initializationManager.Draw();
-
             _generatorSelection.Draw();
-
-            /*if (_generators == null || _generators.Count == 0)
-            {
-                EditorGUILayout.HelpBox("No generators found in the scene.", MessageType.Warning);
-            }
-            else TODO RECORDAR REFACTORIZAR TODO LO RELACIONADO CON EL EDITOR PQ MUCHA SHIT Q PUEDO MEJORAR XD
-            {*/
-
             _generatorSettings.Draw();
-
             _styleManager.Draw();
-
             _generationActions.Draw();
-
-
-            //}
 
             EditorGUILayout.EndScrollView();
         }

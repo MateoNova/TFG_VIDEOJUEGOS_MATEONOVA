@@ -5,12 +5,13 @@ namespace Editor
 {
     public class InitializationManager
     {
-        private static InitializationManager _instance;
-
-        public static InitializationManager Instance => _instance ??= new InitializationManager();
         private bool _showInitialization = true;
+        private readonly GeneratorSelection _generatorSelection;
 
-        private readonly GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
+        public InitializationManager(GeneratorSelection generatorSelection)
+        {
+            _generatorSelection = generatorSelection;
+        }
 
         public void Draw()
         {
@@ -40,16 +41,13 @@ namespace Editor
         private void ClearCachedData()
         {
             EditorPrefs.DeleteAll();
-
             _generatorSelection.ClearCacheData();
-            //EditorApplication.delayCall += Repaint;
         }
 
-        internal void InitScene()
+        public void InitScene()
         {
             _generatorSelection.RetrieveOrInitializeCachedGenerationManager();
             _generatorSelection.FindAllGenerators();
-            //_isInitialized = true;
             _generatorSelection.SelectGenerator(0);
         }
     }

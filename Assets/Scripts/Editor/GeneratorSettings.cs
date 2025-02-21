@@ -5,12 +5,12 @@ namespace Editor
     public class GeneratorSettings
     {
         private bool _showGeneratorSettings = true;
+        private readonly GeneratorSelection _generatorSelection;
 
-        private readonly GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
-
-        private static GeneratorSettings _instance;
-
-        public static GeneratorSettings Instance => _instance ??= new GeneratorSettings();
+        public GeneratorSettings(GeneratorSelection generatorSelection)
+        {
+            _generatorSelection = generatorSelection;
+        }
 
         public void Draw()
         {

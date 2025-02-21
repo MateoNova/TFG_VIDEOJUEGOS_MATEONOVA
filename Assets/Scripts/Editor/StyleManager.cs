@@ -9,27 +9,16 @@ namespace Editor
 {
     public class StyleManager
     {
-        private static StyleManager _instance;
-
         private bool _showStyle = true;
-
-
-        public static StyleManager Instance => _instance ??= new StyleManager();
-
-        private readonly GeneratorSelection _generatorSelection = GeneratorSelection.Instance;
-
-        /// <summary>
-        /// Scroll position for the floor tile settings.
-        /// </summary>
+        private readonly GeneratorSelection _generatorSelection;
         private Vector2 _floorScrollPosition;
-
-        /// <summary>
-        /// Serialized object for the Tilemap Painter.
-        /// </summary>
         private SerializedObject _tilemapPainterObject;
-
         private readonly Dictionary<string, Vector2> _wallScrollPositions = new();
 
+        public StyleManager(GeneratorSelection generatorSelection)
+        {
+            _generatorSelection = generatorSelection;
+        }
 
         public void Draw()
         {
@@ -51,8 +40,6 @@ namespace Editor
 
             DrawTileGroupSettings(ref _floorScrollPosition, "walkableTileBases", "walkableTilesPriorities",
                 "Add floor tile", true, 0);
-            /*DrawTileGroupSettings(ref _wallScrollPosition, "wallTileBases", "wallTilesPriorities",
-            "Add wall tile", false, 1001);*/
 
             DrawWallTileSettings();
         }
@@ -79,7 +66,6 @@ namespace Editor
                         tilePrioritiesProperty.GetArrayElementAtIndex(tilePrioritiesProperty.arraySize - 1).intValue =
                             0;
                         _tilemapPainterObject.ApplyModifiedProperties();
-                        //Repaint();
                     }
 
                     var clearLabel = "Clear all " + (isWalkable ? "floor" : "wall") + " tiles";
@@ -95,7 +81,6 @@ namespace Editor
                         }
 
                         _tilemapPainterObject.ApplyModifiedProperties();
-                        //Repaint();
                     }
 
                     var selectLabel = "Select " + (isWalkable ? "floor" : "wall") + " tiles from folder";
@@ -105,7 +90,6 @@ namespace Editor
                         _generatorSelection.CurrentGenerator.TilemapPainter.SelectFromFolder(isWalkable, path);
                         _tilemapPainterObject.Update();
                         _tilemapPainterObject.ApplyModifiedProperties();
-                        //Repaint();
                     }
                 }
 
@@ -126,11 +110,10 @@ namespace Editor
                                 DrawTileBasePreview(tileBaseProperty, $"Tile {i + 1}", i + controlIdOffset,
                                     priorityProperty, i, isWalkable);
 
-                                // Show and edit the priority
                                 using (new EditorGUILayout.HorizontalScope())
                                 {
                                     if (Utils.ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName,
-                                            conditionalFieldBindingFlags: System.Reflection.BindingFlags.Public))
+                                            conditionalFieldBindingFlags: BindingFlags.Public))
                                         continue;
 
                                     GUILayout.FlexibleSpace();
@@ -147,8 +130,7 @@ namespace Editor
                 _tilemapPainterObject.ApplyModifiedProperties();
             }
 
-            scrollPosition = localScrollPosition; // Assign back to the ref parameter
-            //Repaint();
+            scrollPosition = localScrollPosition;
         }
 
         private void DrawWallTileSettings()
@@ -187,7 +169,6 @@ namespace Editor
                     if (wallProp != null)
                     {
                         string label = ObjectNames.NicifyVariableName(field.Name);
-
                         int controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
                         EditorGUILayout.BeginVertical();
                         DrawWallTilePreview(wallProp, label, controlID);
@@ -200,7 +181,6 @@ namespace Editor
             }
 
             _tilemapPainterObject.ApplyModifiedProperties();
-            //Repaint();
         }
 
         private void DrawTileBasePreview(SerializedProperty tileBaseProperty, string label, int controlID,
@@ -212,7 +192,6 @@ namespace Editor
                 return;
             }
 
-
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
@@ -222,13 +201,11 @@ namespace Editor
                 {
                     _generatorSelection.CurrentGenerator.TilemapPainter.RemoveTileAtPosition(index, isWalkable);
                     _tilemapPainterObject.ApplyModifiedProperties();
-                    //Repaint();
                 }
 
                 GUILayout.FlexibleSpace();
             }
 
-            // Show the preview of the TileBase
             var tileBase = tileBaseProperty.objectReferenceValue as TileBase;
             if (tileBase)
             {
@@ -265,7 +242,6 @@ namespace Editor
             }
         }
 
-        // Función auxiliar para dibujar la preview de cada wall tile
         private void DrawWallTilePreview(SerializedProperty tileProperty, string label, int controlID)
         {
             if (tileProperty == null)
@@ -274,23 +250,19 @@ namespace Editor
                 return;
             }
 
-            // Dibuja el título y el botón "X" para limpiar el tile
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
                 GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
                 if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
                 {
-                    // Al pulsar "X" se asigna null al campo del tile
                     tileProperty.objectReferenceValue = null;
                     _tilemapPainterObject.ApplyModifiedProperties();
-                    //Repaint();
                 }
 
                 GUILayout.FlexibleSpace();
             }
 
-            // Muestra la preview del TileBase
             var tileBase = tileProperty.objectReferenceValue as TileBase;
             if (tileBase)
             {
@@ -320,7 +292,6 @@ namespace Editor
                 }
             }
 
-            // Actualiza el tile seleccionado desde el Object Picker
             if (Event.current.commandName == "ObjectSelectorUpdated" &&
                 EditorGUIUtility.GetObjectPickerControlID() == controlID)
             {
