@@ -79,7 +79,6 @@ namespace Editor
             _showGeneratorSelection = EditorGUILayout.Foldout(_showGeneratorSelection, "Generator Selection", true);
             if (_showGeneratorSelection)
             {
-                EditorGUILayoutExtensions.DrawSectionTitle("Generator Selection");
                 DrawGeneratorSelection();
             }
         }

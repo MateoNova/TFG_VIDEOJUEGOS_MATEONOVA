@@ -38,7 +38,6 @@ public class GenerationActions
         _showGenerationActions = EditorGUILayout.Foldout(_showGenerationActions, "Generation Actions", true);
         if (_showGenerationActions)
         {
-            EditorGUILayoutExtensions.DrawSectionTitle("Generation Actions");
             DrawDungeonActions();
         }
     }
