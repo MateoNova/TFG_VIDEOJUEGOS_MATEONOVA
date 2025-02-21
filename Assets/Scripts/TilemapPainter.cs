@@ -24,13 +24,13 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// List of walkable tile bases. This allows for multiple walkable tiles to be used.
     /// </summary>
-    [SerializeField] private List<TileBase> walkableTileBases;
+    [SerializeField] private List<TileBase> walkableTileBases = new();
 
     /// <summary>
     /// List of priorities corresponding to the walkable tiles. The higher the priority, the more likely the tile will be chosen.
     /// </summary>
     [ConditionalField("randomWalkableTilesPlacement"), SerializeField]
-    private List<int> walkableTilesPriorities;
+    private List<int> walkableTilesPriorities = new();
 
     /// <summary>
     /// Indicates if the walkable tiles should be placed randomly.
@@ -305,6 +305,7 @@ public class TilemapPainter : MonoBehaviour
             string guid = AssetDatabase.AssetPathToGUID(assetPath);
             list.Add(new SerializableTile(pos, guid));
         }
+
         return list;
     }
 
@@ -333,37 +334,22 @@ public class TilemapPainter : MonoBehaviour
 
         foreach (var tile in tilemapData.walkableTiles)
         {
-            var tileBase = GetTileBaseByGUID(tile.tileGUID);
+            var tileBase = GetTileBaseByGuid(tile.tileGUID);
             walkableTilemap.SetTile(tile.position, tileBase);
         }
 
         foreach (var tile in tilemapData.wallTiles)
         {
-            var tileBase = GetTileBaseByGUID(tile.tileGUID);
+            var tileBase = GetTileBaseByGuid(tile.tileGUID);
             wallTilemap.SetTile(tile.position, tileBase);
         }
     }
 
-    private static TileBase GetTileBaseByGUID(string guid)
+    private static TileBase GetTileBaseByGuid(string guid)
     {
         var assetPath = AssetDatabase.GUIDToAssetPath(guid);
         return AssetDatabase.LoadAssetAtPath<TileBase>(assetPath);
     }
-
-
-    /// <summary>
-    /// Finds a TileBase by its name in the specified directory.
-    /// </summary>
-    /// <param name="tileName">Name of the tile to find.</param>
-    /// <returns>TileBase with the specified name.</returns>
-    private static TileBase GetTileBaseByName(string tileName)
-    {
-        var guids = AssetDatabase.FindAssets(tileName, new[] { "Assets/Assets/TilemapsDungeonTilesetil" });
-        return guids.Select(AssetDatabase.GUIDToAssetPath)
-            .Select(AssetDatabase.LoadAssetAtPath<TileBase>)
-            .FirstOrDefault(tile => tile && tile.name == tileName);
-    }
-
 
     #endregion
 
@@ -452,6 +438,10 @@ public class TilemapPainter : MonoBehaviour
     private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
         Dictionary<TileBase, float> probabilities, string path)
     {
+        tileBases ??= new List<TileBase>();
+        priorities ??= new List<int>();
+        probabilities ??= new Dictionary<TileBase, float>();
+
         tileBases.Clear();
         priorities.Clear();
         probabilities.Clear();
