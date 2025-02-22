@@ -32,10 +32,13 @@ namespace Editor
         /// </summary>
         public void Draw()
         {
+            EditorGUILayout.Space();
             _showGenerationActions = EditorGUILayout.Foldout(_showGenerationActions, "Generation Actions", true,
                 Utils.GetSectionTitleStyle());
 
-            if (_showGenerationActions) DrawDungeonActions();
+            if (!_showGenerationActions) return;
+            EditorGUILayout.Space();
+            DrawDungeonActions();
         }
 
         /// <summary>

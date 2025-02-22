@@ -18,6 +18,7 @@ namespace Editor
         private bool _showStyle = true;
         private bool _showFloorTileSettings = true;
         private bool _showWallTileSettings = true;
+        private readonly Dictionary<string, bool> _showWallTileGroupSettings = new();
 
         private Vector2 _walkableTilesScrollPosition;
         private readonly Dictionary<string, Vector2> _wallScrollPositions = new();
@@ -46,15 +47,17 @@ namespace Editor
             if (!HasValidTilemapPainter()) return;
 
             _showFloorTileSettings = EditorGUILayout.Foldout(_showFloorTileSettings, "Floor Tile Settings", true,
-                Utils.GetSubSectionTitleStyle());
+                Utils.GetSecondSectionTitleStyle());
             if (_showFloorTileSettings)
             {
                 EditorGUILayout.Space();
                 DrawFloorTileSettings();
             }
-
+            
+            EditorGUILayout.Space();
             _showWallTileSettings = EditorGUILayout.Foldout(_showWallTileSettings, "Wall Tile Settings", true,
-                Utils.GetSubSectionTitleStyle());
+                Utils.GetSecondSectionTitleStyle());
+            
             if (_showWallTileSettings)
             {
                 DrawWallTileSettings();
@@ -104,7 +107,7 @@ namespace Editor
                 {
                     using var scrollScope =
                         new EditorGUILayout.ScrollViewScope(localScrollPosition,
-                            GUILayout.Height(Utils.GetDisplayHeightScrollView(tilemapPainter)));
+                            GUILayout.Height(Utils.GetWalkableDisplayHeightScrollView(tilemapPainter)));
                     localScrollPosition = scrollScope.scrollPosition;
 
                     using (new EditorGUILayout.HorizontalScope())
@@ -157,47 +160,60 @@ namespace Editor
         private void DrawWallTileSettings()
         {
             if (!HasValidTilemapPainter()) return;
-
+        
             AddWallOptionButtons();
-
+        
             _tilemapPainterObject = new SerializedObject(_generatorSelection.CurrentGenerator.TilemapPainter);
             _tilemapPainterObject.Update();
-
+        
             var groupedWallFields = GetGroupedFields<WallTileGroupAttribute>(attr => attr.GroupName);
-
+        
             foreach (var group in groupedWallFields)
             {
                 var groupName = group.Key;
-
+        
                 if (!_wallScrollPositions.ContainsKey(groupName))
                     _wallScrollPositions[groupName] = Vector2.zero;
-
-                EditorGUILayout.LabelField(groupName, EditorStyles.boldLabel);
-                _wallScrollPositions[groupName] =
-                    EditorGUILayout.BeginScrollView(_wallScrollPositions[groupName], GUILayout.Height(100));
-
-                using (new EditorGUILayout.HorizontalScope())
+        
+                _showWallTileGroupSettings.TryAdd(groupName, true);
+        
+                _showWallTileGroupSettings[groupName] = EditorGUILayout.Foldout(_showWallTileGroupSettings[groupName],
+                    groupName, true, Utils.GetThirdSectionTitleStyle());
+                EditorGUILayout.Space();
+                
+                if (_showWallTileGroupSettings[groupName])
                 {
-                    foreach (var field in group)
+                    _wallScrollPositions[groupName] =
+                        EditorGUILayout.BeginScrollView(_wallScrollPositions[groupName], GUILayout.Height(Utils.GetWalllDisplayHeightScrollView()));
+        
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        var wallProp = _tilemapPainterObject.FindProperty(field.Name);
-                        if (wallProp == null) continue;
-
-                        var label = ObjectNames.NicifyVariableName(field.Name.Replace("wall", "",
-                            StringComparison.OrdinalIgnoreCase));
-                        var controlID = field.Name.GetHashCode() & 0x7FFFFFFF; // Ensure positive control ID
-
-                        using (new EditorGUILayout.VerticalScope())
+                        foreach (var field in group)
                         {
-                            DrawTilePreview(wallProp, label, controlID,
-                                () => { wallProp.objectReferenceValue = null; });
+                            var wallProp = _tilemapPainterObject.FindProperty(field.Name);
+                            if (wallProp == null) continue;
+        
+                            var label = ObjectNames.NicifyVariableName(field.Name);
+                            label = label.Replace("wall", "", StringComparison.OrdinalIgnoreCase);
+                            label = label.Replace("inner", "", StringComparison.OrdinalIgnoreCase);
+                            label = label.Replace("triple", "", StringComparison.OrdinalIgnoreCase);
+                            var parts = label.Split(' ');
+                            label = string.Join("\n", parts.Where(part => part != ""));
+        
+                            var controlID = field.Name.GetHashCode() & 0x7FFFFFFF; // Ensure positive control ID
+        
+                            using (new EditorGUILayout.VerticalScope())
+                            {
+                                DrawTilePreview(wallProp, label, controlID,
+                                    () => { wallProp.objectReferenceValue = null; });
+                            }
                         }
                     }
+        
+                    EditorGUILayout.EndScrollView();
                 }
-
-                EditorGUILayout.EndScrollView();
             }
-
+        
             _tilemapPainterObject.ApplyModifiedProperties();
         }
 
@@ -207,7 +223,7 @@ namespace Editor
         #region Common UI Helpers
 
         /// <summary>
-        /// Draws a tile preview with a removal button and tile selection.
+        /// Draws a tile preview with a removal option via right-click context menu.
         /// </summary>
         /// <param name="tileProperty">The serialized tile property.</param>
         /// <param name="label">Label for the tile.</param>
@@ -215,52 +231,72 @@ namespace Editor
         /// <param name="onRemove">Callback action on removal.</param>
         private void DrawTilePreview(SerializedProperty tileProperty, string label, int controlID, Action onRemove)
         {
-            using (new EditorGUILayout.VerticalScope()) // Mantener el contenido en una columna
+            using (new EditorGUILayout.VerticalScope())
             {
-                using (new EditorGUILayout.HorizontalScope()) // Centrar label y botón X
-                {
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
-                    if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20), GUILayout.Height(20)))
-                    {
-                        onRemove?.Invoke();
-                        _tilemapPainterObject.ApplyModifiedProperties();
-                    }
-                    GUILayout.FlexibleSpace();
-                }
-                
-                var tileBase = tileProperty.objectReferenceValue as TileBase;
-                var size = Utils.GetPreviewTileSize();
-                
-                using (new EditorGUILayout.HorizontalScope()) // Centrar la imagen de preview
-                {
-                    GUILayout.FlexibleSpace();
-                    
-                    if (tileBase)
-                    {
-                        Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
-                        if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
-                        {
-                            EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("Select Tile", GUILayout.Width(size), GUILayout.Height(size)))
-                        {
-                            EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
-                        }
-                    }
-                    
-                    GUILayout.FlexibleSpace();
-                }
+                ShowRightClickMenu(label, onRemove);
+                ShowTilePreview(tileProperty, controlID);
             }
+            
+            if (Event.current.commandName != "ObjectSelectorUpdated" ||
+                EditorGUIUtility.GetObjectPickerControlID() != controlID) return;
+            
+            tileProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+            _tilemapPainterObject.ApplyModifiedProperties();
+        }
 
-            if (Event.current.commandName == "ObjectSelectorUpdated" &&
-                EditorGUIUtility.GetObjectPickerControlID() == controlID)
+        private static void ShowTilePreview(SerializedProperty tileProperty, int controlID)
+        {
+            var tileBase = tileProperty.objectReferenceValue as TileBase;
+            var size = Utils.GetPreviewTileSize();
+
+            using (new EditorGUILayout.HorizontalScope())
             {
-                tileProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
-                _tilemapPainterObject.ApplyModifiedProperties();
+                GUILayout.FlexibleSpace();
+
+                if (tileBase)
+                {
+                    Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
+                    if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
+                    {
+                        EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
+                    }
+                }
+                else
+                {
+                    if (GUILayout.Button("Select Tile", GUILayout.Width(size), GUILayout.Height(size)))
+                    {
+                        EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
+                    }
+                }
+
+                GUILayout.FlexibleSpace();
+            }
+        }
+
+        private void ShowRightClickMenu(string label, Action onRemove)
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(label, Utils.GetLabelStyle());
+                GUILayout.FlexibleSpace();
+            }
+                
+            var labelRect = GUILayoutUtility.GetLastRect();
+            var currentEvent = Event.current;
+
+            // If right-click on label, show context menu
+            if (currentEvent.type == EventType.ContextClick && labelRect.Contains(currentEvent.mousePosition))
+            {
+                var menu = new GenericMenu();
+                menu.AddItem(new GUIContent("Remove tile"), false, () =>
+                {
+                    onRemove?.Invoke();
+                    _tilemapPainterObject.ApplyModifiedProperties();
+                });
+
+                menu.ShowAsContext();
+                currentEvent.Use(); // Do not propagate the event
             }
         }
 

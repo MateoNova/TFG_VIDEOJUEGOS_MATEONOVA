@@ -117,23 +117,43 @@ public static class Utils
         };
     }
 
-    public static GUIStyle GetSubSectionTitleStyle()
+    public static GUIStyle GetSecondSectionTitleStyle()
     {
         return new GUIStyle(EditorStyles.foldoutHeader)
         {
             fontSize = 14,
-            fontStyle = FontStyle.Bold,
+            fontStyle = FontStyle.Bold
         };
     }
     
-    public static int GetDisplayHeightScrollView(TilemapPainter tilemapPainter)
+    public static GUIStyle GetThirdSectionTitleStyle()
+    {
+        return new GUIStyle(EditorStyles.foldoutHeader)
+        {
+            fontSize = 12,
+            fontStyle = FontStyle.Bold
+        };
+    }
+    
+    public static int GetWalkableDisplayHeightScrollView(TilemapPainter tilemapPainter)
     {
         return tilemapPainter.randomWalkableTilesPlacement ? 100 : 125;
     }
     
+    public static int GetWalllDisplayHeightScrollView()
+    {
+        return 115;
+    }
+    
     public static int GetPreviewTileSize() => 64;
+    
+    public static GUIStyle GetLabelStyle()
+    {
+        return new GUIStyle(EditorStyles.label)
+        {
+            fontSize = 12,
+            alignment = TextAnchor.MiddleCenter
+        };
+    }
 
-    public static int GelLabelHeight() => 20;
-
-    public static float GetButtonXWidth() => 20;
 }

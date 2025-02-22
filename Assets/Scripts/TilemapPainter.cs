@@ -60,31 +60,31 @@ public class TilemapPainter : MonoBehaviour
     [SerializeField, WallTileGroup("Cardinal Directions")]
     private TileBase rightWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("External Corners")]
     private TileBase topLeftWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("External Corners")]
     private TileBase topRightWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("External Corners")]
     private TileBase bottomLeftWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("External Corners")]
     private TileBase bottomRightWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("External Corners")]
     private TileBase allCornersWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("Inner Corners")]
     private TileBase topLeftInnerWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("Inner Corners")]
     private TileBase topRightInnerWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("Inner Corners")]
     private TileBase bottomLeftInnerWall;
 
-    [SerializeField, WallTileGroup("Corners")]
+    [SerializeField, WallTileGroup("Inner Corners")]
     private TileBase bottomRightInnerWall;
 
     [SerializeField, WallTileGroup("Triple Walls")]
@@ -99,10 +99,10 @@ public class TilemapPainter : MonoBehaviour
     [SerializeField, WallTileGroup("Triple Walls")]
     private TileBase tripleExceptRightWall;
 
-    [SerializeField, WallTileGroup("Triple Walls")]
+    [SerializeField, WallTileGroup("Triple Inner Walls")]
     private TileBase tripleExceptLeftInnerWall;
 
-    [SerializeField, WallTileGroup("Triple Walls")]
+    [SerializeField, WallTileGroup("Triple Inner Walls")]
     private TileBase tripleExceptRightInnerWall;
 
     [SerializeField, WallTileGroup("Alone Walls")]
