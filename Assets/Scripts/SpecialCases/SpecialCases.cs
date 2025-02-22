@@ -89,7 +89,7 @@ namespace SpecialCases
     public class TopRightWallToTripleCornerExceptUp : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptUp;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptUp;
 
         protected override bool Matches(
             Vector2Int position,
@@ -112,7 +112,7 @@ namespace SpecialCases
     public class TopRightWallToTripleCornerExceptRightInner : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptRightInner;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptRightInner;
 
         protected override bool Matches(
             Vector2Int position,
@@ -159,7 +159,7 @@ namespace SpecialCases
     public class TopLeftWallToTripleCornerExceptUpCase : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptUp;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptUp;
 
         protected override bool Matches(
             Vector2Int position,
@@ -238,7 +238,7 @@ namespace SpecialCases
     public class BottomRightWallToTripleWallCornerExceptRight : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptRight;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptRight;
 
         protected override bool Matches(
             Vector2Int position,
@@ -276,7 +276,7 @@ namespace SpecialCases
     public class BottomRightWallToTripleWallCornerExceptDown : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptDown;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptDown;
 
         protected override bool Matches(
             Vector2Int position,
@@ -331,7 +331,7 @@ namespace SpecialCases
     public class BottomLeftWallToTripleWallCornerExceptDown : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptDown;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptDown;
 
         protected override bool Matches(
             Vector2Int position,
@@ -362,7 +362,7 @@ namespace SpecialCases
     public class BottomLeftWallToTripleWallCornerExceptLeft : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptLeft;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptLeft;
 
         protected override bool Matches(
             Vector2Int position,
@@ -520,7 +520,7 @@ namespace SpecialCases
     public class RightWallToTripleWallCornerExceptLeftInnerCase : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptLeftInner;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptLeftInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -535,7 +535,7 @@ namespace SpecialCases
     public class RightWallToTripleWallCornerExceptRightInnerCase : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptRightInner;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptRightInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -570,7 +570,7 @@ namespace SpecialCases
     public class DownWallToTripleWallCornerExceptUp : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Down;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptUp;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptUp;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -592,7 +592,7 @@ namespace SpecialCases
     public class DownWallToTripleWallCornerExceptDown : BaseWallOverrideCase
     {
         protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Down;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleWallCornerExceptDown;
+        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptDown;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)

@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 /// <summary>
@@ -87,22 +88,22 @@ public class TilemapPainter : MonoBehaviour
     private TileBase bottomRightInnerWall;
 
     [SerializeField, WallTileGroup("Triple Walls")]
-    private TileBase tripleWallCornerExcetUpWall;
+    private TileBase tripleExceptUpWall;
 
     [SerializeField, WallTileGroup("Triple Walls")]
-    private TileBase tripleWallCornerExcetDownWall;
+    private TileBase tripleExcetDownWall;
 
     [SerializeField, WallTileGroup("Triple Walls")]
-    private TileBase tripleWallCornerExceptLeftWall;
+    private TileBase tripleExceptLeftWall;
 
     [SerializeField, WallTileGroup("Triple Walls")]
-    private TileBase tripleWallCornerExceptRightWall;
+    private TileBase tripleExceptRightWall;
 
     [SerializeField, WallTileGroup("Triple Walls")]
-    private TileBase tripleWallCornerExceptLeftInnerWall;
+    private TileBase tripleExceptLeftInnerWall;
 
     [SerializeField, WallTileGroup("Triple Walls")]
-    private TileBase tripleWallCornerExceptRightInnerWall;
+    private TileBase tripleExceptRightInnerWall;
 
     [SerializeField, WallTileGroup("Alone Walls")]
     private TileBase aloneWall;
@@ -247,18 +248,18 @@ public class TilemapPainter : MonoBehaviour
             Utils.WallPosition.TopRight => topRightWall,
             Utils.WallPosition.BottomRight => bottomRightWall,
 
-            Utils.WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpWall,
-            Utils.WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownWall,
-            Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeftWall,
-            Utils.WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRightWall,
+            Utils.WallPosition.TripleExceptUp => tripleExceptUpWall,
+            Utils.WallPosition.TripleExceptDown => tripleExcetDownWall,
+            Utils.WallPosition.TripleExceptLeft => tripleExceptLeftWall,
+            Utils.WallPosition.TripleExceptRight => tripleExceptRightWall,
             Utils.WallPosition.AllWallCorner => allCornersWall,
             Utils.WallPosition.TopLeftInner => topLeftInnerWall,
             Utils.WallPosition.TopRightInner => topRightInnerWall,
             Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
             Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
             Utils.WallPosition.Alone => aloneWall,
-            Utils.WallPosition.TripleWallCornerExceptLeftInner => tripleWallCornerExceptLeftInnerWall,
-            Utils.WallPosition.TripleWallCornerExceptRightInner => tripleWallCornerExceptRightInnerWall,
+            Utils.WallPosition.TripleExceptLeftInner => tripleExceptLeftInnerWall,
+            Utils.WallPosition.TripleExceptRightInner => tripleExceptRightInnerWall,
             _ => null
         };
 
@@ -365,9 +366,9 @@ public class TilemapPainter : MonoBehaviour
     private static void ClearTileCollections(List<TileBase> tileBases, List<int> priorities,
         Dictionary<TileBase, float> probabilities)
     {
-        tileBases.Clear();
-        priorities.Clear();
-        probabilities.Clear();
+        tileBases?.Clear();
+        priorities?.Clear();
+        probabilities?.Clear();
     }
 
     /// <summary>
@@ -394,10 +395,10 @@ public class TilemapPainter : MonoBehaviour
         topRightInnerWall = null;
         bottomLeftInnerWall = null;
         bottomRightInnerWall = null;
-        tripleWallCornerExcetUpWall = null;
-        tripleWallCornerExcetDownWall = null;
-        tripleWallCornerExceptLeftWall = null;
-        tripleWallCornerExceptRightWall = null;
+        tripleExceptUpWall = null;
+        tripleExcetDownWall = null;
+        tripleExceptLeftWall = null;
+        tripleExceptRightWall = null;
         aloneWall = null;
     }
 

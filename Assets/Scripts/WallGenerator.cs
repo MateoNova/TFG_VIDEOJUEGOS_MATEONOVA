@@ -47,19 +47,18 @@ public class WallGenerator : MonoBehaviour
             { Utils.WallPosition.TopRight, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.right) },
             { Utils.WallPosition.BottomRight, GetCornerPositions(floorPositions, Vector2Int.down, Vector2Int.right) },
             // Initially empty: will be filled by overrides
-            { Utils.WallPosition.TripleWallCornerExceptUp, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.TripleWallCornerExceptDown, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.TripleWallCornerExceptLeft, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.TripleWallCornerExceptRight, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TripleExceptUp, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TripleExceptDown, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TripleExceptLeft, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TripleExceptRight, new HashSet<Vector2Int>() },
             { Utils.WallPosition.AllWallCorner, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.TripleWallCornerLeft, new HashSet<Vector2Int>() },
             { Utils.WallPosition.TopLeftInner, new HashSet<Vector2Int>() },
             { Utils.WallPosition.TopRightInner, new HashSet<Vector2Int>() },
             { Utils.WallPosition.BottomLeftInner, new HashSet<Vector2Int>() },
             { Utils.WallPosition.BottomRightInner, new HashSet<Vector2Int>() },
             { Utils.WallPosition.Alone, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.TripleWallCornerExceptLeftInner, new HashSet<Vector2Int>() },
-            { Utils.WallPosition.TripleWallCornerExceptRightInner, new HashSet<Vector2Int>() }
+            { Utils.WallPosition.TripleExceptLeftInner, new HashSet<Vector2Int>() },
+            { Utils.WallPosition.TripleExceptRightInner, new HashSet<Vector2Int>() }
         };
 
         return wallPositions;

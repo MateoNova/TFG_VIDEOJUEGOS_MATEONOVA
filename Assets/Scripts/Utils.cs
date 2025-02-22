@@ -18,19 +18,18 @@ public static class Utils
         BottomLeft,
         TopRight,
         BottomRight,
-        TripleWallCornerExceptUp,
-        TripleWallCornerExceptDown,
-        TripleWallCornerExceptLeft,
-        TripleWallCornerExceptRight,
+        TripleExceptUp,
+        TripleExceptDown,
+        TripleExceptLeft,
+        TripleExceptRight,
         AllWallCorner,
-        TripleWallCornerLeft,
         TopLeftInner,
         TopRightInner,
         BottomLeftInner,
         BottomRightInner,
         Alone,
-        TripleWallCornerExceptLeftInner,
-        TripleWallCornerExceptRightInner
+        TripleExceptLeftInner,
+        TripleExceptRightInner
     }
 
 
