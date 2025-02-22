@@ -34,7 +34,7 @@ public class WallTileGroupAttribute : Attribute
     }
 }
 
-
+//[AttributeUsage(AttributeTargets.Field)]
 public class WalkableTileGroupAttribute : Attribute
 {
     public bool IsTileBases { get; }

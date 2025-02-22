@@ -81,7 +81,7 @@ public static class Utils
         System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic,
         System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
     {
-        fieldBindingFlags |= System.Reflection.BindingFlags.Instance;
+        fieldBindingFlags |= System.Reflection.BindingFlags.Instance ;
         conditionalFieldBindingFlags |= System.Reflection.BindingFlags.Instance;
         var targetObject = serializedObject.targetObject;
         var field = targetObject.GetType().GetField(propertyName, fieldBindingFlags);

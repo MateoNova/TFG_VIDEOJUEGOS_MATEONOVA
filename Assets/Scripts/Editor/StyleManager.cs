@@ -27,16 +27,10 @@ namespace Editor
 
         #endregion
 
-        #region Constructor
-
         public StyleManager(GeneratorSelection generatorSelection)
         {
             _generatorSelection = generatorSelection;
         }
-
-        #endregion
-
-        #region Drawing Methods
 
         /// <summary>
         /// Draws the style interface.
@@ -49,7 +43,8 @@ namespace Editor
 
             if (!HasValidTilemapPainter()) return;
 
-            _showFloorTileSettings = EditorGUILayout.Foldout(_showFloorTileSettings, "Floor Tile Settings", true, Utils.GetSubSectionTitleStyle());
+            _showFloorTileSettings = EditorGUILayout.Foldout(_showFloorTileSettings, "Floor Tile Settings", true,
+                Utils.GetSubSectionTitleStyle());
             if (_showFloorTileSettings)
             {
                 EditorGUILayout.Space();
@@ -63,9 +58,80 @@ namespace Editor
             }
         }
 
+
+        #region Walkable Tiles drawing
+
+        /// <summary>
+        /// Draws the floor tile settings including the random placement toggle and the tile group settings.
+        /// </summary>
+        private void DrawFloorTileSettings()
+        {
+            var tilemapPainter = _generatorSelection.CurrentGenerator.TilemapPainter;
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label("¿Random Floor Placement?", Utils.GetOptionStyle(), GUILayout.ExpandWidth(false));
+                tilemapPainter.randomWalkableTilesPlacement =
+                    EditorGUILayout.Toggle(tilemapPainter.randomWalkableTilesPlacement);
+            }
+
+            EditorGUILayout.Space();
+            DrawWalkableTileGroupSettings();
+        }
+
+        /// <summary>
+        /// Draws the walkable tile group settings using reflection.
+        /// </summary>
+        private void DrawWalkableTileGroupSettings()
+        {
+            if (!HasValidTilemapPainter()) return;
+
+            _tilemapPainterObject = new SerializedObject(_generatorSelection.CurrentGenerator.TilemapPainter);
+
+            if (!TryGetWalkableTileProperties(out var tileBasesProperty, out var tilePrioritiesProperty))
+                return;
+
+            var localScrollPosition = _walkableTilesScrollPosition;
+            using (new EditorGUILayout.VerticalScope())
+            {
+                AddWalkableOptionsButtons(tileBasesProperty, tilePrioritiesProperty);
+
+                if (tileBasesProperty.arraySize > 0)
+                {
+                    using var scrollScope =
+                        new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(125));
+                    localScrollPosition = scrollScope.scrollPosition;
+
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        for (var i = 0; i < tileBasesProperty.arraySize; i++)
+                        {
+                            var tileBaseProperty = tileBasesProperty.GetArrayElementAtIndex(i);
+                            var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
+
+                            using (new EditorGUILayout.VerticalScope())
+                            {
+                                // Para floor tiles, la acción de remover llama a RemoveTileAtPosition.
+                                DrawTilePreview(tileBaseProperty, $"Tile {i + 1}", i,
+                                    () =>
+                                    {
+                                        _generatorSelection.CurrentGenerator.TilemapPainter.RemoveTileAtPosition(i);
+                                    });
+                                AddPriorityToTilesUI(tilePrioritiesProperty.name, priorityProperty);
+                            }
+                        }
+                    }
+                }
+
+                _tilemapPainterObject.ApplyModifiedProperties();
+            }
+
+            _walkableTilesScrollPosition = localScrollPosition;
+        }
+
         #endregion
 
-        #region Wall Tile Methods
+        #region Wall Tiles Drawing
 
         /// <summary>
         /// Draws the wall tile settings using reflection and grouping by wall tile group attribute.
@@ -84,28 +150,30 @@ namespace Editor
 
             foreach (var group in groupedWallFields)
             {
-                string groupName = group.Key;
+                var groupName = group.Key;
 
                 if (!_wallScrollPositions.ContainsKey(groupName))
                     _wallScrollPositions[groupName] = Vector2.zero;
 
                 EditorGUILayout.LabelField(groupName, EditorStyles.boldLabel);
-                _wallScrollPositions[groupName] = EditorGUILayout.BeginScrollView(_wallScrollPositions[groupName], GUILayout.Height(100));
+                _wallScrollPositions[groupName] =
+                    EditorGUILayout.BeginScrollView(_wallScrollPositions[groupName], GUILayout.Height(100));
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     foreach (var field in group)
                     {
-                        SerializedProperty wallProp = _tilemapPainterObject.FindProperty(field.Name);
+                        var wallProp = _tilemapPainterObject.FindProperty(field.Name);
                         if (wallProp == null) continue;
 
-                        string label = ObjectNames.NicifyVariableName(field.Name);
-                        int controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
+                        var label = ObjectNames.NicifyVariableName(field.Name);
+                        var controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
 
                         using (new EditorGUILayout.VerticalScope())
                         {
                             // Para walls, la acción de remover es asignar null.
-                            DrawTilePreview(wallProp, label, controlID, () => { wallProp.objectReferenceValue = null; });
+                            DrawTilePreview(wallProp, label, controlID,
+                                () => { wallProp.objectReferenceValue = null; });
                         }
                     }
                 }
@@ -118,74 +186,6 @@ namespace Editor
 
         #endregion
 
-        #region Walkable (Floor) Tile Methods
-
-        /// <summary>
-        /// Draws the floor tile settings including the random placement toggle and the tile group settings.
-        /// </summary>
-        private void DrawFloorTileSettings()
-        {
-            var tilemapPainter = _generatorSelection.CurrentGenerator.TilemapPainter;
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.Label("¿Random Floor Placement?", Utils.GetOptionStyle(), GUILayout.ExpandWidth(false));
-                tilemapPainter.randomWalkableTilesPlacement = EditorGUILayout.Toggle(tilemapPainter.randomWalkableTilesPlacement);
-            }
-
-            EditorGUILayout.Space();
-            DrawWalkableTileGroupSettings();
-        }
-
-        /// <summary>
-        /// Draws the walkable tile group settings using reflection.
-        /// </summary>
-        private void DrawWalkableTileGroupSettings()
-        {
-            if (!HasValidTilemapPainter()) return;
-
-            _tilemapPainterObject = new SerializedObject(_generatorSelection.CurrentGenerator.TilemapPainter);
-
-            if (!TryGetWalkableTileProperties(out SerializedProperty tileBasesProperty, out SerializedProperty tilePrioritiesProperty))
-                return;
-
-            var localScrollPosition = _walkableTilesScrollPosition;
-            using (new EditorGUILayout.VerticalScope())
-            {
-                AddWalkableOptionsButtons(tileBasesProperty, tilePrioritiesProperty);
-
-                if (tileBasesProperty.arraySize > 0)
-                {
-                    using var scrollScope = new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(125));
-                    localScrollPosition = scrollScope.scrollPosition;
-
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        for (int i = 0; i < tileBasesProperty.arraySize; i++)
-                        {
-                            SerializedProperty tileBaseProperty = tileBasesProperty.GetArrayElementAtIndex(i);
-                            SerializedProperty priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
-
-                            using (new EditorGUILayout.VerticalScope())
-                            {
-                                // Para floor tiles, la acción de remover llama a RemoveTileAtPosition.
-                                DrawTilePreview(tileBaseProperty, $"Tile {i + 1}", i, () =>
-                                {
-                                    _generatorSelection.CurrentGenerator.TilemapPainter.RemoveTileAtPosition(i);
-                                });
-                                AddPriorityToTilesUI(tilePrioritiesProperty.name, priorityProperty);
-                            }
-                        }
-                    }
-                }
-
-                _tilemapPainterObject.ApplyModifiedProperties();
-            }
-
-            _walkableTilesScrollPosition = localScrollPosition;
-        }
-
-        #endregion
 
         #region Common UI Helpers
 
@@ -207,6 +207,7 @@ namespace Editor
                     onRemove?.Invoke();
                     _tilemapPainterObject.ApplyModifiedProperties();
                 }
+
                 GUILayout.FlexibleSpace();
             }
 
@@ -221,6 +222,7 @@ namespace Editor
                     {
                         EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
                     }
+
                     GUILayout.FlexibleSpace();
                 }
             }
@@ -233,6 +235,7 @@ namespace Editor
                     {
                         EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
                     }
+
                     GUILayout.FlexibleSpace();
                 }
             }
@@ -251,7 +254,8 @@ namespace Editor
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (Utils.ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName, BindingFlags.Public))
+                if (Utils.ShouldDisplayField(_tilemapPainterObject, tilePrioritiesPropName,
+                        conditionalFieldBindingFlags: BindingFlags.Public))
                 {
                     return;
                 }
@@ -266,7 +270,8 @@ namespace Editor
         /// <summary>
         /// Adds buttons for tile operations (add, clear, select from folder) for walkable tiles.
         /// </summary>
-        private void AddWalkableOptionsButtons(SerializedProperty tileBasesProperty, SerializedProperty tilePrioritiesProperty)
+        private void AddWalkableOptionsButtons(SerializedProperty tileBasesProperty,
+            SerializedProperty tilePrioritiesProperty)
         {
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -288,6 +293,7 @@ namespace Editor
             {
                 _generatorSelection.CurrentGenerator.TilemapPainter.SelectWalkableTilesFromFolder(path);
             }
+
             _tilemapPainterObject.Update();
             _tilemapPainterObject.ApplyModifiedProperties();
         }
@@ -310,7 +316,8 @@ namespace Editor
         /// <summary>
         /// Adds a button to add a tile to the list.
         /// </summary>
-        private void AddTileToUIButton(string buttonLabel, SerializedProperty tileBasesProperty, SerializedProperty tilePrioritiesProperty)
+        private void AddTileToUIButton(string buttonLabel, SerializedProperty tileBasesProperty,
+            SerializedProperty tilePrioritiesProperty)
         {
             if (!GUILayout.Button(buttonLabel)) return;
 
@@ -328,7 +335,8 @@ namespace Editor
         /// <summary>
         /// Retrieves grouped fields from TilemapPainter decorated with a specific attribute.
         /// </summary>
-        private IEnumerable<IGrouping<string, FieldInfo>> GetGroupedFields<TAttribute>(Func<TAttribute, string> groupSelector) where TAttribute : Attribute
+        private static IEnumerable<IGrouping<string, FieldInfo>> GetGroupedFields<TAttribute>(
+            Func<TAttribute, string> groupSelector) where TAttribute : Attribute
         {
             return typeof(TilemapPainter)
                 .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
@@ -339,22 +347,26 @@ namespace Editor
         /// <summary>
         /// Retrieves walkable tile properties (bases and priorities) using reflection.
         /// </summary>
-        private bool TryGetWalkableTileProperties(out SerializedProperty tileBasesProperty, out SerializedProperty tilePrioritiesProperty)
+        private bool TryGetWalkableTileProperties(out SerializedProperty tileBasesProperty,
+            out SerializedProperty tilePrioritiesProperty)
         {
             _tilemapPainterObject = new SerializedObject(_generatorSelection.CurrentGenerator.TilemapPainter);
-            Type painterType = typeof(TilemapPainter);
+            var painterType = typeof(TilemapPainter);
 
-            FieldInfo tileBasesField = painterType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+            var tileBasesField = painterType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
                 .FirstOrDefault(f => f.IsDefined(typeof(WalkableTileGroupAttribute), false) &&
-                                     ((WalkableTileGroupAttribute)f.GetCustomAttribute(typeof(WalkableTileGroupAttribute), false)).IsTileBases);
+                                     ((WalkableTileGroupAttribute)f.GetCustomAttribute(
+                                         typeof(WalkableTileGroupAttribute), false)).IsTileBases);
 
-            FieldInfo prioritiesField = painterType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+            var prioritiesField = painterType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
                 .FirstOrDefault(f => f.IsDefined(typeof(WalkableTileGroupAttribute), false) &&
-                                     ((WalkableTileGroupAttribute)f.GetCustomAttribute(typeof(WalkableTileGroupAttribute), false)).IsTilePriorities);
+                                     ((WalkableTileGroupAttribute)f.GetCustomAttribute(
+                                         typeof(WalkableTileGroupAttribute), false)).IsTilePriorities);
 
             if (tileBasesField == null || prioritiesField == null)
             {
-                Debug.LogError("Walkable tile fields not found. Ensure they are decorated with WalkableTileGroupAttribute.");
+                Debug.LogError(
+                    "Walkable tile fields not found. Ensure they are decorated with WalkableTileGroupAttribute.");
                 tileBasesProperty = null;
                 tilePrioritiesProperty = null;
                 return false;
@@ -370,8 +382,8 @@ namespace Editor
         /// </summary>
         private bool HasValidTilemapPainter()
         {
-            return _generatorSelection.CurrentGenerator != null &&
-                   _generatorSelection.CurrentGenerator.TilemapPainter != null;
+            return _generatorSelection.CurrentGenerator &&
+                   _generatorSelection.CurrentGenerator.TilemapPainter;
         }
 
         #endregion
