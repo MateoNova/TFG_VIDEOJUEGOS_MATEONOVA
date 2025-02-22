@@ -73,7 +73,7 @@ public static class Utils
             _ => Vector2Int.up
         };
     }
-    
+
     /// <summary>
     /// Gets the opposite direction to the given direction.
     /// </summary>
@@ -99,7 +99,7 @@ public static class Utils
 
         return conditionValue;
     }
-    
+
     public static GUIStyle GetSectionTitleStyle()
     {
         return new GUIStyle(EditorStyles.foldout)
@@ -108,13 +108,22 @@ public static class Utils
             fontStyle = FontStyle.Bold
         };
     }
-    
+
     public static GUIStyle GetOptionStyle()
     {
         return new GUIStyle(EditorStyles.wordWrappedLabel)
         {
-            fontSize = 14,
+            fontSize = 12,
             fontStyle = FontStyle.Bold
+        };
+    }
+
+    public static GUIStyle GetSubSectionTitleStyle()
+    {
+        return new GUIStyle(EditorStyles.foldoutHeader)
+        {
+            fontSize = 14,
+            fontStyle = FontStyle.Bold,
         };
     }
 }

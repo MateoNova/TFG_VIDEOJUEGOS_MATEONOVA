@@ -387,17 +387,12 @@ public class TilemapPainter : MonoBehaviour
     /// </summary>
     /// <param name="position">Index of the tile to remove.</param>
     /// <param name="isWalkable">Indicates if the tile is walkable.</param>
-    public void RemoveTileAtPosition(int position, bool isWalkable)
+    public void RemoveTileAtPosition(int position)
     {
-        if (isWalkable)
-        {
-            RemoveTileAtIndex(position, walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities);
-        }
-        else
-        {
-            //todo 
-            // RemoveTileAtIndex(position, wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
-        }
+        RemoveTileAtIndex(position, walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities);
+
+        //todo 
+        // RemoveTileAtIndex(position, wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
     }
 
     /// <summary>
@@ -463,19 +458,10 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// Selects tiles from a folder, differentiating between floor and wall tiles.
     /// </summary>
-    /// <param name="floorTiles">Indicates if the tiles are floor tiles.</param>
     /// <param name="path">Path to the folder containing the tiles.</param>
-    public void SelectFromFolder(bool floorTiles, string path)
+    public void SelectWalkableTilesFromFolder(string path)
     {
-        if (floorTiles)
-        {
-            SelectTilesFromFolder(walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities, path);
-        }
-        else
-        {
-            //todo 
-            // SelectTilesFromFolder(wallTileBases, wallTilesPriorities, _wallTilesProbabilities, path);
-        }
+        SelectTilesFromFolder(walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities, path);
     }
 
     #endregion
