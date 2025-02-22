@@ -9,17 +9,12 @@ using UnityEngine.Tilemaps;
 /// </summary>
 public class TilemapPainter : MonoBehaviour
 {
-    #region Inspector Fields
+    # region Fields: Walkable Tiles
 
     /// <summary>
     /// The Tilemap used to render walkable tiles.
     /// </summary>
     [SerializeField] private Tilemap walkableTilemap;
-
-    /// <summary>
-    /// The Tilemap used to render wall tiles.
-    /// </summary>
-    [SerializeField] private Tilemap wallTilemap;
 
     /// <summary>
     /// List of walkable tile bases. This allows for multiple walkable tiles to be used.
@@ -43,11 +38,15 @@ public class TilemapPainter : MonoBehaviour
     /// </summary>
     private Dictionary<TileBase, float> _walkableTilesProbabilities = new();
 
+    # endregion
+
+    #region Fields: Wall Tiles
+
     /// <summary>
-    /// List of wall tile bases. This allows for multiple wall tiles to be used.
+    /// The Tilemap used to render wall tiles.
     /// </summary>
-    //[SerializeField] private List<TileBase> wallTileBases;
-    // Grupo: Cardinal Directions
+    [SerializeField] private Tilemap wallTilemap;
+
     [SerializeField, WallTileGroup("Cardinal Directions")]
     private TileBase upWall;
 
@@ -60,7 +59,6 @@ public class TilemapPainter : MonoBehaviour
     [SerializeField, WallTileGroup("Cardinal Directions")]
     private TileBase rightWall;
 
-    // Grupo: Corners
     [SerializeField, WallTileGroup("Corners")]
     private TileBase topLeftWall;
 
@@ -88,8 +86,6 @@ public class TilemapPainter : MonoBehaviour
     [SerializeField, WallTileGroup("Corners")]
     private TileBase bottomRightInnerWall;
 
-    // Grupo: Triple Walls
-
     [SerializeField, WallTileGroup("Triple Walls")]
     private TileBase tripleWallCornerExcetUpWall;
 
@@ -108,19 +104,18 @@ public class TilemapPainter : MonoBehaviour
     [SerializeField, WallTileGroup("Triple Walls")]
     private TileBase tripleWallCornerExceptRightInnerWall;
 
-    // Grupo: Alone Walls
     [SerializeField, WallTileGroup("Alone Walls")]
     private TileBase aloneWall;
 
-
-    public TilemapPainter(bool randomWalkableTilesPlacement)
-    {
-        this.randomWalkableTilesPlacement = randomWalkableTilesPlacement;
-    }
-
     #endregion
 
-    #region Probability Initialization
+    # region Initialization: Walkable Tiles
+
+    /// <summary>
+    /// Initializes the probabilities for walkable tiles.
+    /// </summary>
+    private void InitializeWalkableTilesProbabilities() =>
+        _walkableTilesProbabilities = InitializeProbabilities(walkableTileBases, walkableTilesPriorities);
 
     /// <summary>
     /// Creates a dictionary of probabilities from the lists of tiles and priorities.
@@ -149,15 +144,9 @@ public class TilemapPainter : MonoBehaviour
         return probabilities;
     }
 
-    /// <summary>
-    /// Initializes the probabilities for walkable tiles.
-    /// </summary>
-    private void InitializeWalkableTilesProbabilities() =>
-        _walkableTilesProbabilities = InitializeProbabilities(walkableTileBases, walkableTilesPriorities);
+    # endregion
 
-    #endregion
-
-    #region Painting Methods
+    # region Paint: Walkable Tiles
 
     /// <summary>
     /// Renders the walkable tiles at the specified positions.
@@ -175,47 +164,6 @@ public class TilemapPainter : MonoBehaviour
         {
             PaintTilesWithProbabilities(tilesPositions, walkableTilemap, walkableTileBases,
                 _walkableTilesProbabilities);
-        }
-    }
-
-    /// <summary>
-    /// Renders the wall tiles at the specified positions.
-    /// </summary>
-    /// <param name="tilesPositions">Positions to render the wall tiles.</param>
-    public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, Utils.WallPosition position)
-    {
-        var tile = position switch
-        {
-            Utils.WallPosition.Up => upWall,
-            Utils.WallPosition.Down => downWall,
-            Utils.WallPosition.Left => leftWall,
-            Utils.WallPosition.Right => rightWall,
-            Utils.WallPosition.TopLeft => topLeftWall,
-            Utils.WallPosition.BottomLeft => bottomLeftWall,
-            Utils.WallPosition.TopRight => topRightWall,
-            Utils.WallPosition.BottomRight => bottomRightWall,
-
-            Utils.WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpWall,
-            Utils.WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownWall,
-            Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeftWall,
-            Utils.WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRightWall,
-            Utils.WallPosition.AllWallCorner => allCornersWall,
-            Utils.WallPosition.TopLeftInner => topLeftInnerWall,
-            Utils.WallPosition.TopRightInner => topRightInnerWall,
-            Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
-            Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
-            Utils.WallPosition.Alone => aloneWall,
-            Utils.WallPosition.TripleWallCornerExceptLeftInner => tripleWallCornerExceptLeftInnerWall,
-            Utils.WallPosition.TripleWallCornerExceptRightInner => tripleWallCornerExceptRightInnerWall,
-            _ => null
-        };
-
-        if (!tile) return;
-
-        foreach (var pos in tilesPositions)
-        {
-            var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
-            wallTilemap.SetTile(tilePosition, tile);
         }
     }
 
@@ -277,7 +225,59 @@ public class TilemapPainter : MonoBehaviour
         }
     }
 
-    #endregion
+    # endregion
+
+    # region Paint: Wall Tiles
+
+    /// <summary>
+    /// Renders the wall tiles at the specified positions.
+    /// </summary>
+    /// <param name="tilesPositions">Positions to render the wall tiles.</param>
+    /// <param name="position"> Position of the wall tile.</param>
+    public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, Utils.WallPosition position)
+    {
+        var tile = position switch
+        {
+            Utils.WallPosition.Up => upWall,
+            Utils.WallPosition.Down => downWall,
+            Utils.WallPosition.Left => leftWall,
+            Utils.WallPosition.Right => rightWall,
+            Utils.WallPosition.TopLeft => topLeftWall,
+            Utils.WallPosition.BottomLeft => bottomLeftWall,
+            Utils.WallPosition.TopRight => topRightWall,
+            Utils.WallPosition.BottomRight => bottomRightWall,
+
+            Utils.WallPosition.TripleWallCornerExceptUp => tripleWallCornerExcetUpWall,
+            Utils.WallPosition.TripleWallCornerExceptDown => tripleWallCornerExcetDownWall,
+            Utils.WallPosition.TripleWallCornerExceptLeft => tripleWallCornerExceptLeftWall,
+            Utils.WallPosition.TripleWallCornerExceptRight => tripleWallCornerExceptRightWall,
+            Utils.WallPosition.AllWallCorner => allCornersWall,
+            Utils.WallPosition.TopLeftInner => topLeftInnerWall,
+            Utils.WallPosition.TopRightInner => topRightInnerWall,
+            Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
+            Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
+            Utils.WallPosition.Alone => aloneWall,
+            Utils.WallPosition.TripleWallCornerExceptLeftInner => tripleWallCornerExceptLeftInnerWall,
+            Utils.WallPosition.TripleWallCornerExceptRightInner => tripleWallCornerExceptRightInnerWall,
+            _ => null
+        };
+
+        if (!tile) return;
+
+        foreach (var pos in tilesPositions)
+        {
+            var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
+            wallTilemap.SetTile(tilePosition, tile);
+        }
+    }
+
+    # endregion
+
+    public TilemapPainter(bool randomWalkableTilesPlacement)
+    {
+        this.randomWalkableTilesPlacement = randomWalkableTilesPlacement;
+    }
+
 
     #region Save & Load
 
@@ -302,8 +302,8 @@ public class TilemapPainter : MonoBehaviour
         {
             var tile = tilemap.GetTile(pos);
             if (!tile) continue;
-            string assetPath = AssetDatabase.GetAssetPath(tile);
-            string guid = AssetDatabase.AssetPathToGUID(assetPath);
+            var assetPath = AssetDatabase.GetAssetPath(tile);
+            var guid = AssetDatabase.AssetPathToGUID(assetPath);
             list.Add(new SerializableTile(pos, guid));
         }
 
@@ -357,45 +357,6 @@ public class TilemapPainter : MonoBehaviour
     #region Tile Collections Management
 
     /// <summary>
-    /// Helper method to remove a tile (and its priority) from a collection.
-    /// </summary>
-    /// <param name="index">Index of the tile to remove.</param>
-    /// <param name="tileBases">List of tile bases.</param>
-    /// <param name="priorities">List of priorities corresponding to the tiles.</param>
-    /// <param name="probabilities">Dictionary of tiles and their probabilities.</param>
-    private static void RemoveTileAtIndex(int index, List<TileBase> tileBases, List<int> priorities,
-        Dictionary<TileBase, float> probabilities)
-    {
-        if (index < 0 || index >= tileBases.Count)
-        {
-            Debug.LogWarning("Index out of range.");
-            return;
-        }
-
-        var tile = tileBases[index];
-
-        if (tile && probabilities != null)
-        {
-            probabilities.Remove(tile);
-        }
-
-        tileBases.RemoveAt(index);
-        priorities.RemoveAt(index);
-    }
-
-    /// <summary>
-    /// Removes a tile (by index) from the corresponding collection.
-    /// </summary>
-    /// <param name="position">Index of the tile to remove.</param>
-    public void RemoveTileAtPosition(int position)
-    {
-        RemoveTileAtIndex(position, walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities);
-
-        //todo 
-        // RemoveTileAtIndex(position, wallTileBases, wallTilesPriorities, _wallTilesProbabilities);
-    }
-
-    /// <summary>
     /// Helper method to clear the tile collections.
     /// </summary>
     /// <param name="tileBases">List of tile bases.</param>
@@ -420,7 +381,24 @@ public class TilemapPainter : MonoBehaviour
     /// </summary>
     public void RemoveAllWallTiles()
     {
-        //todo 
+        upWall = null;
+        downWall = null;
+        leftWall = null;
+        rightWall = null;
+        topLeftWall = null;
+        topRightWall = null;
+        bottomLeftWall = null;
+        bottomRightWall = null;
+        allCornersWall = null;
+        topLeftInnerWall = null;
+        topRightInnerWall = null;
+        bottomLeftInnerWall = null;
+        bottomRightInnerWall = null;
+        tripleWallCornerExcetUpWall = null;
+        tripleWallCornerExcetDownWall = null;
+        tripleWallCornerExceptLeftWall = null;
+        tripleWallCornerExceptRightWall = null;
+        aloneWall = null;
     }
 
     /// <summary>
