@@ -131,4 +131,10 @@ public static class Utils
     {
         return tilemapPainter.randomWalkableTilesPlacement ? 100 : 125;
     }
+    
+    public static int GetPreviewTileSize() => 64;
+
+    public static int GelLabelHeight() => 20;
+
+    public static float GetButtonXWidth() => 20;
 }

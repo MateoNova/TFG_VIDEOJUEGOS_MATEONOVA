@@ -102,7 +102,8 @@ namespace Editor
                 if (tileBasesProperty.arraySize > 0)
                 {
                     using var scrollScope =
-                        new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(Utils.GetDisplayHeightScrollView(tilemapPainter)));
+                        new EditorGUILayout.ScrollViewScope(localScrollPosition,
+                            GUILayout.Height(Utils.GetDisplayHeightScrollView(tilemapPainter)));
                     localScrollPosition = scrollScope.scrollPosition;
 
                     using (new EditorGUILayout.HorizontalScope())
@@ -187,7 +188,6 @@ namespace Editor
 
                         using (new EditorGUILayout.VerticalScope())
                         {
-                            // Para walls, la acción de remover es asignar null.
                             DrawTilePreview(wallProp, label, controlID,
                                 () => { wallProp.objectReferenceValue = null; });
                         }
@@ -217,8 +217,10 @@ namespace Editor
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
-                GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(20));
-                if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
+                GUILayout.Label(label, EditorStyles.boldLabel, GUILayout.Height(Utils.GelLabelHeight()),
+                    GUILayout.ExpandWidth(false));
+                
+                if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(Utils.GetButtonXWidth())))
                 {
                     onRemove?.Invoke();
                     _tilemapPainterObject.ApplyModifiedProperties();
@@ -228,13 +230,15 @@ namespace Editor
             }
 
             var tileBase = tileProperty.objectReferenceValue as TileBase;
+            var size = Utils.GetPreviewTileSize();
             if (tileBase)
             {
                 Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button(previewTexture, GUILayout.Width(64), GUILayout.Height(64)))
+                    
+                    if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
                     {
                         EditorGUIUtility.ShowObjectPicker<TileBase>(tileBase, false, "", controlID);
                     }
@@ -247,7 +251,7 @@ namespace Editor
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Select Tile", GUILayout.Width(64), GUILayout.Height(64)))
+                    if (GUILayout.Button("Select Tile", GUILayout.Width(size), GUILayout.Height(size)))
                     {
                         EditorGUIUtility.ShowObjectPicker<TileBase>(null, false, "", controlID);
                     }
@@ -258,7 +262,7 @@ namespace Editor
 
             if (Event.current.commandName != "ObjectSelectorUpdated" ||
                 EditorGUIUtility.GetObjectPickerControlID() != controlID) return;
-            
+
             tileProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
             _tilemapPainterObject.ApplyModifiedProperties();
         }
