@@ -126,4 +126,9 @@ public static class Utils
             fontStyle = FontStyle.Bold,
         };
     }
+    
+    public static int GetDisplayHeightScrollView(TilemapPainter tilemapPainter)
+    {
+        return tilemapPainter.randomWalkableTilesPlacement ? 100 : 125;
+    }
 }

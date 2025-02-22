@@ -78,13 +78,14 @@ namespace Editor
             }
 
             EditorGUILayout.Space();
-            DrawWalkableTileGroupSettings();
+            DrawWalkableTileGroupSettings(tilemapPainter);
         }
 
         /// <summary>
         /// Draws the walkable tile group settings using reflection.
         /// </summary>
-        private void DrawWalkableTileGroupSettings()
+        /// <param name="tilemapPainter"></param>
+        private void DrawWalkableTileGroupSettings(TilemapPainter tilemapPainter)
         {
             if (!HasValidTilemapPainter()) return;
 
@@ -101,12 +102,12 @@ namespace Editor
                 if (tileBasesProperty.arraySize > 0)
                 {
                     using var scrollScope =
-                        new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(125));
+                        new EditorGUILayout.ScrollViewScope(localScrollPosition, GUILayout.Height(Utils.GetDisplayHeightScrollView(tilemapPainter)));
                     localScrollPosition = scrollScope.scrollPosition;
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        List<int> indicesToRemove = new List<int>();
+                        var indicesToRemove = new List<int>();
 
                         for (var i = 0; i < tileBasesProperty.arraySize; i++)
                         {
@@ -226,8 +227,8 @@ namespace Editor
                 GUILayout.FlexibleSpace();
             }
 
-            TileBase tileBase = tileProperty.objectReferenceValue as TileBase;
-            if (tileBase != null)
+            var tileBase = tileProperty.objectReferenceValue as TileBase;
+            if (tileBase)
             {
                 Texture previewTexture = AssetPreview.GetAssetPreview(tileBase);
                 using (new EditorGUILayout.HorizontalScope())
@@ -255,12 +256,11 @@ namespace Editor
                 }
             }
 
-            if (Event.current.commandName == "ObjectSelectorUpdated" &&
-                EditorGUIUtility.GetObjectPickerControlID() == controlID)
-            {
-                tileProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
-                _tilemapPainterObject.ApplyModifiedProperties();
-            }
+            if (Event.current.commandName != "ObjectSelectorUpdated" ||
+                EditorGUIUtility.GetObjectPickerControlID() != controlID) return;
+            
+            tileProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+            _tilemapPainterObject.ApplyModifiedProperties();
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace Editor
         {
             if (!GUILayout.Button(buttonLabel)) return;
 
-            string path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
+            var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
             if (isWalkable)
             {
                 _generatorSelection.CurrentGenerator.TilemapPainter.SelectWalkableTilesFromFolder(path);
