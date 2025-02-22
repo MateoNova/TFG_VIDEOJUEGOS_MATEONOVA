@@ -27,9 +27,22 @@ public class ConditionalFieldAttribute : PropertyAttribute
 public class WallTileGroupAttribute : Attribute
 {
     public string GroupName { get; }
-    
+
     public WallTileGroupAttribute(string groupName)
     {
         GroupName = groupName;
+    }
+}
+
+
+public class WalkableTileGroupAttribute : Attribute
+{
+    public bool IsTileBases { get; }
+    public bool IsTilePriorities { get; }
+
+    public WalkableTileGroupAttribute(bool isTileBases = false, bool isTilePriorities = false)
+    {
+        IsTileBases = isTileBases;
+        IsTilePriorities = isTilePriorities;
     }
 }

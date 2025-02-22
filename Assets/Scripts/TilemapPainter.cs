@@ -24,12 +24,13 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// List of walkable tile bases. This allows for multiple walkable tiles to be used.
     /// </summary>
-    [SerializeField] private List<TileBase> walkableTileBases = new();
+    [SerializeField, WalkableTileGroup(isTileBases: true)]
+    private List<TileBase> walkableTileBases = new();
 
     /// <summary>
     /// List of priorities corresponding to the walkable tiles. The higher the priority, the more likely the tile will be chosen.
     /// </summary>
-    [ConditionalField("randomWalkableTilesPlacement"), SerializeField]
+    [ConditionalField("randomWalkableTilesPlacement"), WalkableTileGroup(isTilePriorities: true), SerializeField]
     private List<int> walkableTilesPriorities = new();
 
     /// <summary>
