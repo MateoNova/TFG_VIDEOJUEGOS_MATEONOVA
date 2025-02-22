@@ -374,7 +374,7 @@ public class TilemapPainter : MonoBehaviour
 
         var tile = tileBases[index];
 
-        if (tile)
+        if (tile && probabilities != null)
         {
             probabilities.Remove(tile);
         }
@@ -387,7 +387,6 @@ public class TilemapPainter : MonoBehaviour
     /// Removes a tile (by index) from the corresponding collection.
     /// </summary>
     /// <param name="position">Index of the tile to remove.</param>
-    /// <param name="isWalkable">Indicates if the tile is walkable.</param>
     public void RemoveTileAtPosition(int position)
     {
         RemoveTileAtIndex(position, walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities);

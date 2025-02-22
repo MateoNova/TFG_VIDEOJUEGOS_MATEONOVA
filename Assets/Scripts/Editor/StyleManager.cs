@@ -25,6 +25,8 @@ namespace Editor
         private readonly GeneratorSelection _generatorSelection;
         private SerializedObject _tilemapPainterObject;
 
+        private readonly Dictionary<string, int> _walkableTilePriorities = new();
+
         #endregion
 
         public StyleManager(GeneratorSelection generatorSelection)
@@ -109,13 +111,32 @@ namespace Editor
                             var tileBaseProperty = tileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
 
+                            var name = $"Tile {i + 1}";
+                            var isAssigned = tileBaseProperty.objectReferenceValue != null;
+                            if (isAssigned)
+                            {
+                                name = tileBaseProperty.objectReferenceValue.name;
+                                _walkableTilePriorities.TryAdd(name, i);
+                            }
+                            
                             using (new EditorGUILayout.VerticalScope())
                             {
                                 // Para floor tiles, la acción de remover llama a RemoveTileAtPosition.
-                                DrawTilePreview(tileBaseProperty, $"Tile {i + 1}", i,
+                                DrawTilePreview(tileBaseProperty, name, i,
                                     () =>
                                     {
-                                        _generatorSelection.CurrentGenerator.TilemapPainter.RemoveTileAtPosition(i);
+                                        if (isAssigned)
+                                        {
+                                            if (!_walkableTilePriorities.TryGetValue(name, out var index)) return;
+                                            _walkableTilePriorities.Remove(name);
+                                            _generatorSelection.CurrentGenerator.TilemapPainter
+                                                .RemoveTileAtPosition(index);
+                                        }
+                                        else
+                                        {
+                                            _generatorSelection.CurrentGenerator.TilemapPainter.RemoveTileAtPosition(
+                                                i);
+                                        }
                                     });
                                 AddPriorityToTilesUI(tilePrioritiesProperty.name, priorityProperty);
                             }
@@ -244,6 +265,7 @@ namespace Editor
                 EditorGUIUtility.GetObjectPickerControlID() == controlID)
             {
                 tileProperty.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+                _tilemapPainterObject.ApplyModifiedProperties();
             }
         }
 
