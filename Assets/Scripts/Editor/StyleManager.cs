@@ -106,40 +106,34 @@ namespace Editor
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
+                        List<int> indicesToRemove = new List<int>();
+
                         for (var i = 0; i < tileBasesProperty.arraySize; i++)
                         {
                             var tileBaseProperty = tileBasesProperty.GetArrayElementAtIndex(i);
                             var priorityProperty = tilePrioritiesProperty.GetArrayElementAtIndex(i);
 
                             var name = $"Tile {i + 1}";
-                            var isAssigned = tileBaseProperty.objectReferenceValue != null;
-                            if (isAssigned)
+                            if (tileBaseProperty.objectReferenceValue != null)
                             {
                                 name = tileBaseProperty.objectReferenceValue.name;
                                 _walkableTilePriorities.TryAdd(name, i);
                             }
-                            
+
                             using (new EditorGUILayout.VerticalScope())
                             {
-                                // Para floor tiles, la acción de remover llama a RemoveTileAtPosition.
+                                var i1 = i;
                                 DrawTilePreview(tileBaseProperty, name, i,
-                                    () =>
-                                    {
-                                        if (isAssigned)
-                                        {
-                                            if (!_walkableTilePriorities.TryGetValue(name, out var index)) return;
-                                            _walkableTilePriorities.Remove(name);
-                                            _generatorSelection.CurrentGenerator.TilemapPainter
-                                                .RemoveTileAtPosition(index);
-                                        }
-                                        else
-                                        {
-                                            _generatorSelection.CurrentGenerator.TilemapPainter.RemoveTileAtPosition(
-                                                i);
-                                        }
-                                    });
+                                    () => { indicesToRemove.Add(i1); });
+
                                 AddPriorityToTilesUI(tilePrioritiesProperty.name, priorityProperty);
                             }
+                        }
+
+                        foreach (var index in indicesToRemove.OrderByDescending(i => i))
+                        {
+                            tileBasesProperty.DeleteArrayElementAtIndex(index);
+                            tilePrioritiesProperty.DeleteArrayElementAtIndex(index);
                         }
                     }
                 }
