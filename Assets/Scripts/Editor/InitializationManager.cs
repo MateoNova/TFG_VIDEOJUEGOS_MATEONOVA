@@ -1,92 +1,75 @@
 using UnityEditor;
-using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Editor
 {
-    /// <summary>
-    /// Manages the initialization of the scene and the editor preferences.
-    /// </summary>
+
     public class InitializationManager
     {
-        #region Fields
-
-        /// <summary>
-        /// Indicates whether the initialization foldout should be shown.
-        /// </summary>
-        private bool _showInitialization = true;
-
-        /// <summary>
-        /// Reference to the GeneratorSelection instance.
-        /// </summary>
         private readonly GeneratorSelection _generatorSelection;
-
-        #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InitializationManager"/> class.
-        /// </summary>
-        /// <param name="generatorSelection">The generator selection instance.</param>
+        private Foldout _foldout;
+        
         public InitializationManager(GeneratorSelection generatorSelection)
         {
             _generatorSelection = generatorSelection;
         }
-
-        #region Drawing
-
-        /// <summary>
-        /// Draws the initialization foldout.
-        /// </summary>
-        public void Draw()
+        
+        public VisualElement CreateUI()
         {
-            _showInitialization = EditorGUILayout.Foldout(_showInitialization, "Initialization", true,
-                Utils.GetSectionTitleStyle());
+            var container = Utils.CreateContainer();
 
-            if (!_showInitialization) return;
-            DrawButtons();
-        }
+            _foldout = new Foldout { text = "Initialization", value = true };
 
-        /// <summary>
-        /// Draws the buttons for clearing and reinitializing the scene.
-        /// </summary>
-        private void DrawButtons()
-        {
-            using (new EditorGUILayout.HorizontalScope())
+            var buttonContainer = new VisualElement
             {
-                if (GUILayout.Button("Clear and delete"))
+                style =
                 {
-                    ClearCachedData();
+                    flexDirection = FlexDirection.Row,
+                    flexWrap = Wrap.Wrap,
+                    marginTop = 5
                 }
+            };
 
-                if (GUILayout.Button("Initialize Scene"))
+            var clearButton = new Button(ClearCachedData)
+            {
+                text = "Clear and Delete",
+                style =
                 {
-                    InitScene();
+                    height = 30,
+                    marginRight = 5
                 }
-            }
+            };
+
+            var initButton = new Button(InitScene)
+            {
+                text = "Initialize Scene",
+                style =
+                {
+                    height = 30
+                }
+            };
+
+            buttonContainer.Add(clearButton);
+            buttonContainer.Add(initButton);
+
+            _foldout.Add(buttonContainer);
+            container.Add(_foldout);
+
+            return container;
         }
-
-        #endregion
-
-        #region ButtonsActions
-
-        /// <summary>
-        /// Clears the cached data and editor preferences.
-        /// </summary>
+        
         private void ClearCachedData()
         {
             EditorPrefs.DeleteAll();
             _generatorSelection.ClearCacheData();
         }
-
-        /// <summary>
-        /// Initializes the scene with the default values.
-        /// </summary>
+        
         public void InitScene()
         {
+            //todo when everithing workds do this
             _generatorSelection.RetrieveOrInitializeCachedGenerationManager();
             _generatorSelection.FindAllGenerators();
             _generatorSelection.SelectGenerator(0);
         }
-
-        #endregion
     }
 }

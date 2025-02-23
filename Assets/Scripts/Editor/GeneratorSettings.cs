@@ -1,75 +1,78 @@
 ﻿using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace Editor
 {
-    /// <summary>
-    /// Manage the settings of the generator.
-    /// </summary>
     public class GeneratorSettings
     {
-        #region Fields
-
-        /// <summary>
-        /// Indicates whether the generator settings foldout should be shown.
-        /// </summary>
-        private bool _showGeneratorSettings = true;
-
-        /// <summary>
-        /// Reference to the GeneratorSelection instance.
-        /// </summary>
         private readonly GeneratorSelection _generatorSelection;
+        private VisualElement _container;
 
-        #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeneratorSettings"/> class.
-        /// </summary>
-        /// <param name="generatorSelection">The generator selection instance.</param>
         public GeneratorSettings(GeneratorSelection generatorSelection)
         {
             _generatorSelection = generatorSelection;
+            GeneratorSelection.OnGeneratorChanged += Repaint;
         }
 
-        #region Drawing
-
-        /// <summary>
-        /// Draws the generator settings foldout.
-        /// </summary>
-        public void Draw()
+        public VisualElement CreateUI()
         {
-            _showGeneratorSettings = EditorGUILayout.Foldout(_showGeneratorSettings, "Generator Settings", true);
-            if (_showGeneratorSettings)
+            if (_container == null)
             {
-                DrawGeneratorSettings();
+                _container = Utils.CreateContainer();
             }
-        }
-
-        /// <summary>
-        /// Draws the generator settings.
-        /// </summary>
-        private void DrawGeneratorSettings()
-        {
-            if (!_generatorSelection.CurrentGenerator) return;
-
-            using (new EditorGUILayout.VerticalScope("box"))
+            else
             {
-                SerializedObject generatorObject = new(_generatorSelection.CurrentGenerator);
-                var property = generatorObject.GetIterator();
-                // Skip the first property (m_Script)
-                property.NextVisible(true);
+                _container.Clear();
+            }
 
-                while (property.NextVisible(false))
+            var foldout = new Foldout { text = "Generator Settings", value = true };
+
+            if (_generatorSelection.CurrentGenerator == null)
+            {
+                var infoLabel = Utils.CreateHelpLabel("No generator selected.");
+                foldout.Add(infoLabel);
+            }
+            else
+            {
+                var settingsContainer = new VisualElement();
+
+                var serializedObject = new SerializedObject(_generatorSelection.CurrentGenerator);
+                var property = serializedObject.GetIterator();
+                const bool enterChildren = true;
+                if (property.NextVisible(enterChildren))
                 {
-                    if (Utils.ShouldDisplayField(generatorObject, property.name))
+                    while (property.NextVisible(false))
                     {
-                        EditorGUILayout.PropertyField(property, true);
+                        if (!Utils.ShouldDisplayField(serializedObject, property.name)) continue;
+
+                        var propField = new PropertyField(property);
+                        propField.Bind(serializedObject);
+                        settingsContainer.Add(propField);
                     }
                 }
 
-                generatorObject.ApplyModifiedProperties();
+                foldout.Add(settingsContainer);
             }
+
+            _container.Add(foldout);
+            return _container;
         }
 
-        #endregion
+        private void Repaint()
+        {
+            if (_container == null)
+            {
+                _container = Utils.CreateContainer();
+            }
+            else
+            {
+                _container.Clear();
+            }
+        
+            // Recreate the UI
+            CreateUI();
+            _container.MarkDirtyRepaint();
+        }
     }
 }

@@ -1,30 +1,22 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Editor
 {
-    /// <summary>
-    /// Manages the Generation Manager window.
-    /// </summary>
     public class GenerationManagerWindow : EditorWindow
     {
-        #region Fields
-
         private InitializationManager _initializationManager;
         private GeneratorSelection _generatorSelection;
         private GeneratorSettings _generatorSettings;
         private StyleManager _styleManager;
         private GenerationActions _generationActions;
-        private Vector2 _globalScrollPosition;
-
-        #endregion
-
-        #region Initialization
 
         [MenuItem("Window/Generation Manager")]
         public static void ShowWindow()
         {
-            GetWindow<GenerationManagerWindow>("Generation Manager");
+            var window = GetWindow<GenerationManagerWindow>("Generation Manager");
+            window.minSize = new Vector2(400, 600);
         }
 
         private void OnEnable()
@@ -34,7 +26,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Initializes the dependencies of the window.
+        /// Inicializa las dependencias de la ventana.
         /// </summary>
         private void InitializeDependencies()
         {
@@ -45,27 +37,29 @@ namespace Editor
             _generationActions = new GenerationActions(_generatorSelection);
         }
 
-        #endregion
-
-        #region GUI Drawing
-
         /// <summary>
-        /// Draws the GUI of the window.
+        /// Crea la interfaz de usuario utilizando UI Toolkit.
         /// </summary>
-        private void OnGUI()
+        public void CreateGUI()
         {
-            _globalScrollPosition =
-                EditorGUILayout.BeginScrollView(_globalScrollPosition, true, false, GUILayout.ExpandWidth(true));
+            var root = rootVisualElement;
+            root.Clear();
 
-            _initializationManager.Draw();
-            _generatorSelection.Draw();
-            _generatorSettings.Draw();
-            _styleManager.Draw();
-            _generationActions.Draw();
+            // Opcional: Cargar hoja de estilos USS si la tienes
+            // root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Path/To/YourStyles.uss"));
+            
+            // Scroll para el contenido
+            var scrollView = new ScrollView();
+            scrollView.style.flexGrow = 1;
 
-            EditorGUILayout.EndScrollView();
+            // Se añaden los VisualElements generados por cada manager
+            scrollView.Add(_initializationManager.CreateUI());
+            scrollView.Add(_generatorSelection.CreateUI());
+            scrollView.Add(_generatorSettings.CreateUI());
+            scrollView.Add(_styleManager.CreateUI());
+            scrollView.Add(_generationActions.CreateUI());
+
+            root.Add(scrollView);
         }
-
-        #endregion
     }
 }

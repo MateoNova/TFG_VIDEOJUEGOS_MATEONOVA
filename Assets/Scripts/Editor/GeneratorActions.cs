@@ -1,83 +1,77 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Editor
 {
     /// <summary>
-    /// Manages the dungeon generation actions: generate, clear, save, and load.
+    /// Gestiona las acciones de generación del dungeon: generar, limpiar, guardar y cargar, usando UI Toolkit.
     /// </summary>
     public class GenerationActions
     {
-        # region Fields
-
         private readonly GeneratorSelection _generatorSelection;
         private bool _showGenerationActions = true;
         private bool _clearDungeon = true;
 
-        # endregion
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenerationActions"/> class.
-        /// </summary>
-        /// <param name="generatorSelection">The generator selection instance.</param>
         public GenerationActions(GeneratorSelection generatorSelection)
         {
             _generatorSelection = generatorSelection;
         }
 
-        # region Drawing
-
         /// <summary>
-        /// Draws the generation actions interface.
+        /// Crea la interfaz de usuario para las acciones de generación.
         /// </summary>
-        public void Draw()
+        public VisualElement CreateUI()
         {
-            EditorGUILayout.Space();
-            _showGenerationActions = EditorGUILayout.Foldout(_showGenerationActions, "Generation Actions", true,
-                Utils.GetSectionTitleStyle());
+            VisualElement container = new VisualElement();
+            container.style.marginBottom = 10;
 
-            if (!_showGenerationActions) return;
-            EditorGUILayout.Space();
-            DrawDungeonActions();
-        }
+            Foldout actionsFoldout = new Foldout() { text = "Generation Actions", value = _showGenerationActions };
+            actionsFoldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
+            container.Add(actionsFoldout);
 
-        /// <summary>
-        /// Draws the dungeon actions.
-        /// </summary>
-        private void DrawDungeonActions()
-        {
-            _clearDungeon =
-                EditorGUILayout.Toggle(
-                    new GUIContent("Clear all tiles", "This will clear all tiles before generating the dungeon"),
-                    _clearDungeon);
-            EditorGUILayout.Space();
+            if (!_showGenerationActions)
+                return container;
 
-            DrawActionButton("Generate Dungeon", Generate);
-            DrawActionButton("Clear Dungeon", ClearDungeon);
-            DrawActionButton("Save Dungeon", SaveDungeon);
-            DrawActionButton("Load Dungeon", LoadDungeon);
-        }
+            // Toggle para limpiar el dungeon
+            Toggle clearToggle = new Toggle("Clear all tiles");
+            clearToggle.tooltip = "This will clear all tiles before generating the dungeon";
+            clearToggle.value = _clearDungeon;
+            clearToggle.RegisterValueChangedCallback(evt => _clearDungeon = evt.newValue);
+            actionsFoldout.Add(clearToggle);
 
-        /// <summary>
-        /// Draws an action button.
-        /// </summary>
-        /// <param name="label">The label of the button.</param>
-        /// <param name="action">The action to be invoked when the button is clicked.</param>
-        private static void DrawActionButton(string label, System.Action action)
-        {
-            if (GUILayout.Button(label))
+            // Botones de acciones
+            VisualElement buttonsContainer = new VisualElement();
+            buttonsContainer.style.flexDirection = FlexDirection.Column;
+            buttonsContainer.style.marginTop = 5;
+
+            Button generateButton = new Button(() => { Generate(); })
             {
-                action.Invoke();
-            }
+                text = "Generate Dungeon"
+            };
+            Button clearButton = new Button(() => { ClearDungeon(); })
+            {
+                text = "Clear Dungeon"
+            };
+            Button saveButton = new Button(() => { SaveDungeon(); })
+            {
+                text = "Save Dungeon"
+            };
+            Button loadButton = new Button(() => { LoadDungeon(); })
+            {
+                text = "Load Dungeon"
+            };
+
+            buttonsContainer.Add(generateButton);
+            buttonsContainer.Add(clearButton);
+            buttonsContainer.Add(saveButton);
+            buttonsContainer.Add(loadButton);
+
+            actionsFoldout.Add(buttonsContainer);
+
+            return container;
         }
 
-        # endregion
-
-        # region Actions
-
-        /// <summary>
-        /// Generates the dungeon.
-        /// </summary>
         private void Generate()
         {
             if (_generatorSelection.CurrentGenerator)
@@ -91,38 +85,27 @@ namespace Editor
             }
         }
 
-        /// <summary>
-        /// Clears the dungeon.
-        /// </summary>
         private void ClearDungeon()
         {
             _generatorSelection.CurrentGenerator?.ClearDungeon();
         }
 
-        /// <summary>
-        /// Saves the dungeon to a file.
-        /// </summary>
         private void SaveDungeon()
         {
-            var path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
+            string path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
             if (string.IsNullOrEmpty(path))
                 return;
 
             _generatorSelection.CurrentGenerator.SaveDungeon(path);
         }
 
-        /// <summary>
-        /// Loads the dungeon from a file.
-        /// </summary>
         private void LoadDungeon()
         {
-            var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
+            string path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
             if (!string.IsNullOrEmpty(path))
             {
                 _generatorSelection.CurrentGenerator.LoadDungeon(path);
             }
         }
-
-        # endregion
     }
 }

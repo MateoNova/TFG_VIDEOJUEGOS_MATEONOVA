@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 /// <summary>
@@ -80,7 +81,7 @@ public static class Utils
         System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic,
         System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
     {
-        fieldBindingFlags |= System.Reflection.BindingFlags.Instance ;
+        fieldBindingFlags |= System.Reflection.BindingFlags.Instance;
         conditionalFieldBindingFlags |= System.Reflection.BindingFlags.Instance;
         var targetObject = serializedObject.targetObject;
         var field = targetObject.GetType().GetField(propertyName, fieldBindingFlags);
@@ -125,7 +126,7 @@ public static class Utils
             fontStyle = FontStyle.Bold
         };
     }
-    
+
     public static GUIStyle GetThirdSectionTitleStyle()
     {
         return new GUIStyle(EditorStyles.foldoutHeader)
@@ -134,19 +135,19 @@ public static class Utils
             fontStyle = FontStyle.Bold
         };
     }
-    
+
     public static int GetWalkableDisplayHeightScrollView(TilemapPainter tilemapPainter)
     {
         return tilemapPainter.randomWalkableTilesPlacement ? 100 : 125;
     }
-    
+
     public static int GetWalllDisplayHeightScrollView()
     {
         return 115;
     }
-    
+
     public static int GetPreviewTileSize() => 64;
-    
+
     public static GUIStyle GetLabelStyle()
     {
         return new GUIStyle(EditorStyles.label)
@@ -156,4 +157,70 @@ public static class Utils
         };
     }
 
+    public static VisualElement CreateContainer()
+    {
+        return new VisualElement
+        {
+            style =
+            {
+                marginBottom = 10
+            }
+        };
+    }
+
+    public static Label CreateHelpLabel(string text)
+    {
+        return new Label(text)
+        {
+            style =
+            {
+                unityFontStyleAndWeight = FontStyle.Italic
+            }
+        };
+    }
+
+    public static VisualElement CreateToggleContainer()
+    {
+        return new VisualElement
+        {
+            style =
+            {
+                flexDirection = FlexDirection.Row,
+                alignItems = Align.Center
+            }
+        };
+    }
+
+    public static VisualElement CreateLabelWithMinLength(string labelText, int minWidth)
+    {
+        return new Label(labelText)
+        {
+            style =
+            {
+                minWidth = minWidth
+            }
+        };
+    }
+
+    public static Toggle CreateToggle(bool value)
+    {
+        return new Toggle
+        {
+            value = value
+        };
+    }
+
+    public static VisualElement CreateButtonsRow()
+    {
+        return new VisualElement
+        {
+            style =
+            {
+                flexDirection = FlexDirection.Row,
+                flexWrap = Wrap.NoWrap,
+                marginTop = 5,
+                marginBottom = 5
+            }
+        };
+    }
 }
