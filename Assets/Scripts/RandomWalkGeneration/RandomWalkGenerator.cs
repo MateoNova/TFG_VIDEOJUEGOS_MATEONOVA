@@ -11,8 +11,11 @@ namespace RandomWalkGeneration
     {
         #region Serialized Fields
 
-        [SerializeField, Tooltip("Settings for the random walk algorithm.")]
-        private RandomWalkRoomsSettings randomWalkRoomsSettings;
+        public int walkIterations = 10;
+
+        public int stepsPerIteration = 10;
+
+        public bool randomizeStartPos = true;
 
         [SerializeField,
          Tooltip("Flag to determine if corridors should be generated and calcule potential rooms positions.")]
@@ -41,11 +44,6 @@ namespace RandomWalkGeneration
         #endregion
 
         #region Generation Methods
-
-        public void CORRRREEEE()
-        {
-            RunGeneration();
-        }
 
         /// <summary>
         /// Runs the dungeon generation process.
@@ -224,12 +222,12 @@ namespace RandomWalkGeneration
             var currentPos = startPos;
             HashSet<Vector2Int> tiles = new();
 
-            for (var i = 0; i < randomWalkRoomsSettings.walkIterations; i++)
+            for (var i = 0; i < walkIterations; i++)
             {
-                var path = RandomWalkAlgorithm(currentPos, randomWalkRoomsSettings.stepsPerIteration);
+                var path = RandomWalkAlgorithm(currentPos, stepsPerIteration);
                 tiles.UnionWith(path);
 
-                if (randomWalkRoomsSettings.randomizeStartPos && tiles.Count > 0)
+                if (randomizeStartPos && tiles.Count > 0)
                 {
                     // Selecciona aleatoriamente un nuevo punto de inicio de entre los tiles ya visitados.
                     currentPos = tiles.ElementAt(Random.Range(0, tiles.Count));
