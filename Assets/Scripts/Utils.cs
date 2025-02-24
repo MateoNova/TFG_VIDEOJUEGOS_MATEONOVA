@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -219,6 +220,66 @@ public static class Utils
                 flexDirection = FlexDirection.Row,
                 flexWrap = Wrap.NoWrap,
                 marginTop = 5,
+                marginBottom = 5
+            }
+        };
+    }
+
+    public static string AddSpacesToCamelCase(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return input;
+        }
+
+        return Regex.Replace(input, "(?<!^)([A-Z0-9])", " $1");
+    }
+
+    public static VisualElement CreateRowPreviewAndLabelContainer()
+    {
+        return new VisualElement
+        {
+            style =
+            {
+                flexDirection = FlexDirection.Row,
+                flexWrap = Wrap.Wrap
+            }
+        };
+    }
+
+    public static VisualElement CreateTileContainer()
+    {
+        return new VisualElement
+        {
+            style =
+            {
+                flexDirection = FlexDirection.Column,
+                alignItems = Align.Center,
+                marginBottom = 10
+            }
+        };
+    }
+
+    public static VisualElement CreateHorizontalContainer()
+    {
+        return new VisualElement
+        {
+            style =
+            {
+                flexDirection = FlexDirection.Row,
+                flexWrap = Wrap.Wrap
+            }
+        };
+    }
+
+    public static Label CreateLabelForTile(string labelText)
+    {
+        return new Label(labelText)
+        {
+            style =
+            {
+                unityFontStyleAndWeight = FontStyle.Bold,
+                marginTop = 10,
                 marginBottom = 5
             }
         };
