@@ -9,9 +9,12 @@ using UnityEngine.UIElements;
 
 namespace Editor
 {
+    /// <summary>
+    /// Manages the styles for the generator selection.
+    /// </summary>
     public class StyleManager
     {
-        # region Fields
+        #region Fields
 
         private readonly GeneratorSelection _generatorSelection;
 
@@ -21,15 +24,23 @@ namespace Editor
         private List<int> _walkableTilesPriorities;
         private bool _randomPlacement;
 
-        # endregion
+        #endregion
 
-        # region General Methods
+        #region General Methods
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StyleManager"/> class.
+        /// </summary>
+        /// <param name="generatorSelection">The generator selection instance.</param>
         public StyleManager(GeneratorSelection generatorSelection)
         {
             _generatorSelection = generatorSelection;
         }
 
+        /// <summary>
+        /// Creates the UI for the style manager.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the UI elements.</returns>
         public VisualElement CreateUI()
         {
             _walkableTileBases = _generatorSelection.CurrentGenerator.TilemapPainter.walkableTileBases;
@@ -38,7 +49,7 @@ namespace Editor
 
             if (_root == null)
             {
-                _root = Utils.CreateContainer();
+                _root = StyleUtils.SimpleContainer();
             }
             else
             {
@@ -50,6 +61,10 @@ namespace Editor
             return _root;
         }
 
+        /// <summary>
+        /// Creates the style section UI.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the style section UI elements.</returns>
         private VisualElement CreateStyleSection()
         {
             var styleSection = new Foldout { text = "Style", value = true };
@@ -58,11 +73,14 @@ namespace Editor
             return styleSection;
         }
 
+        /// <summary>
+        /// Refreshes the UI.
+        /// </summary>
         private void RefreshUI()
         {
             if (_root == null)
             {
-                _root = Utils.CreateContainer();
+                _root = StyleUtils.SimpleContainer();
             }
             else
             {
@@ -73,10 +91,14 @@ namespace Editor
             CreateUI();
         }
 
-        # endregion
+        #endregion
 
-        # region Walkable Tiles - Floor Tile Settings
+        #region Walkable Tiles - Floor Tile Settings
 
+        /// <summary>
+        /// Creates the floor tile settings UI.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the floor tile settings UI elements.</returns>
         private VisualElement CreateFloorTileSettings()
         {
             var floorTileSettings = new Foldout { text = "Floor Tile Settings", value = true };
@@ -89,31 +111,17 @@ namespace Editor
             return floorTileSettings;
         }
 
+        /// <summary>
+        /// Creates the random floor placement toggle UI.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the random floor placement toggle UI elements.</returns>
         private VisualElement CreateRandomFloorPlacementToggle()
         {
-            var container = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                    alignItems = Align.Center
-                }
-            };
-
-            var label = new Label("¿Random Floor Placement?")
-            {
-                style =
-                {
-                    unityFontStyleAndWeight = FontStyle.Bold,
-                    marginRight = 10
-                }
-            };
+            var container = StyleUtils.HorizontalContainerCentered();
+            var label = StyleUtils.LabelForToggle("¿Random Floor Placement?");
             container.Add(label);
 
-            var toggle = new Toggle
-            {
-                value = _randomPlacement
-            };
+            var toggle = new Toggle { value = _randomPlacement };
 
             toggle.RegisterValueChangedCallback(evt =>
             {
@@ -126,16 +134,13 @@ namespace Editor
             return container;
         }
 
+        /// <summary>
+        /// Creates the walkable options buttons UI.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the walkable options buttons UI elements.</returns>
         private VisualElement CreateWalkableOptionsButtons()
         {
-            var container = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                    alignItems = Align.Center
-                }
-            };
+            var container = StyleUtils.HorizontalContainerCentered();
 
             container.Add(CreateTileToUIButton("Add Floor tile"));
             container.Add(CreateClearTilesButton("Clear all floor tiles", true));
@@ -144,6 +149,11 @@ namespace Editor
             return container;
         }
 
+        /// <summary>
+        /// Creates a button to add a tile to the UI.
+        /// </summary>
+        /// <param name="buttonText">The text to display on the button.</param>
+        /// <returns>A <see cref="Button"/> to add a tile to the UI.</returns>
         private Button CreateTileToUIButton(string buttonText)
         {
             var button = new Button(() =>
@@ -159,6 +169,12 @@ namespace Editor
             return button;
         }
 
+        /// <summary>
+        /// Creates a button to clear tiles.
+        /// </summary>
+        /// <param name="buttonText">The text to display on the button.</param>
+        /// <param name="isWalkable">Indicates whether the tiles are walkable.</param>
+        /// <returns>A <see cref="Button"/> to clear tiles.</returns>
         private Button CreateClearTilesButton(string buttonText, bool isWalkable)
         {
             var button = new Button(() =>
@@ -177,6 +193,12 @@ namespace Editor
             return button;
         }
 
+        /// <summary>
+        /// Creates a button to select walkable tiles from a folder.
+        /// </summary>
+        /// <param name="buttonText">The text to display on the button.</param>
+        /// <param name="isWalkable">Indicates whether the tiles are walkable.</param>
+        /// <returns>A <see cref="Button"/> to select walkable tiles from a folder.</returns>
         private Button CreateSelectWalkableTilesFromFolderButton(string buttonText, bool isWalkable)
         {
             var button = new Button(() =>
@@ -197,16 +219,24 @@ namespace Editor
             return button;
         }
 
+        /// <summary>
+        /// Checks if the tilemap painter is valid.
+        /// </summary>
+        /// <returns>True if the tilemap painter is valid, otherwise false.</returns>
         private bool HasValidTilemapPainter()
         {
             return _generatorSelection.CurrentGenerator &&
                    _generatorSelection.CurrentGenerator.TilemapPainter;
         }
 
-        # endregion
+        #endregion
 
-        # region Walkable Tiles - Tile Group Settings
+        #region Walkable Tiles - Tile Group Settings
 
+        /// <summary>
+        /// Creates the walkable tile group settings UI.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the walkable tile group settings UI elements.</returns>
         private VisualElement CreateWalkableTileGroupSettings()
         {
             var container = new VisualElement();
@@ -218,7 +248,7 @@ namespace Editor
             }
 
             var walkableTiles = _generatorSelection.CurrentGenerator.TilemapPainter.walkableTileBases;
-            var horizontalContainer = Utils.CreateHorizontalContainer();
+            var horizontalContainer = StyleUtils.HorizontalContainerWrapped();
 
             for (var index = 0; index < walkableTiles.Count; index++)
             {
@@ -230,6 +260,10 @@ namespace Editor
             return container;
         }
 
+        /// <summary>
+        /// Checks if the generator selection is valid.
+        /// </summary>
+        /// <returns>True if the generator selection is valid, otherwise false.</returns>
         private bool IsGeneratorSelectionValid()
         {
             return _generatorSelection != null &&
@@ -237,18 +271,23 @@ namespace Editor
                    _generatorSelection.CurrentGenerator.TilemapPainter != null;
         }
 
-
+        /// <summary>
+        /// Creates a container for a tile.
+        /// </summary>
+        /// <param name="walkableTiles">The list of walkable tiles.</param>
+        /// <param name="index">The index of the tile.</param>
+        /// <returns>A <see cref="VisualElement"/> containing the tile container UI elements.</returns>
         private VisualElement CreateTileContainer(List<TileBase> walkableTiles, int index)
         {
             var walkableTile = walkableTiles[index];
 
-            var tileContainer = Utils.CreateTileContainer();
+            var tileContainer = StyleUtils.TileContainer();
 
             var label = GetLaberFromTile(walkableTile);
             tileContainer.Add(label);
 
             var imguiPreviewContainer = CreateIMGUIContainer(walkableTiles, index, label);
-            imguiPreviewContainer.style.height = 60;
+            imguiPreviewContainer.style.height = Utils.GemImGuiHeight();
             tileContainer.Add(imguiPreviewContainer);
 
             if (_generatorSelection.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement) return tileContainer;
@@ -259,6 +298,13 @@ namespace Editor
             return tileContainer;
         }
 
+        /// <summary>
+        /// Creates an IMGUI container for a tile.
+        /// </summary>
+        /// <param name="walkableTiles">The list of walkable tiles.</param>
+        /// <param name="currentIndex">The index of the current tile.</param>
+        /// <param name="label">The label for the tile.</param>
+        /// <returns>An <see cref="IMGUIContainer"/> containing the IMGUI container UI elements.</returns>
         private IMGUIContainer CreateIMGUIContainer(List<TileBase> walkableTiles, int currentIndex, Label label)
         {
             return new IMGUIContainer(() =>
@@ -276,9 +322,14 @@ namespace Editor
             });
         }
 
+        /// <summary>
+        /// Gets the preview texture for a tile.
+        /// </summary>
+        /// <param name="currentTile">The current tile.</param>
+        /// <returns>The preview texture for the tile.</returns>
         private static Texture GetPreviewTexture(TileBase currentTile)
         {
-            if (currentTile == null) return EditorGUIUtility.IconContent("d_UnityEditor.ConsoleWindow").image;
+            if (currentTile == null) return EditorGUIUtility.IconContent(Utils.GetDefaultIconContent()).image;
 
             var previewTexture = AssetPreview.GetAssetPreview(currentTile);
             if (previewTexture == null)
@@ -289,9 +340,14 @@ namespace Editor
             return previewTexture;
         }
 
+        /// <summary>
+        /// Updates the tile on selection.
+        /// </summary>
+        /// <param name="currentIndex">The index of the current tile.</param>
+        /// <param name="label">The label for the tile.</param>
         private void UpdateTileOnSelection(int currentIndex, Label label)
         {
-            if (Event.current == null || Event.current.commandName != "ObjectSelectorUpdated") return;
+            if (Event.current == null || Event.current.commandName != Utils.GetObjectSelectorUpdateCommand()) return;
 
             var pickerControlId = EditorGUIUtility.GetObjectPickerControlID();
 
@@ -302,49 +358,38 @@ namespace Editor
             if (newTile == null) return;
 
             _generatorSelection.CurrentGenerator.TilemapPainter.walkableTileBases[currentIndex] = newTile;
-            var newName = (newTile?.name).Replace("floor", "", StringComparison.OrdinalIgnoreCase);
+            var newName = newTile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase);
             label.text = Utils.AddSpacesToCamelCase(newName);
         }
 
+        /// <summary>
+        /// Gets the label for a tile.
+        /// </summary>
+        /// <param name="walkableTile">The walkable tile.</param>
+        /// <returns>The label for the tile.</returns>
         private static Label GetLaberFromTile(TileBase walkableTile)
         {
             var labelText = walkableTile?.name ?? "No selected";
             labelText = labelText.Replace("floor", "", StringComparison.OrdinalIgnoreCase);
             labelText = Utils.AddSpacesToCamelCase(labelText);
 
-            return Utils.CreateLabelForTile(labelText);
+            return StyleUtils.LabelForTile(labelText);
         }
 
+        /// <summary>
+        /// Adds priority to the tiles UI.
+        /// </summary>
+        /// <param name="index">The index of the tile.</param>
+        /// <returns>A <see cref="VisualElement"/> containing the priority UI elements.</returns>
         private VisualElement AddPriorityToTilesUI(int index)
         {
-            var container = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                    alignItems = Align.Center
-                }
-            };
+            var container = StyleUtils.HorizontalContainerCentered();
 
             if (_randomPlacement) return container;
 
-            var label = new Label("Priority:")
-            {
-                style =
-                {
-                    width = 50,
-                    marginRight = 5
-                }
-            };
+            var label = StyleUtils.LabelForIntField("Priority;");
 
-            var intField = new IntegerField
-            {
-                value = _walkableTilesPriorities[index],
-                style =
-                {
-                    width = 30
-                }
-            };
+            var intField = StyleUtils.SimpleIntField(_walkableTilesPriorities[index]);
 
             intField.RegisterValueChangedCallback(evt =>
             {
@@ -358,28 +403,38 @@ namespace Editor
             return container;
         }
 
-        # endregion
-        
+        #endregion
+
         #region Wall Tiles - Wall Tile Settings
-        
+
+        /// <summary>
+        /// Creates the wall tile settings UI.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the wall tile settings UI elements.</returns>
         private VisualElement CreateWallTileSettings()
         {
             var container = new VisualElement();
-        
+
             if (!HasValidTilemapPainter())
                 return container;
-        
+
             var groupedWallFields = GetGroupedFields<WallTileGroupAttribute>(attr => attr.GroupName);
-        
+
             foreach (var group in groupedWallFields)
             {
                 var foldout = CreateFoldoutForGroup(group);
                 container.Add(foldout);
             }
-        
+
             return container;
         }
-        
+
+        /// <summary>
+        /// Gets the grouped fields by attribute.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <param name="groupSelector">The group selector function.</param>
+        /// <returns>An enumerable of grouped fields.</returns>
         private static IEnumerable<IGrouping<string, FieldInfo>> GetGroupedFields<TAttribute>(
             Func<TAttribute, string> groupSelector) where TAttribute : Attribute
         {
@@ -388,103 +443,105 @@ namespace Editor
                 .Where(f => f.FieldType == typeof(TileBase) && f.IsDefined(typeof(TAttribute), false))
                 .GroupBy(f => groupSelector(f.GetCustomAttribute<TAttribute>()));
         }
-        
+
+        /// <summary>
+        /// Creates a foldout for a group of fields.
+        /// </summary>
+        /// <param name="group">The group of fields.</param>
+        /// <returns>A <see cref="Foldout"/> containing the foldout UI elements.</returns>
         private Foldout CreateFoldoutForGroup(IGrouping<string, FieldInfo> group)
         {
             var foldout = new Foldout { text = group.Key, value = true };
-            var horizontalContainer = CreateHorizontalContainer();
-        
+            var horizontalContainer = StyleUtils.HorizontalContainerWrapped();
+
             foreach (var field in group)
             {
                 var tileContainer = CreateTileContainerForField(field);
                 horizontalContainer.Add(tileContainer);
             }
-        
+
             foldout.Add(horizontalContainer);
             return foldout;
         }
-        
-        private VisualElement CreateHorizontalContainer()
-        {
-            return new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                    flexWrap = Wrap.Wrap
-                }
-            };
-        }
-        
+
+        /// <summary>
+        /// Creates a container for a field.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <returns>A <see cref="VisualElement"/> containing the field container UI elements.</returns>
         private VisualElement CreateTileContainerForField(FieldInfo field)
         {
-            var tileContainer = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Column,
-                    marginRight = 10
-                }
-            };
-        
+            var tileContainer = StyleUtils.TileContainer();
             var label = CreateLabelForField(field);
             tileContainer.Add(label);
-        
-            var imguiContainer = CreateIMGUIContainerForField(field, label);
+
+            var imguiContainer = CreateIMGUIContainerForField(field);
             imguiContainer.style.height = 60;
             tileContainer.Add(imguiContainer);
-        
+
             return tileContainer;
         }
-        
-        private Label CreateLabelForField(FieldInfo field)
+
+        /// <summary>
+        /// Creates a label for a field.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <returns>A <see cref="Label"/> containing the label UI elements.</returns>
+        private static Label CreateLabelForField(FieldInfo field)
         {
             var labelText = CleanWallLabel(field.Name);
-            return new Label(labelText)
-            {
-                style =
-                {
-                    unityFontStyleAndWeight = FontStyle.Bold,
-                    marginTop = 10,
-                    marginBottom = 5
-                }
-            };
+            return StyleUtils.LabelForTile(labelText);
         }
-        
-        private IMGUIContainer CreateIMGUIContainerForField(FieldInfo field, Label label)
+
+        /// <summary>
+        /// Creates an IMGUI container for a field.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <returns>An <see cref="IMGUIContainer"/> containing the IMGUI container UI elements.</returns>
+        private IMGUIContainer CreateIMGUIContainerForField(FieldInfo field)
         {
             var controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
-        
+
             return new IMGUIContainer(() =>
             {
                 var tilemapPainter = _generatorSelection.CurrentGenerator.TilemapPainter;
                 var currentTile = field.GetValue(tilemapPainter) as TileBase;
                 var previewTexture = GetPreviewTexture(currentTile);
-        
+
                 var size = Utils.GetPreviewTileSize();
                 if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
                 {
                     EditorGUIUtility.ShowObjectPicker<TileBase>(currentTile, false, "", controlID);
                 }
-        
+
                 UpdateTileOnSelection(field, controlID);
             });
         }
-        
+
+        /// <summary>
+        /// Updates the tile on selection.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <param name="controlID">The control ID.</param>
         private void UpdateTileOnSelection(FieldInfo field, int controlID)
         {
-            if (Event.current == null || Event.current.commandName != "ObjectSelectorUpdated") return;
-        
+            if (Event.current == null || Event.current.commandName != Utils.GetObjectSelectorUpdateCommand()) return;
+
             var pickerControlID = EditorGUIUtility.GetObjectPickerControlID();
             if (pickerControlID != controlID) return;
-        
+
             var newTile = EditorGUIUtility.GetObjectPickerObject() as TileBase;
             if (newTile == null) return;
-        
+
             var tilemapPainter = _generatorSelection.CurrentGenerator.TilemapPainter;
             field.SetValue(tilemapPainter, newTile);
         }
-        
+
+        /// <summary>
+        /// Cleans the wall label.
+        /// </summary>
+        /// <param name="original">The original label.</param>
+        /// <returns>The cleaned wall label.</returns>
         private static string CleanWallLabel(string original)
         {
             var label = ObjectNames.NicifyVariableName(original);
@@ -494,7 +551,7 @@ namespace Editor
             var parts = label.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             return string.Join("\n", parts);
         }
-        
+
         #endregion
     }
 }

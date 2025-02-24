@@ -4,22 +4,39 @@ using UnityEngine.UIElements;
 
 namespace Editor
 {
+    /// <summary>
+    /// Manages the settings for the selected generator.
+    /// </summary>
     public class GeneratorSettings
     {
+        # region Fields
+
         private readonly GeneratorSelection _generatorSelection;
         private VisualElement _container;
 
+        # endregion
+
+        # region Methods
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeneratorSettings"/> class.
+        /// </summary>
+        /// <param name="generatorSelection">The generator selection instance.</param>
         public GeneratorSettings(GeneratorSelection generatorSelection)
         {
             _generatorSelection = generatorSelection;
             GeneratorSelection.OnGeneratorChanged += Repaint;
         }
 
+        /// <summary>
+        /// Creates the UI for the generator settings.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the UI elements.</returns>
         public VisualElement CreateUI()
         {
             if (_container == null)
             {
-                _container = Utils.CreateContainer();
+                _container = StyleUtils.SimpleContainer();
             }
             else
             {
@@ -30,7 +47,7 @@ namespace Editor
 
             if (_generatorSelection.CurrentGenerator == null)
             {
-                var infoLabel = Utils.CreateHelpLabel("No generator selected.");
+                var infoLabel = StyleUtils.HelpLabel("No generator selected.");
                 foldout.Add(infoLabel);
             }
             else
@@ -59,20 +76,24 @@ namespace Editor
             return _container;
         }
 
+        /// <summary>
+        /// Repaints the UI when the generator selection changes.
+        /// </summary>
         private void Repaint()
         {
             if (_container == null)
             {
-                _container = Utils.CreateContainer();
+                _container = StyleUtils.SimpleContainer();
             }
             else
             {
                 _container.Clear();
             }
-        
-            // Recreate the UI
+
             CreateUI();
             _container.MarkDirtyRepaint();
         }
+
+        # endregion
     }
 }

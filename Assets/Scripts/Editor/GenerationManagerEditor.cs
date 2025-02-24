@@ -1,9 +1,11 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Editor
 {
+    /// <summary>
+    /// The main window for the Generation Manager.
+    /// </summary>
     public class GenerationManagerWindow : EditorWindow
     {
         private InitializationManager _initializationManager;
@@ -12,6 +14,9 @@ namespace Editor
         private StyleManager _styleManager;
         private GenerationActions _generationActions;
 
+        /// <summary>
+        /// Opens the Generation Manager window.
+        /// </summary>
         [MenuItem("Window/Generation Manager")]
         public static void ShowWindow()
         {
@@ -19,6 +24,10 @@ namespace Editor
             window.minSize = new Vector2(400, 600);
         }
 
+        /// <summary>
+        /// Called when the window is enabled.
+        /// Initializes dependencies and sets up the scene.
+        /// </summary>
         private void OnEnable()
         {
             InitializeDependencies();
@@ -26,7 +35,7 @@ namespace Editor
         }
 
         /// <summary>
-        /// Inicializa las dependencias de la ventana.
+        /// Initializes the dependencies for the window.
         /// </summary>
         private void InitializeDependencies()
         {
@@ -38,21 +47,15 @@ namespace Editor
         }
 
         /// <summary>
-        /// Crea la interfaz de usuario utilizando UI Toolkit.
+        /// Creates the user interface using UI Toolkit.
         /// </summary>
         public void CreateGUI()
         {
             var root = rootVisualElement;
             root.Clear();
 
-            // Opcional: Cargar hoja de estilos USS si la tienes
-            // root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Path/To/YourStyles.uss"));
-            
-            // Scroll para el contenido
-            var scrollView = new ScrollView();
-            scrollView.style.flexGrow = 1;
+            var scrollView = StyleUtils.SimpleScrollView();
 
-            // Se añaden los VisualElements generados por cada manager
             scrollView.Add(_initializationManager.CreateUI());
             scrollView.Add(_generatorSelection.CreateUI());
             scrollView.Add(_generatorSettings.CreateUI());

@@ -7,8 +7,13 @@ using Object = UnityEngine.Object;
 
 namespace Editor
 {
+    /// <summary>
+    /// Manages the selection of generators within the editor.
+    /// </summary>
     public class GeneratorSelection
     {
+        #region Fields
+
         private const string CachedGeneratorNamesKey = "CachedGeneratorNames";
         private const string CachedGenerationManagerIdKey = "CachedGenerationManagerId";
         private const string PrefabPath = "Assets/Prefabs/GenerationManager.prefab";
@@ -26,17 +31,24 @@ namespace Editor
 
         private GameObject CachedGenerationManager { get; set; }
 
+        #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Creates the UI for the generator selection.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the UI elements.</returns>
         public VisualElement CreateUI()
         {
-            _container = Utils.CreateContainer();
+            _container = StyleUtils.SimpleContainer();
 
             var foldout = new Foldout { text = "Generator Selection", value = true };
 
             if (_cachedGeneratorNames == null || _cachedGeneratorNames.Count == 0)
             {
                 var helpLabel =
-                    Utils.CreateHelpLabel(
+                    StyleUtils.HelpLabel(
                         "No generators found in the scene. Click the initialize button to search for them.");
 
                 foldout.Add(helpLabel);
@@ -59,6 +71,10 @@ namespace Editor
             return _container;
         }
 
+        /// <summary>
+        /// Selects a generator by its index.
+        /// </summary>
+        /// <param name="index">The index of the generator to select.</param>
         public void SelectGenerator(int index)
         {
             if (index >= 0 && index < _generators.Count)
@@ -69,10 +85,13 @@ namespace Editor
             }
             else
             {
-                Debug.LogWarning("Índice de generador inválido.");
+                Debug.LogWarning("Index out of range.");
             }
         }
 
+        /// <summary>
+        /// Finds all generators in the scene.
+        /// </summary>
         public void FindAllGenerators()
         {
             if (CachedGenerationManager != null)
@@ -91,9 +110,13 @@ namespace Editor
             }
         }
 
+        /// <summary>
+        /// Gets the names of all generators.
+        /// </summary>
+        /// <returns>A list of generator names.</returns>
         private List<string> GetGeneratorNames()
         {
-            List<string> names = new List<string>();
+            var names = new List<string>();
             foreach (var generator in _generators)
             {
                 if (generator)
@@ -102,13 +125,16 @@ namespace Editor
                 }
                 else
                 {
-                    Debug.LogWarning("El generador es null.");
+                    Debug.LogWarning("Generator not found.");
                 }
             }
 
             return names;
         }
 
+        /// <summary>
+        /// Clears the lists of generators and cached generator names.
+        /// </summary>
         private void ClearGeneratorLists()
         {
             _generators.Clear();
@@ -116,11 +142,18 @@ namespace Editor
             EditorPrefs.DeleteKey(CachedGeneratorNamesKey);
         }
 
+        /// <summary>
+        /// Retrieves or initializes the cached generation manager.
+        /// </summary>
         public void RetrieveOrInitializeCachedGenerationManager()
         {
             CachedGenerationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
         }
 
+        /// <summary>
+        /// Retrieves the cached generation manager.
+        /// </summary>
+        /// <returns>The cached generation manager, or null if not found.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
             var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
@@ -132,6 +165,10 @@ namespace Editor
             return null;
         }
 
+        /// <summary>
+        /// Instantiates the generation manager from the prefab.
+        /// </summary>
+        /// <returns>The instantiated generation manager.</returns>
         private GameObject InstantiateGenerationManager()
         {
             if (_cachedPrefab == null)
@@ -141,7 +178,7 @@ namespace Editor
 
             if (_cachedPrefab == null)
             {
-                Debug.LogError($"Prefab no encontrado en la ruta: {PrefabPath}");
+                Debug.LogError($"Prefab wasn't found in route: {PrefabPath}");
                 return null;
             }
 
@@ -150,6 +187,9 @@ namespace Editor
             return CachedGenerationManager;
         }
 
+        /// <summary>
+        /// Clears the cached data.
+        /// </summary>
         public void ClearCacheData()
         {
             if (CachedGenerationManager)
@@ -166,5 +206,7 @@ namespace Editor
 
             _container.MarkDirtyRepaint();
         }
+
+        #endregion
     }
 }
