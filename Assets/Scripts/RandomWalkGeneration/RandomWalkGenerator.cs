@@ -10,35 +10,40 @@ namespace RandomWalkGeneration
     public class RandomWalkGenerator : BaseGenerator
     {
         #region Serialized Fields
-
+        /// <summary>
+        /// ${RandomWalkTooltips.WalkIterationsTooltip}
+        /// </summary>
+        [SerializeField,
+         Tooltip(RandomWalkTooltips.WalkIterationsTooltip)]
         public int walkIterations = 10;
 
+        [SerializeField,
+         Tooltip(RandomWalkTooltips.StepsPerIterationTooltip)]
         public int stepsPerIteration = 10;
 
-        public bool randomizeStartPos = true;
-
-        [SerializeField, ConditionAttribute("generateCorridors"),
-         Tooltip("Flag to determine if corridors should be generated and calcule potential rooms positions.")]
+        [SerializeField,
+         Condition("generateCorridors"),
+         Tooltip(RandomWalkTooltips.GenerateCorridorsTooltip)]
         private bool generateCorridors;
 
-        [ConditionalField("generateCorridors"), SerializeField,
-         Tooltip(
-             "Length of each corridor. Smaller values create shorter corridors, resulting in a more compact dungeon layout. Larger values create longer corridors, resulting in a more spread-out dungeon layout.")]
+        [SerializeField,
+         ConditionalField("generateCorridors"),
+         Tooltip(RandomWalkTooltips.CorridorLengthTooltip)]
         private int corridorLength = 10;
 
-        [ConditionalField("generateCorridors"), SerializeField,
-         Tooltip(
-             "Number of corridors to generate. Smaller values create fewer corridors, resulting in fewer connections between rooms. Larger values create more corridors, resulting in more connections between rooms.")]
+        [SerializeField,
+         ConditionalField("generateCorridors"),
+         Tooltip(RandomWalkTooltips.CorridorCountTooltip)]
         private int corridorCount = 5;
 
-        [ConditionalField("generateCorridors"), SerializeField, Range(0f, 1f),
-         Tooltip(
-             "Percentage of potential room positions to convert into rooms. Smaller values create fewer rooms, resulting in a more sparse dungeon layout. Larger values create more rooms, resulting in a more dense dungeon layout.")]
+        [SerializeField, Range(0f, 1f),
+         ConditionalField("generateCorridors"),
+         Tooltip(RandomWalkTooltips.RoomPercentageTooltip)]
         private float roomPercentage = 0.8f;
 
-        [ConditionalField("generateCorridors"), SerializeField, Range(1f, 4f),
-         Tooltip(
-             "Width of the corridors. Smaller values create narrower corridors, resulting in tighter passageways. Larger values create wider corridors, resulting in more spacious passageways.")]
+        [SerializeField, Range(1f, 4f),
+         ConditionalField("generateCorridors"),
+         Tooltip(RandomWalkTooltips.CorridorWidthTooltip)]
         private int corridorWidth = 1;
 
         #endregion
@@ -226,12 +231,6 @@ namespace RandomWalkGeneration
             {
                 var path = RandomWalkAlgorithm(currentPos, stepsPerIteration);
                 tiles.UnionWith(path);
-
-                if (randomizeStartPos && tiles.Count > 0)
-                {
-                    // Selecciona aleatoriamente un nuevo punto de inicio de entre los tiles ya visitados.
-                    currentPos = tiles.ElementAt(Random.Range(0, tiles.Count));
-                }
             }
 
             return tiles;
