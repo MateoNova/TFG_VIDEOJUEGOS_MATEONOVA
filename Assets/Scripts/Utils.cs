@@ -78,7 +78,7 @@ public static class Utils
     /// <summary>
     /// Gets the opposite direction to the given direction.
     /// </summary>
-    public static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName,
+    /*public static bool ShouldDisplayField(SerializedObject serializedObject, string propertyName,
         System.Reflection.BindingFlags fieldBindingFlags = System.Reflection.BindingFlags.NonPublic,
         System.Reflection.BindingFlags conditionalFieldBindingFlags = System.Reflection.BindingFlags.NonPublic)
     {
@@ -99,7 +99,7 @@ public static class Utils
         var conditionValue = (bool)conditionField.GetValue(targetObject);
 
         return conditionValue;
-    }
+    }*/
 
     public static int GetPreviewTileSize() => 64;
     

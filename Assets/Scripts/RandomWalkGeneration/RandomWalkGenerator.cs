@@ -17,7 +17,7 @@ namespace RandomWalkGeneration
 
         public bool randomizeStartPos = true;
 
-        [SerializeField,
+        [SerializeField, ConditionAttribute("generateCorridors"),
          Tooltip("Flag to determine if corridors should be generated and calcule potential rooms positions.")]
         private bool generateCorridors;
 
