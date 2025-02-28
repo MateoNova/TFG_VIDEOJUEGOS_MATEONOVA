@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -10,6 +11,8 @@ namespace Editor
     {
         private readonly GeneratorSelection _generatorSelection;
         private Foldout _foldout;
+        
+        public Action _onReload;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InitializationManager"/> class.
@@ -33,14 +36,21 @@ namespace Editor
             var buttonContainer = StyleUtils.RowButtonContainer();
             var clearButton = StyleUtils.ButtonInRowContainer("Clear and Delete", ClearCachedData, true);
             var initButton = StyleUtils.ButtonInRowContainer("Initialize Scene", InitScene);
+            var reloadAll = StyleUtils.ButtonInRowContainer("Reload", ReloadAll);
 
             buttonContainer.Add(clearButton);
             buttonContainer.Add(initButton);
+            buttonContainer.Add(reloadAll);
 
             _foldout.Add(buttonContainer);
             container.Add(_foldout);
 
             return container;
+        }
+
+        private void ReloadAll()
+        {
+            _onReload?.Invoke();
         }
 
         /// <summary>

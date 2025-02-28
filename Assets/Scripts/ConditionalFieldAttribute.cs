@@ -21,10 +21,6 @@ using NUnit.Framework;
 //         ConditionFieldName = conditionFieldName;
 //     }
 // }
-
-
-
-
 [AttributeUsage(AttributeTargets.Field)]
 public class WallTileGroupAttribute : Attribute
 {
@@ -50,16 +46,23 @@ public class WalkableTileGroupAttribute : Attribute
 }
 
 [AttributeUsage(AttributeTargets.Field)]
-public class ConditionAttribute : PropertyAttribute {
+public class ConditionAttribute : PropertyAttribute
+{
     public string Group { get; }
-    public ConditionAttribute(string group = null) {
+
+    public ConditionAttribute(string group = null)
+    {
         Group = group;
     }
 }
+
 [AttributeUsage(AttributeTargets.Field)]
-public class ConditionalFieldAttribute : PropertyAttribute {
+public class ConditionalFieldAttribute : PropertyAttribute
+{
     public string ConditionGroup { get; }
-    public ConditionalFieldAttribute(string conditionGroup = null) {
+
+    public ConditionalFieldAttribute(string conditionGroup = null)
+    {
         ConditionGroup = conditionGroup;
     }
 }

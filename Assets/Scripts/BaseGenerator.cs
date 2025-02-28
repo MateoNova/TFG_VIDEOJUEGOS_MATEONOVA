@@ -1,3 +1,4 @@
+using RandomWalkGeneration;
 using UnityEngine;
 
 /// <summary>
@@ -10,12 +11,14 @@ public abstract class BaseGenerator : MonoBehaviour
     /// <summary>
     /// The TilemapPainter used to visualize the dungeon.
     /// </summary>
-    [SerializeField] protected TilemapPainter tilemapPainter;
+    [SerializeField, Tooltip(BaseGeneratorTooltips.tilemapPainterTooltip)]
+    protected TilemapPainter tilemapPainter;
 
     /// <summary>
     /// The origin point for dungeon generation.
     /// </summary>
-    [SerializeField] protected Vector2Int origin = Vector2Int.zero;
+    [SerializeField, Tooltip(BaseGeneratorTooltips.originTooltip)]
+    protected Vector2Int origin = Vector2Int.zero;
 
     #endregion
 

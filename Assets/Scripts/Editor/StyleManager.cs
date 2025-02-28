@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using GeneralUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -43,6 +44,7 @@ namespace Editor
         /// <returns>A <see cref="VisualElement"/> containing the UI elements.</returns>
         public VisualElement CreateUI()
         {
+            if (_generatorSelection.CurrentGenerator.TilemapPainter == null) return null;
             _walkableTileBases = _generatorSelection.CurrentGenerator.TilemapPainter.walkableTileBases;
             _walkableTilesPriorities = _generatorSelection.CurrentGenerator.TilemapPainter.walkableTilesPriorities;
             _randomPlacement = _generatorSelection.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement;
@@ -504,7 +506,10 @@ namespace Editor
 
             return new IMGUIContainer(() =>
             {
+                if (_generatorSelection == null) return;
+
                 var tilemapPainter = _generatorSelection.CurrentGenerator.TilemapPainter;
+                if (tilemapPainter == null) return;
                 var currentTile = field.GetValue(tilemapPainter) as TileBase;
                 var previewTexture = GetPreviewTexture(currentTile);
 

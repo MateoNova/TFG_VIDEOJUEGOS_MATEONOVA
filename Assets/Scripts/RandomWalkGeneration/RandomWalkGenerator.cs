@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GeneralUtils;
+using GeneralUtils.Tooltipls;
 using UnityEngine;
 
 namespace RandomWalkGeneration
@@ -10,9 +12,7 @@ namespace RandomWalkGeneration
     public class RandomWalkGenerator : BaseGenerator
     {
         #region Serialized Fields
-        /// <summary>
-        /// ${RandomWalkTooltips.WalkIterationsTooltip}
-        /// </summary>
+
         [SerializeField,
          Tooltip(RandomWalkTooltips.WalkIterationsTooltip)]
         public int walkIterations = 10;

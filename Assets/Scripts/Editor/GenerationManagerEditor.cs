@@ -44,6 +44,8 @@ namespace Editor
             _generatorSettings = new GeneratorSettings(_generatorSelection);
             _styleManager = new StyleManager(_generatorSelection);
             _generationActions = new GenerationActions(_generatorSelection);
+            
+            _initializationManager._onReload += CreateGUI;
         }
 
         /// <summary>

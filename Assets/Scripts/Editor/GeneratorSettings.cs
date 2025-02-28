@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -70,7 +72,7 @@ namespace Editor
 
                     var fieldInfo = serializedObject.targetObject.GetType().GetField(property.name,
                         BindingFlags.Instance | BindingFlags.NonPublic);
-
+                    
                     if (fieldInfo == null)
                     {
                         AddNoCustomAttributesField(property, serializedObject, settingsContainer);
