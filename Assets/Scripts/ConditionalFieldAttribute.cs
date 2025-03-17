@@ -1,5 +1,7 @@
 ﻿using System;
-using NUnit.Framework;
+using UnityEditor;
+using UnityEngine;
+using PropertyAttribute = NUnit.Framework.PropertyAttribute;
 
 /// <summary>
 /// Attribute to conditionally display a field in the Unity Inspector based on the value of another field.
@@ -64,5 +66,24 @@ public class ConditionalFieldAttribute : PropertyAttribute
     public ConditionalFieldAttribute(string conditionGroup = null)
     {
         ConditionGroup = conditionGroup;
+    }
+}
+
+[AttributeUsage(AttributeTargets.Class)]
+public class OpenGraphEditorAttribute : Attribute
+{
+}
+
+[CustomPropertyDrawer(typeof(OpenGraphEditorAttribute))]
+public class OpenGraphEditorDrawer : PropertyDrawer
+{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        EditorGUI.PropertyField(position, property, label);
+
+        if (GUI.Button(new Rect(position.xMax - 60, position.y, 60, position.height), "Open"))
+        {
+            GraphBasedGenerator.GraphWindow.ShowWindow();
+        }
     }
 }

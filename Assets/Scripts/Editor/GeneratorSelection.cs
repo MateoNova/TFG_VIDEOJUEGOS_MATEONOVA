@@ -24,6 +24,7 @@ namespace Editor
         private List<string> _cachedGeneratorNames = new();
 
         public static Action OnGeneratorChanged;
+        public static Action<bool> ShowButtonOpenGraphWindow;
 
         private VisualElement _container;
 
@@ -77,16 +78,27 @@ namespace Editor
         /// <param name="index">The index of the generator to select.</param>
         public void SelectGenerator(int index)
         {
-            if (index >= 0 && index < _generators.Count)
-            {
-                _selectedGeneratorIndex = index;
-                CurrentGenerator = _generators[_selectedGeneratorIndex];
-                OnGeneratorChanged?.Invoke();
-            }
-            else
+            if (index < 0 || index >= _generators.Count)
             {
                 Debug.LogWarning("Index out of range.");
+                return;
             }
+
+            _selectedGeneratorIndex = index;
+            CurrentGenerator = _generators[_selectedGeneratorIndex];
+
+            // Check if the selected generator has the OpenGraphEditor attribute
+            switch (Attribute.IsDefined(CurrentGenerator.GetType(), typeof(OpenGraphEditorAttribute)))
+            {
+                case true:
+                    ShowButtonOpenGraphWindow?.Invoke(true);
+                    break;
+                case false when GeneratorSettings.GetShowOpenGraphButton():
+                    ShowButtonOpenGraphWindow?.Invoke(false);
+                    break;
+            }
+
+            OnGeneratorChanged?.Invoke();
         }
 
         /// <summary>

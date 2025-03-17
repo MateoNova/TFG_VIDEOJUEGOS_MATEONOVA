@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -19,6 +17,11 @@ namespace Editor
         private readonly GeneratorSelection _generatorSelection;
         private VisualElement _container;
 
+        private Button _openGraphButton;
+        private Foldout _foldout;
+
+        private static bool _showOpenGraphButton;
+
         # endregion
 
         # region Methods
@@ -31,6 +34,7 @@ namespace Editor
         {
             _generatorSelection = generatorSelection;
             GeneratorSelection.OnGeneratorChanged += Repaint;
+            GeneratorSelection.ShowButtonOpenGraphWindow += ShowOpenGraphWindowButton;
         }
 
         /// <summary>
@@ -48,12 +52,12 @@ namespace Editor
                 _container.Clear();
             }
 
-            var foldout = new Foldout { text = "Generator Settings", value = true };
+            _foldout = new Foldout { text = "Generator Settings", value = true };
 
             if (_generatorSelection.CurrentGenerator == null)
             {
                 var infoLabel = StyleUtils.HelpLabel("No generator selected.");
-                foldout.Add(infoLabel);
+                _foldout.Add(infoLabel);
             }
             else
             {
@@ -72,7 +76,7 @@ namespace Editor
 
                     var fieldInfo = serializedObject.targetObject.GetType().GetField(property.name,
                         BindingFlags.Instance | BindingFlags.NonPublic);
-                    
+
                     if (fieldInfo == null)
                     {
                         AddNoCustomAttributesField(property, serializedObject, settingsContainer);
@@ -94,10 +98,16 @@ namespace Editor
                     UpdateConditionalVisibility(group, serializedObject, conditionalFields);
                 }
 
-                foldout.Add(settingsContainer);
+                _foldout.Add(settingsContainer);
             }
 
-            _container.Add(foldout);
+            _openGraphButton = new Button(() => _generatorSelection.CurrentGenerator.OpenGraphWindow())
+            {
+                text = "Open Graph Window",
+                style = { display = _showOpenGraphButton ? DisplayStyle.Flex : DisplayStyle.None }
+            };
+            _foldout.Add(_openGraphButton);
+            _container.Add(_foldout);
             return _container;
         }
 
@@ -230,6 +240,16 @@ namespace Editor
             CreateUI();
             _container.MarkDirtyRepaint();
         }
+
+        /// <summary>
+        /// Adds a button to open the graph window.
+        /// </summary>
+        private static void ShowOpenGraphWindowButton(bool show)
+        {
+            _showOpenGraphButton = show;
+        }
+
+        public static bool GetShowOpenGraphButton() => _showOpenGraphButton;
 
         # endregion
     }

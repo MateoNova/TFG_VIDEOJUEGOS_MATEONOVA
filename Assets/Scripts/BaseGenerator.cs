@@ -48,6 +48,15 @@ public abstract class BaseGenerator : MonoBehaviour
 
     #endregion
 
+    # region Virtual Methods
+
+    public virtual void OpenGraphWindow()
+    {
+        Debug.LogWarning("OpenGraphWindow is not implemented.");
+    }
+
+    #endregion
+
     #region Utility Methods
 
     /// <summary>
