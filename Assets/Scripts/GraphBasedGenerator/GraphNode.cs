@@ -16,10 +16,10 @@ namespace GraphBasedGenerator
             var rect = new Rect(position, size);
             SetPosition(rect);
 
-            var inputPort = CreateHiddenPort(Direction.Input);
+            var inputPort = CreatePort(Direction.Input);
             inputContainer.Add(inputPort);
 
-            var outputPort = CreateHiddenPort(Direction.Output);
+            var outputPort = CreatePort(Direction.Output);
             outputContainer.Add(outputPort);
 
             CreateJsonFileUI();
@@ -27,16 +27,15 @@ namespace GraphBasedGenerator
             RefreshExpandedState();
         }
 
-        private Port CreateHiddenPort(Direction portDirection)
+        private Port CreatePort(Direction portDirection)
         {
-            var port = new CenteredPort(Orientation.Vertical, portDirection, Port.Capacity.Multi, typeof(object));
-            port.style.display = DisplayStyle.None;
+            var port = Port.Create<Edge>(Orientation.Vertical, portDirection, Port.Capacity.Multi, typeof(object));
             return port;
         }
 
         private void AddCustomContextMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Create Connection", action =>
+            evt.menu.AppendAction("Create Connection", _ =>
             {
                 var graphView = this.GetFirstAncestorOfType<GraphGeneratorView>();
                 if (graphView == null)
