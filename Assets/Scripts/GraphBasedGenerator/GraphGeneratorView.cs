@@ -1,27 +1,28 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 namespace GraphBasedGenerator
 {
     public class GraphGeneratorView : GraphView
     {
+        public static GraphNode pendingConnectionNode;
+
         public GraphGeneratorView()
         {
             AddManipulators();
             AddBackground();
             AddStyles();
         }
-        
+
         private void AddManipulators()
         {
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new ContentZoomer());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
-
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
         }
 
@@ -42,9 +43,7 @@ namespace GraphBasedGenerator
         {
             if (evt.target is not GraphGeneratorView) return;
 
-            var localMousePosition =
-                this.ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
-
+            var localMousePosition = this.ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
             evt.menu.AppendAction("Create Node", _ => CreateNode(localMousePosition));
         }
 
@@ -53,8 +52,16 @@ namespace GraphBasedGenerator
             var node = new GraphNode(position, new Vector2(200, 200));
             AddElement(node);
         }
-        
-        
-        
+
+        public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
+        {
+            var compatiblePorts = new List<Port>();
+            ports.ForEach((port) =>
+            {
+                if (startPort != port && startPort.node != port.node)
+                    compatiblePorts.Add(port);
+            });
+            return compatiblePorts;
+        }
     }
 }

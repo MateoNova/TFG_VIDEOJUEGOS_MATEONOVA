@@ -15,7 +15,62 @@ namespace GraphBasedGenerator
         {
             var rect = new Rect(position, size);
             SetPosition(rect);
+
+            var inputPort = CreateHiddenPort(Direction.Input);
+            inputContainer.Add(inputPort);
+
+            var outputPort = CreateHiddenPort(Direction.Output);
+            outputContainer.Add(outputPort);
+
             CreateJsonFileUI();
+            this.AddManipulator(new ContextualMenuManipulator(AddCustomContextMenu));
+            RefreshExpandedState();
+        }
+
+        private Port CreateHiddenPort(Direction portDirection)
+        {
+            var port = new CenteredPort(Orientation.Vertical, portDirection, Port.Capacity.Multi, typeof(object));
+            port.style.display = DisplayStyle.None;
+            return port;
+        }
+
+        private void AddCustomContextMenu(ContextualMenuPopulateEvent evt)
+        {
+            evt.menu.AppendAction("Create Connection", action =>
+            {
+                var graphView = this.GetFirstAncestorOfType<GraphGeneratorView>();
+                if (graphView == null)
+                    return;
+
+                if (GraphGeneratorView.pendingConnectionNode == null)
+                {
+                    GraphGeneratorView.pendingConnectionNode = this;
+                    Debug.Log(
+                        "Connection source set. Now right-click on the target node and select 'Create Connection' again.");
+                }
+                else if (GraphGeneratorView.pendingConnectionNode == this)
+                {
+                    GraphGeneratorView.pendingConnectionNode = null;
+                    Debug.Log("Connection source cleared.");
+                }
+                else
+                {
+                    var sourceNode = GraphGeneratorView.pendingConnectionNode;
+                    var sourcePort = sourceNode.outputContainer[0] as Port;
+                    var targetPort = this.inputContainer[0] as Port;
+
+                    var edge = new Edge
+                    {
+                        output = sourcePort,
+                        input = targetPort
+                    };
+                    edge.UpdateEdgeControl();
+
+                    graphView.AddElement(edge);
+                    Debug.Log("Created connection between nodes.");
+                    GraphGeneratorView.pendingConnectionNode = null;
+                }
+            });
         }
 
         private void CreateJsonFileUI()
@@ -32,14 +87,12 @@ namespace GraphBasedGenerator
             _jsonFileLabel = new Label("None");
             container.Add(_jsonFileLabel);
 
-            // Botón para abrir el selector de archivos JSON
             var selectButton = new Button(() =>
             {
                 var path = EditorUtility.OpenFilePanel("JSON selection", "", "json");
                 if (string.IsNullOrEmpty(path)) return;
                 _jsonFilePath = path;
                 var fileName = Path.GetFileName(_jsonFilePath);
-                //delete .json extension
                 _jsonFileLabel.text = fileName[..^5];
             })
             {
@@ -47,9 +100,7 @@ namespace GraphBasedGenerator
             };
 
             container.Add(selectButton);
-
             extensionContainer.Add(container);
-            RefreshExpandedState();
         }
 
         public sealed override void SetPosition(Rect newPos)
