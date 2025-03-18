@@ -327,23 +327,25 @@ public class TilemapPainter : MonoBehaviour
     /// Loads the state of both Tilemaps from a file.
     /// </summary>
     /// <param name="path">Path to load the file from.</param>
-    public void LoadTilemap(string path)
+    /// <param name="clearBeforeLoading"> Flag to clear</param>
+    public void LoadTilemap(string path, bool clearBeforeLoading = true, Vector3Int offset = default)
+    
     {
         var json = System.IO.File.ReadAllText(path);
         var tilemapData = JsonUtility.FromJson<TilemapData>(json);
 
-        ResetAllTiles();
+        if (clearBeforeLoading) ResetAllTiles();
 
         foreach (var tile in tilemapData.walkableTiles)
         {
             var tileBase = GetTileBaseByGuid(tile.tileGUID);
-            walkableTilemap.SetTile(tile.position, tileBase);
+            walkableTilemap.SetTile(tile.position+offset, tileBase);
         }
 
         foreach (var tile in tilemapData.wallTiles)
         {
             var tileBase = GetTileBaseByGuid(tile.tileGUID);
-            wallTilemap.SetTile(tile.position, tileBase);
+            wallTilemap.SetTile(tile.position + offset, tileBase);
         }
     }
 

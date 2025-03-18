@@ -8,7 +8,7 @@ namespace GraphBasedGenerator
 {
     public class GraphNode : Node
     {
-        private string _jsonFilePath = "";
+        public string JsonFilePath = "";
         private Label _jsonFileLabel;
 
         public GraphNode(Vector2 position, Vector2 size)
@@ -41,20 +41,20 @@ namespace GraphBasedGenerator
                 if (graphView == null)
                     return;
 
-                if (GraphGeneratorView.pendingConnectionNode == null)
+                if (GraphGeneratorView.PendingConnectionNode == null)
                 {
-                    GraphGeneratorView.pendingConnectionNode = this;
+                    GraphGeneratorView.PendingConnectionNode = this;
                     Debug.Log(
                         "Connection source set. Now right-click on the target node and select 'Create Connection' again.");
                 }
-                else if (GraphGeneratorView.pendingConnectionNode == this)
+                else if (GraphGeneratorView.PendingConnectionNode == this)
                 {
-                    GraphGeneratorView.pendingConnectionNode = null;
+                    GraphGeneratorView.PendingConnectionNode = null;
                     Debug.Log("Connection source cleared.");
                 }
                 else
                 {
-                    var sourceNode = GraphGeneratorView.pendingConnectionNode;
+                    var sourceNode = GraphGeneratorView.PendingConnectionNode;
                     var sourcePort = sourceNode.outputContainer[0] as Port;
                     var targetPort = this.inputContainer[0] as Port;
 
@@ -67,7 +67,7 @@ namespace GraphBasedGenerator
 
                     graphView.AddElement(edge);
                     Debug.Log("Created connection between nodes.");
-                    GraphGeneratorView.pendingConnectionNode = null;
+                    GraphGeneratorView.PendingConnectionNode = null;
                 }
             });
         }
@@ -90,8 +90,8 @@ namespace GraphBasedGenerator
             {
                 var path = EditorUtility.OpenFilePanel("JSON selection", "", "json");
                 if (string.IsNullOrEmpty(path)) return;
-                _jsonFilePath = path;
-                var fileName = Path.GetFileName(_jsonFilePath);
+                JsonFilePath = path;
+                var fileName = Path.GetFileName(JsonFilePath);
                 _jsonFileLabel.text = fileName[..^5];
             })
             {

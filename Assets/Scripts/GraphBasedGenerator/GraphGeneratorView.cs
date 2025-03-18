@@ -8,7 +8,7 @@ namespace GraphBasedGenerator
 {
     public class GraphGeneratorView : GraphView
     {
-        public static GraphNode pendingConnectionNode;
+        public static GraphNode PendingConnectionNode;
 
         public GraphGeneratorView()
         {
