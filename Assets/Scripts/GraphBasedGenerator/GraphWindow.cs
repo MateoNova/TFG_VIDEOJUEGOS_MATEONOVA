@@ -25,18 +25,6 @@ namespace GraphBasedGenerator
         }
 
         /// <summary>
-        /// Handles the event when the window is destroyed.
-        /// </summary>
-        private void OnDestroy()
-        {
-            if (EditorUtility.DisplayDialog("Confirm Close", "Are you sure you want to close the Graph Window?", "Yes",
-                    "No")) return;
-            // Cancel the close operation
-            var window = GetWindow<GraphWindow>("Graph Window");
-            window.Show();
-        }
-
-        /// <summary>
         /// Gets the GraphGeneratorView from the window.
         /// </summary>
         /// <returns>The GraphGeneratorView instance.</returns>
