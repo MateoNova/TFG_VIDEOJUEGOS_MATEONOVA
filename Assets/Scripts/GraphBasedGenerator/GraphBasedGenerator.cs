@@ -13,24 +13,8 @@ namespace GraphBasedGenerator
         private readonly HashSet<Vector2Int> _occupiedDoorPositions = new();
 
         private readonly HashSet<Vector2Int> _allFloorPositions = new();
-
-
-        /// <summary>
-        /// Dada la posición de la puerta (doorPos) y las posiciones de suelo de la habitación (roomFloorPositions),
-        /// encuentra las celdas de suelo que están adyacentes a la puerta.
-        /// </summary>
-        private IEnumerable<Vector2Int> GetTilesBehindDoor(Vector2Int doorPos, HashSet<Vector2Int> roomFloorPositions)
-        {
-            var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-            foreach (var dir in directions)
-            {
-                var neighbor = doorPos + dir;
-                if (roomFloorPositions.Contains(neighbor))
-                {
-                    yield return neighbor;
-                }
-            }
-        }
+        private readonly HashSet<Vector2Int> _allWallPositions = new();
+        
 
         public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
@@ -41,6 +25,7 @@ namespace GraphBasedGenerator
 
             _occupiedDoorPositions.Clear();
             _allFloorPositions.Clear(); // Limpiamos antes de empezar
+            _allWallPositions.Clear();
 
             _graphView = GraphWindow.getGraphGeneratorView();
 
@@ -72,14 +57,11 @@ namespace GraphBasedGenerator
                 // 2. Obtenemos posiciones de puertas y suelo
                 var doors = GetDoorPositions(graphNode.JsonFilePath, gridPos);
                 var floorTiles = GetFloorPositions(graphNode.JsonFilePath, gridPos);
-
-                // Añadimos a nuestro set global de suelo
-                foreach (var floorPos in floorTiles)
-                    _allFloorPositions.Add(floorPos);
+                GetWallPositions(graphNode.JsonFilePath, gridPos);
 
                 // También añadimos las puertas al set de suelo (para que no genere paredes en ellas)
-                foreach (var doorPos in doors)
-                    _allFloorPositions.Add(doorPos);
+                // foreach (var doorPos in doors)
+                //     _allFloorPositions.Add(doorPos);
 
                 roomDoors[graphNode] = doors;
             }
@@ -98,11 +80,20 @@ namespace GraphBasedGenerator
 
                 var room1Doors = roomDoors[sourceNode];
                 var room2Doors = roomDoors[targetNode];
-                GenerateCorridor(room1Doors, room2Doors, _allFloorPositions, _allFloorPositions);
+                GenerateCorridor(room1Doors, room2Doors);
             }
+        }
 
-            // 4. Una vez puestos todos los rooms y corredores, generamos las paredes de TODO el dungeon
-            WallGenerator.GenerateWalls(_allFloorPositions, tilemapPainter);
+        private void GetWallPositions(string graphNodeJsonFilePath, Vector2Int gridPos)
+        {
+            var json = System.IO.File.ReadAllText(graphNodeJsonFilePath);
+            var tilemapData = JsonUtility.FromJson<TilemapData>(json);
+
+            foreach (var tile in tilemapData.wallTiles)
+            {
+                var wallPos = new Vector2Int(tile.position.x, tile.position.y) + gridPos;
+                _allWallPositions.Add(wallPos);
+            }
         }
 
         private List<Vector2Int> GetFloorPositions(string jsonFilePath, Vector2Int offset)
@@ -115,6 +106,7 @@ namespace GraphBasedGenerator
             foreach (var tile in tilemapData.walkableTiles)
             {
                 floorPositions.Add(new Vector2Int(tile.position.x, tile.position.y) + offset);
+                _allFloorPositions.Add(new Vector2Int(tile.position.x, tile.position.y) + offset);
             }
 
             return floorPositions;
@@ -145,9 +137,7 @@ namespace GraphBasedGenerator
         /// </summary>
         private void GenerateCorridor(
             List<Vector2Int> room1Doors,
-            List<Vector2Int> room2Doors,
-            HashSet<Vector2Int> room1FloorPositions, // Suelo de la habitación 1
-            HashSet<Vector2Int> room2FloorPositions // Suelo de la habitación 2
+            List<Vector2Int> room2Doors
         )
         {
             // 1. Creamos la lista de parejas de puertas ordenadas por distancia
@@ -187,15 +177,15 @@ namespace GraphBasedGenerator
                 var corridorFloorPositions = new HashSet<Vector2Int>(corridorPath);
 
                 // Agregamos las puertas
-                corridorFloorPositions.Add(candidate.door1);
-                corridorFloorPositions.Add(candidate.door2);
-
-                // Agregamos las casillas detrás de las puertas (para evitar muros internos)
-                foreach (var tileBehindDoor in GetTilesBehindDoor(candidate.door1, room1FloorPositions))
-                    corridorFloorPositions.Add(tileBehindDoor);
-
-                foreach (var tileBehindDoor in GetTilesBehindDoor(candidate.door2, room2FloorPositions))
-                    corridorFloorPositions.Add(tileBehindDoor);
+                // corridorFloorPositions.Add(candidate.door1);
+                // corridorFloorPositions.Add(candidate.door2);
+                
+                corridorPath.Remove(candidate.door1);
+                corridorPath.Remove(candidate.door2);
+                
+                //remove the tile next to each door
+                corridorPath.Remove(candidate.door1 + new Vector2Int(1, 0));
+                corridorPath.Remove(candidate.door1 + new Vector2Int(-1, 0));
 
                 // Ahora sí generamos muros SOLO para este corredor
                 WallGenerator.GenerateWalls(corridorFloorPositions, tilemapPainter);

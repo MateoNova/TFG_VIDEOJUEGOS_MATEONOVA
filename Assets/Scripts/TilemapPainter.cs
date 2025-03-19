@@ -286,8 +286,7 @@ public class TilemapPainter : MonoBehaviour
         foreach (var pos in tilesPositions)
         {
             var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
-            if (wallTilemap.GetTile(tilePosition) != null)
-                continue;
+            
             wallTilemap.SetTile(tilePosition, tile);
         }
     }
