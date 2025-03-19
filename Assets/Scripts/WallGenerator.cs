@@ -14,7 +14,9 @@ public class WallGenerator : MonoBehaviour
     /// </summary>
     /// <param name="walkableTilesPositions">A set of positions of walkable tiles.</param>
     /// <param name="tilemapPainter">The TilemapPainter used to paint the walls.</param>
-    public static void GenerateWalls(HashSet<Vector2Int> walkableTilesPositions, TilemapPainter tilemapPainter)
+    /// <param name="nonWallPositions"></param>
+    public static void GenerateWalls(HashSet<Vector2Int> walkableTilesPositions, TilemapPainter tilemapPainter,
+        HashSet<Vector2Int> nonWallPositions = null)
     {
         // 1. Build the initial dictionary of wall positions
         var wallPositionsByType = BuildInitialWallPositions(walkableTilesPositions);
@@ -25,7 +27,14 @@ public class WallGenerator : MonoBehaviour
         // 3. Paint the walls (iterate through each type and paint the corresponding positions)
         foreach (var kvp in wallPositionsByType)
         {
-            tilemapPainter.PaintWallTiles(kvp.Value, kvp.Key);
+            // Filter out non-wall positions
+            var filteredPositions = kvp.Value;
+            if (nonWallPositions != null)
+            {
+                filteredPositions = new HashSet<Vector2Int>(kvp.Value.Except(nonWallPositions));
+            }
+
+            tilemapPainter.PaintWallTiles(filteredPositions, kvp.Key);
         }
     }
 
