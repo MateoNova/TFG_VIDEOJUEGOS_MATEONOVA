@@ -11,7 +11,6 @@ namespace GraphBasedGenerator
         private float _scalingFactor = 0.1f;
 
         private readonly HashSet<Vector2Int> _occupiedDoorPositions = new();
-        private readonly HashSet<Vector2Int> _allFloorPositions = new();
 
 
         public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
@@ -22,7 +21,6 @@ namespace GraphBasedGenerator
             }
 
             _occupiedDoorPositions.Clear();
-            _allFloorPositions.Clear();
 
             _graphView = GraphWindow.getGraphGeneratorView();
 
@@ -33,7 +31,7 @@ namespace GraphBasedGenerator
             }
 
             var roomDoors = PaintRooms();
-            
+
             // 3. Generar corredores entre rooms
             foreach (var edge in _graphView.edges)
             {
@@ -50,8 +48,6 @@ namespace GraphBasedGenerator
                 var room2Doors = roomDoors[targetNode];
                 GenerateCorridor(room1Doors, room2Doors);
             }
-            
-            WallGenerator.GenerateWalls(_allFloorPositions, tilemapPainter);
         }
 
         private Dictionary<GraphNode, List<Vector2Int>> PaintRooms()
@@ -89,7 +85,7 @@ namespace GraphBasedGenerator
 
             foreach (var tile in tilemapData.walkableTiles)
             {
-                _allFloorPositions.Add(new Vector2Int(tile.position.x, tile.position.y) + offset);
+                //_allFloorPositions.Add(new Vector2Int(tile.position.x, tile.position.y) + offset);
             }
         }
 
@@ -131,9 +127,9 @@ namespace GraphBasedGenerator
                     candidatePairs.Add((door1, door2, distance));
                 }
             }
-
+        
             candidatePairs.Sort((a, b) => a.distance.CompareTo(b.distance));
-
+        
             // 2. Probamos cada pareja para ver si se puede trazar el corredor con A*
             foreach (var candidate in candidatePairs)
             {
@@ -141,47 +137,41 @@ namespace GraphBasedGenerator
                 if (_occupiedDoorPositions.Contains(candidate.door1) ||
                     _occupiedDoorPositions.Contains(candidate.door2))
                     continue;
-
+        
                 var corridorPath = Pathfinding.FindPath(candidate.door1, candidate.door2, tilemapPainter);
                 if (corridorPath == null || corridorPath.Count == 0)
                     continue;
-
+        
                 // Marcamos estas puertas como usadas
                 _occupiedDoorPositions.Add(candidate.door1);
                 _occupiedDoorPositions.Add(candidate.door2);
-
-                // Pintamos el corredor en el tilemap walkable
-                tilemapPainter.PaintWalkableTiles(corridorPath);
-                
-                //add corridor to floor positions
-                foreach (var pos in corridorPath)
-                {
-                    _allFloorPositions.Add(pos);
-                }
-                // --- Aquí viene la clave ---
+        
                 // Construimos el set de "suelo" para ESTE corredor
                 var corridorFloorPositions = new HashSet<Vector2Int>(corridorPath);
-
-                // Agregamos las puertas
-                // corridorFloorPositions.Add(candidate.door1);
-                // corridorFloorPositions.Add(candidate.door2);
-
-                corridorPath.Remove(candidate.door1);
-                corridorPath.Remove(candidate.door2);
-
-                //remove the tile next to each door
-                corridorPath.Remove(candidate.door1 + new Vector2Int(1, 0));
-                corridorPath.Remove(candidate.door1 + new Vector2Int(-1, 0));
-
-                
-
+        
+                // Excluimos las puertas de las posiciones de suelo
+                corridorFloorPositions.Remove(candidate.door1);
+                corridorFloorPositions.Remove(candidate.door2);
+        
+                // Pintamos el corredor en el tilemap walkable
+                tilemapPainter.PaintWalkableTiles(corridorFloorPositions);
+        
                 // Pintamos las puertas en el tilemap
                 tilemapPainter.PaintDoorTiles(new List<Vector2Int> { candidate.door1, candidate.door2 });
+        
+                // Excluimos las puertas de las posiciones de pared
+                var wallPositions = new HashSet<Vector2Int>(corridorFloorPositions);
 
+                //wallPositions.Add(candidate.door2);
+                //wallPositions.Add(candidate.door1);
+        
+                // Generamos las paredes alrededor del corredor
+                WallGenerator.GenerateWalls(wallPositions, tilemapPainter);
+        
                 // Termina aquí (ya construimos un corredor válido)
                 return;
             }
-
+        
             Debug.LogWarning("No se pudo generar un corredor entre las habitaciones con las puertas disponibles.");
         }
 
