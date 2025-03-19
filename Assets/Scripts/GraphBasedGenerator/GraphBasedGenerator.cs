@@ -1,23 +1,31 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
 
 namespace GraphBasedGenerator
 {
     [OpenGraphEditor]
     public class GraphBasedGenerator : BaseGenerator
     {
+        #region Fields
+
         private GraphGeneratorView _graphView;
-        private float _scalingFactor = 0.1f;
+        [SerializeField] private float scalingFactor = 0.1f;
 
         private readonly HashSet<Vector2Int> _occupiedDoorPositions = new();
         private readonly HashSet<Vector2Int> _allFloorPositions = new();
         private readonly HashSet<Vector2Int> _allWallPositions = new();
-        private List<Vector2Int> _allDoorsPositions = new();
+        private readonly List<Vector2Int> _allDoorsPositions = new();
 
+        #endregion
 
+        #region Generation Methods
 
-
+        /// <summary>
+        /// Runs the generation process.
+        /// </summary>
+        /// <param name="resetTilemap">If true, resets the tilemap before generation.</param>
+        /// <param name="startPoint">The starting point for generation.</param>
         public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
             if (resetTilemap)
@@ -39,8 +47,8 @@ namespace GraphBasedGenerator
             }
 
             var roomDoors = PaintRooms();
-            
-            // 3. Generar corredores entre rooms
+
+            // Generate corridors between rooms
             foreach (var edge in _graphView.edges)
             {
                 if (edge is null) continue;
@@ -56,15 +64,24 @@ namespace GraphBasedGenerator
                 var room2Doors = roomDoors[targetNode];
                 GenerateCorridor(room1Doors, room2Doors);
             }
-            //add doors to allwallpositions
+
+            // Add doors to all wall positions
             foreach (var door in _allDoorsPositions)
             {
                 _allWallPositions.Add(door);
             }
+
             WallGenerator.GenerateWalls(_allFloorPositions, tilemapPainter, _allWallPositions);
         }
-        
 
+        #endregion
+
+        #region Room Painting
+
+        /// <summary>
+        /// Paints rooms on the tilemap.
+        /// </summary>
+        /// <returns>A dictionary mapping each GraphNode to its list of door positions.</returns>
         private Dictionary<GraphNode, List<Vector2Int>> PaintRooms()
         {
             var roomDoors = new Dictionary<GraphNode, List<Vector2Int>>();
@@ -72,34 +89,42 @@ namespace GraphBasedGenerator
             {
                 if (node is not GraphNode graphNode) continue;
 
-                var por = graphNode.GetPosition();
-                var originalPos = new Vector2(por.x, -por.y);
-                var adjustedPos = originalPos * _scalingFactor;
+                var pos = graphNode.GetPosition();
+                var originalPos = new Vector2(pos.x, -pos.y);
+                var adjustedPos = originalPos * scalingFactor;
                 var gridPos = new Vector2Int(Mathf.RoundToInt(adjustedPos.x), Mathf.RoundToInt(adjustedPos.y));
 
-                // Pinta la habitación en el Tilemap
+                // Paint the room on the Tilemap
                 tilemapPainter.LoadTilemap(
                     graphNode.JsonFilePath,
                     offset: new Vector3Int(gridPos.x, gridPos.y, 0),
                     clearBeforeLoading: false
                 );
 
-                // 2. Obtenemos posiciones de puertas y suelo
+                // Get door and floor positions
                 var doors = GetDoorPositions(graphNode.JsonFilePath, gridPos);
-                foreach(var door in doors)
+                foreach (var door in doors)
                 {
                     _allDoorsPositions.Add(door);
                 }
-                    
+
                 GetFloorPositions(graphNode.JsonFilePath, gridPos);
                 GetWallPositions(graphNode.JsonFilePath, gridPos);
                 roomDoors[graphNode] = doors;
-                
             }
 
             return roomDoors;
         }
 
+        #endregion
+
+        #region Position Retrieval
+
+        /// <summary>
+        /// Gets wall positions from the JSON file.
+        /// </summary>
+        /// <param name="graphNodeJsonFilePath">The path to the JSON file.</param>
+        /// <param name="gridPos">The grid position offset.</param>
         private void GetWallPositions(string graphNodeJsonFilePath, Vector2Int gridPos)
         {
             var json = System.IO.File.ReadAllText(graphNodeJsonFilePath);
@@ -111,6 +136,11 @@ namespace GraphBasedGenerator
             }
         }
 
+        /// <summary>
+        /// Gets floor positions from the JSON file.
+        /// </summary>
+        /// <param name="jsonFilePath">The path to the JSON file.</param>
+        /// <param name="offset">The grid position offset.</param>
         private void GetFloorPositions(string jsonFilePath, Vector2Int offset)
         {
             var json = System.IO.File.ReadAllText(jsonFilePath);
@@ -122,51 +152,44 @@ namespace GraphBasedGenerator
             }
         }
 
-
         /// <summary>
-        /// Obtiene las posiciones de las puertas de una habitación a partir del JSON.
+        /// Gets door positions from the JSON file.
         /// </summary>
-        private List<Vector2Int> GetDoorPositions(string jsonFilePath, Vector2Int offset)
+        /// <param name="jsonFilePath">The path to the JSON file.</param>
+        /// <param name="offset">The grid position offset.</param>
+        /// <returns>A list of door positions.</returns>
+        private static List<Vector2Int> GetDoorPositions(string jsonFilePath, Vector2Int offset)
         {
-            var doorPositions = new List<Vector2Int>();
             var json = System.IO.File.ReadAllText(jsonFilePath);
             var tilemapData = JsonUtility.FromJson<TilemapData>(json);
 
-            foreach (var tile in tilemapData.doorTiles)
-            {
-                doorPositions.Add(new Vector2Int(tile.position.x, tile.position.y) + offset);
-            }
-
-            return doorPositions;
+            return tilemapData.doorTiles.Select(tile => new Vector2Int(tile.position.x, tile.position.y) + offset)
+                .ToList();
         }
 
+        #endregion
+
+        #region Corridor Generation
+
         /// <summary>
-        /// Genera un corredor entre las puertas de dos habitaciones.
-        /// Se ordenan todas las parejas de puertas por distancia y se intenta generar el corredor
-        /// con A* en cada pareja hasta encontrar una que funcione.
+        /// Generates a corridor between the doors of two rooms.
         /// </summary>
-        private void GenerateCorridor(
-            List<Vector2Int> room1Doors,
-            List<Vector2Int> room2Doors
-        )
+        /// <param name="room1Doors">List of door positions in the first room.</param>
+        /// <param name="room2Doors">List of door positions in the second room.</param>
+        private void GenerateCorridor(List<Vector2Int> room1Doors, List<Vector2Int> room2Doors)
         {
-            // 1. Creamos la lista de parejas de puertas ordenadas por distancia
-            var candidatePairs = new List<(Vector2Int door1, Vector2Int door2, float distance)>();
-            foreach (var door1 in room1Doors)
-            {
-                foreach (var door2 in room2Doors)
-                {
-                    var distance = Vector2Int.Distance(door1, door2);
-                    candidatePairs.Add((door1, door2, distance));
-                }
-            }
+            // Create a list of door pairs sorted by distance
+            var candidatePairs = (from door1 in room1Doors
+                from door2 in room2Doors
+                let distance = Vector2Int.Distance(door1, door2)
+                select (door1, door2, distance)).ToList();
 
             candidatePairs.Sort((a, b) => a.distance.CompareTo(b.distance));
 
-            // 2. Probamos cada pareja para ver si se puede trazar el corredor con A*
+            // Try each pair to see if a corridor can be created with A*
             foreach (var candidate in candidatePairs)
             {
-                // Evitar usar puertas ya ocupadas
+                // Avoid using already occupied doors
                 if (_occupiedDoorPositions.Contains(candidate.door1) ||
                     _occupiedDoorPositions.Contains(candidate.door2))
                     continue;
@@ -175,84 +198,83 @@ namespace GraphBasedGenerator
                 if (corridorPath == null || corridorPath.Count == 0)
                     continue;
 
-                // Marcamos estas puertas como usadas
+                // Mark these doors as used
                 _occupiedDoorPositions.Add(candidate.door1);
                 _occupiedDoorPositions.Add(candidate.door2);
 
-                // Pintamos el corredor en el tilemap walkable
+                // Paint the corridor on the walkable tilemap
                 tilemapPainter.PaintWalkableTiles(corridorPath);
-                
-                //add corridor to floor positions
+
+                // Add corridor to floor positions
                 foreach (var pos in corridorPath)
                 {
                     _allFloorPositions.Add(pos);
                 }
-                // --- Aquí viene la clave ---
-                // Construimos el set de "suelo" para ESTE corredor
-                var corridorFloorPositions = new HashSet<Vector2Int>(corridorPath);
 
-                // Agregamos las puertas
-                // corridorFloorPositions.Add(candidate.door1);
-                // corridorFloorPositions.Add(candidate.door2);
-
-                corridorPath.Remove(candidate.door1);
-                corridorPath.Remove(candidate.door2);
-
-                //remove the tile next to each door
+                // Remove the tile next to each door
                 corridorPath.Remove(candidate.door1 + new Vector2Int(1, 0));
                 corridorPath.Remove(candidate.door1 + new Vector2Int(-1, 0));
 
-                
-
-                // Pintamos las puertas en el tilemap
+                // Paint the doors on the tilemap
                 tilemapPainter.PaintDoorTiles(new List<Vector2Int> { candidate.door1, candidate.door2 });
 
-                // Termina aquí (ya construimos un corredor válido)
+                // Exit after creating a valid corridor
                 return;
             }
 
-            Debug.LogWarning("No se pudo generar un corredor entre las habitaciones con las puertas disponibles.");
+            Debug.LogWarning("Could not generate a corridor between the rooms with the available doors.");
         }
 
+        #endregion
 
+        #region Utility Methods
+
+        /// <summary>
+        /// Opens the graph window.
+        /// </summary>
         public override void OpenGraphWindow()
         {
             GraphWindow.ShowWindow();
         }
+
+        #endregion
     }
 }
-
 
 namespace GraphBasedGenerator
 {
     public static class Pathfinding
     {
-        // Clase auxiliar para A*
+        // Helper class for A*
         private class Node
         {
             public Vector2Int position;
-            public float g; // costo desde el inicio
+            public float g; // cost from start
             public float f; // g + h
             public Node parent;
         }
 
         /// <summary>
-        /// Implementa A* para encontrar un camino desde start hasta end, evitando celdas con tiles (paredes, puertas, etc.).
-        /// Se permite que las celdas de inicio y fin tengan puertas.
+        /// Implements A* to find a path from start to end, avoiding cells with tiles (walls, doors, etc.).
+        /// Start and end cells are allowed to have doors.
         /// </summary>
+        /// <param name="start">The starting position.</param>
+        /// <param name="end">The ending position.</param>
+        /// <param name="painter">The TilemapPainter used to check walkability.</param>
+        /// <returns>A list of positions representing the path.</returns>
         public static List<Vector2Int> FindPath(Vector2Int start, Vector2Int end, TilemapPainter painter)
         {
             var openList = new List<Node>();
             var closedSet = new HashSet<Vector2Int>();
 
-            Node startNode = new Node { position = start, g = 0, f = Heuristic(start, end), parent = null };
+            var startNode = new Node { position = start, g = 0, f = Heuristic(start, end), parent = null };
             openList.Add(startNode);
 
             while (openList.Count > 0)
             {
-                // Selecciona el nodo con menor f
+                // Select the node with the lowest f
                 openList.Sort((a, b) => a.f.CompareTo(b.f));
-                Node current = openList[0];
+                var current = openList[0];
 
                 if (current.position == end)
                 {
@@ -262,7 +284,7 @@ namespace GraphBasedGenerator
                 openList.Remove(current);
                 closedSet.Add(current.position);
 
-                // Vecinos en 4 direcciones
+                // Neighbors in 4 directions
                 foreach (var dir in new Vector2Int[]
                          {
                              new Vector2Int(0, 1),
@@ -271,16 +293,15 @@ namespace GraphBasedGenerator
                              new Vector2Int(-1, 0)
                          })
                 {
-                    Vector2Int neighborPos = current.position + dir;
+                    var neighborPos = current.position + dir;
                     if (closedSet.Contains(neighborPos))
                         continue;
-
 
                     if (!IsWalkable(neighborPos, painter, start, end))
                         continue;
 
-                    float tentativeG = current.g + 1;
-                    Node neighbor = openList.Find(n => n.position == neighborPos);
+                    var tentativeG = current.g + 1;
+                    var neighbor = openList.Find(n => n.position == neighborPos);
                     if (neighbor == null)
                     {
                         neighbor = new Node
@@ -301,21 +322,30 @@ namespace GraphBasedGenerator
                 }
             }
 
-            // Si no se encuentra camino, se devuelve una lista vacía.
+            // If no path is found, return an empty list.
             return new List<Vector2Int>();
         }
 
-        // Heurística: distancia Manhattan
+        /// <summary>
+        /// Manhattan distance heuristic.
+        /// </summary>
+        /// <param name="a">The starting position.</param>
+        /// <param name="b">The ending position.</param>
+        /// <returns>The Manhattan distance between the two positions.</returns>
         private static float Heuristic(Vector2Int a, Vector2Int b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
 
-        // Reconstruye el camino desde el nodo final hasta el inicio.
+        /// <summary>
+        /// Reconstructs the path from the end node to the start.
+        /// </summary>
+        /// <param name="endNode">The end node.</param>
+        /// <returns>A list of positions representing the path.</returns>
         private static List<Vector2Int> ReconstructPath(Node endNode)
         {
-            List<Vector2Int> path = new List<Vector2Int>();
-            Node current = endNode;
+            var path = new List<Vector2Int>();
+            var current = endNode;
             while (current != null)
             {
                 path.Add(current.position);
@@ -327,17 +357,21 @@ namespace GraphBasedGenerator
         }
 
         /// <summary>
-        /// Determina si la celda pos es transitable. Se consideran obstáculos las celdas que ya tengan tiles
-        /// en walkableTilemap, wallTilemap o doorTilemap, salvo si es la celda de inicio o fin.
+        /// Determines if the cell at pos is walkable. Cells with tiles in walkableTilemap, wallTilemap, or doorTilemap are considered obstacles, except for the start and end cells.
         /// </summary>
+        /// <param name="pos">The position to check.</param>
+        /// <param name="painter">The TilemapPainter used to check walkability.</param>
+        /// <param name="start">The starting position.</param>
+        /// <param name="end">The ending position.</param>
+        /// <returns>True if the position is walkable, false otherwise.</returns>
         private static bool IsWalkable(Vector2Int pos, TilemapPainter painter, Vector2Int start, Vector2Int end)
         {
-            Vector3Int cellPos = new Vector3Int(pos.x, pos.y, 0);
-            // Si la posición es el inicio o fin, se permite aunque tenga puerta
-            bool isEndpoint = pos == start || pos == end;
+            var cellPos = new Vector3Int(pos.x, pos.y, 0);
+            // If the position is the start or end, allow it even if it has a door
+            var isEndpoint = pos == start || pos == end;
 
-            bool walkable = painter.walkableTilemap.GetTile(cellPos) == null &&
-                            painter.wallTilemap.GetTile(cellPos) == null;
+            var walkable = painter.walkableTilemap.GetTile(cellPos) == null &&
+                           painter.wallTilemap.GetTile(cellPos) == null;
             if (!isEndpoint)
             {
                 walkable = walkable && painter.doorTilemap.GetTile(cellPos) == null;
