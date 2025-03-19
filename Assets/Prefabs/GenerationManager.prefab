@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemapPainter: {fileID: 4841484267194583844}
   origin: {x: 0, y: 0}
+  scalingFactor: 0.1
 --- !u!1 &2304021856590278399
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,30 +519,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkableTilemap: {fileID: 7209869302509103302}
   walkableTileBases:
-  - {fileID: 11400000, guid: 5e44da89d290ff742bc271de8deb2b8a, type: 2}
+  - {fileID: 11400000, guid: a0c98a20c0cf438408755eb877243238, type: 2}
   walkableTilesPriorities: 00000000
   randomWalkableTilesPlacement: 1
   wallTilemap: {fileID: 3826764859063543759}
-  upWall: {fileID: 11400000, guid: 2dd6d06681b65db48a8fe37318534abf, type: 2}
-  downWall: {fileID: 11400000, guid: 2dd6d06681b65db48a8fe37318534abf, type: 2}
-  leftWall: {fileID: 11400000, guid: 8e2ec5d41398d8341a103fdae5c13f61, type: 2}
-  rightWall: {fileID: 11400000, guid: fa67b4a8267305243867e62874ef89ea, type: 2}
-  topLeftWall: {fileID: 11400000, guid: acb64021054a09b4eb958bc0a3a976c0, type: 2}
-  topRightWall: {fileID: 11400000, guid: 774240f6dae0c9a4082e63b2780c6264, type: 2}
-  bottomLeftWall: {fileID: 11400000, guid: 88cfb822903fc04439ffbb25f641d331, type: 2}
-  bottomRightWall: {fileID: 11400000, guid: 9c80670e202a040408c28a644f7396a3, type: 2}
-  allCornersWall: {fileID: 11400000, guid: 2469edd5ede1b464eb57a2a8d7c25096, type: 2}
-  topLeftInnerWall: {fileID: 11400000, guid: 8acade7a48f897e41bb13155c185e4c5, type: 2}
-  topRightInnerWall: {fileID: 11400000, guid: 8072006017096df46bb1dbd140e5e84b, type: 2}
-  bottomLeftInnerWall: {fileID: 11400000, guid: b7761e7ab199a5c41b55309bd0eaf54e, type: 2}
-  bottomRightInnerWall: {fileID: 11400000, guid: 365d1d48d908a404fa979f28dcb15801, type: 2}
-  tripleExceptUpWall: {fileID: 11400000, guid: 970f5d5ede9a34e40bf713752b3427e2, type: 2}
-  tripleExcetDownWall: {fileID: 11400000, guid: 6214e8e3eb5232c40a6b6fc07acf5e5d, type: 2}
-  tripleExceptLeftWall: {fileID: 11400000, guid: c320c3fc51e645d4199360cded50db13, type: 2}
-  tripleExceptRightWall: {fileID: 11400000, guid: f5cca94941f840941ab0d48c06925ef5, type: 2}
-  tripleExceptLeftInnerWall: {fileID: 11400000, guid: fc9792d0ebc3ac949aa112e01cb6e645, type: 2}
-  tripleExceptRightInnerWall: {fileID: 11400000, guid: edb987bbb8d9b874fb1d46413ddf9a95, type: 2}
-  aloneWall: {fileID: 11400000, guid: dde1b94f8fc287943b55d3b9652c6038, type: 2}
+  upWall: {fileID: 11400000, guid: f0d28abe17ec8b841ace4cffc4ef302e, type: 2}
+  downWall: {fileID: 11400000, guid: f0d28abe17ec8b841ace4cffc4ef302e, type: 2}
+  leftWall: {fileID: 11400000, guid: 29a4b734ce98dc24c8127ef2a90cda35, type: 2}
+  rightWall: {fileID: 11400000, guid: b8612ce0c8fb7d3448ff388858e1cb37, type: 2}
+  topLeftWall: {fileID: 11400000, guid: 0e2862e0bd9f79e4fabe0409c49e6652, type: 2}
+  topRightWall: {fileID: 11400000, guid: 005b6a39c67f7a641927274f789a90ef, type: 2}
+  bottomLeftWall: {fileID: 11400000, guid: c47bacbd56a19ca47a246c92a7110cd0, type: 2}
+  bottomRightWall: {fileID: 11400000, guid: 3348c4a24d76e754f94c7b9f00d8444b, type: 2}
+  allCornersWall: {fileID: 11400000, guid: 067a9d2028072ed46b7f5efad6c7cca3, type: 2}
+  topLeftInnerWall: {fileID: 11400000, guid: 2540255031b82394bb4130fc50c9e5e9, type: 2}
+  topRightInnerWall: {fileID: 11400000, guid: b4f6aff9251c0c149978c595fb9b95ee, type: 2}
+  bottomLeftInnerWall: {fileID: 11400000, guid: e85f0a9d6ed0f3140b0cd0a380ae8d9e, type: 2}
+  bottomRightInnerWall: {fileID: 11400000, guid: e0aedd6702319bd48a22cfc7be582af1, type: 2}
+  tripleExceptUpWall: {fileID: 11400000, guid: a76f15eb6369178409a3b904b0956d5a, type: 2}
+  tripleExcetDownWall: {fileID: 11400000, guid: 2b1b1ce5a6811b14996535f02f2b0563, type: 2}
+  tripleExceptLeftWall: {fileID: 11400000, guid: 6c383510083061346a5f6a3452bf2072, type: 2}
+  tripleExceptRightWall: {fileID: 11400000, guid: 4bae8e3bb5205e4499bbf90de717ecb0, type: 2}
+  tripleExceptLeftInnerWall: {fileID: 11400000, guid: c7199c41200a21a45abec0702bcd43c0, type: 2}
+  tripleExceptRightInnerWall: {fileID: 11400000, guid: 47f40438b412f2d42ad0c11bffeeacac, type: 2}
+  aloneWall: {fileID: 11400000, guid: 52df0772377ca1b49870c2d423816b76, type: 2}
   doorTilemap: {fileID: 3926002330551509252}
   doorTileBase: {fileID: 11400000, guid: 430b25243673ebb4c829b8db0e2b7cce, type: 2}
 --- !u!1 &6359850700630042422
