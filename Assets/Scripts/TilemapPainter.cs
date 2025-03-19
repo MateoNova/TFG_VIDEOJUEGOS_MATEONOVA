@@ -15,7 +15,7 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// The Tilemap used to render walkable tiles.
     /// </summary>
-    [SerializeField] private Tilemap walkableTilemap;
+    [SerializeField] internal Tilemap walkableTilemap;
 
     /// <summary>
     /// List of walkable tile bases. This allows for multiple walkable tiles to be used.
@@ -46,7 +46,7 @@ public class TilemapPainter : MonoBehaviour
     /// <summary>
     /// The Tilemap used to render wall tiles.
     /// </summary>
-    [SerializeField] private Tilemap wallTilemap;
+    [SerializeField] internal Tilemap wallTilemap;
 
     [SerializeField, WallTileGroup("Cardinal Directions")]
     private TileBase upWall;
@@ -107,6 +107,20 @@ public class TilemapPainter : MonoBehaviour
 
     [SerializeField, WallTileGroup("Alone Walls")]
     private TileBase aloneWall;
+
+    #endregion
+
+    #region Fields: Door Tiles
+
+    /// <summary>
+    /// The Tilemap used to render door tiles.
+    /// </summary>
+    [SerializeField] internal Tilemap doorTilemap;
+
+    /// <summary>
+    /// The TileBase used for door tiles.
+    /// </summary>
+    [SerializeField] private TileBase doorTileBase;
 
     #endregion
 
@@ -227,6 +241,10 @@ public class TilemapPainter : MonoBehaviour
     }
 
     # endregion
+    
+    public readonly HashSet<Vector2Int> _allFloorPositions = new();
+    public readonly HashSet<Vector2Int> _allWallPositions = new();
+
 
     # region Paint: Wall Tiles
 
@@ -268,11 +286,30 @@ public class TilemapPainter : MonoBehaviour
         foreach (var pos in tilesPositions)
         {
             var tilePosition = wallTilemap.WorldToCell((Vector3Int)pos);
+            if (wallTilemap.GetTile(tilePosition) != null)
+                continue;
             wallTilemap.SetTile(tilePosition, tile);
         }
     }
 
     # endregion
+
+    #region Paint: Door Tiles
+
+    /// <summary>
+    /// Renders the door tiles at the specified positions.
+    /// </summary>
+    /// <param name="tilesPositions">Positions to render the door tiles.</param>
+    public void PaintDoorTiles(IEnumerable<Vector2Int> tilesPositions)
+    {
+        foreach (var pos in tilesPositions)
+        {
+            var tilePosition = doorTilemap.WorldToCell((Vector3Int)pos);
+            doorTilemap.SetTile(tilePosition, doorTileBase);
+        }
+    }
+
+    #endregion
 
     public TilemapPainter(bool randomWalkableTilesPlacement)
     {
@@ -289,6 +326,7 @@ public class TilemapPainter : MonoBehaviour
     {
         walkableTilemap?.ClearAllTiles();
         wallTilemap?.ClearAllTiles();
+        doorTilemap?.ClearAllTiles();
     }
 
     /// <summary>
@@ -296,7 +334,7 @@ public class TilemapPainter : MonoBehaviour
     /// </summary>
     /// <param name="tilemap">Tilemap to convert.</param>
     /// <returns>List of SerializableTile representing the state of the Tilemap.</returns>
-    private static List<SerializableTile> GetSerializableTiles(Tilemap tilemap)
+    private static List<SerializableTile> GetSerializableTiles(Tilemap tilemap, bool isDoor = false)
     {
         var list = new List<SerializableTile>();
         foreach (var pos in tilemap.cellBounds.allPositionsWithin)
@@ -305,49 +343,51 @@ public class TilemapPainter : MonoBehaviour
             if (!tile) continue;
             var assetPath = AssetDatabase.GetAssetPath(tile);
             var guid = AssetDatabase.AssetPathToGUID(assetPath);
-            list.Add(new SerializableTile(pos, guid));
+            list.Add(new SerializableTile(pos, guid, isDoor));
         }
-
+    
         return list;
     }
 
 
-    /// <summary>
-    /// Saves the current state of both Tilemaps to a file.
-    /// </summary>
-    /// <param name="path">Path to save the file.</param>
     public void SaveTilemap(string path)
     {
-        var tilemapData = new TilemapData(GetSerializableTiles(walkableTilemap), GetSerializableTiles(wallTilemap));
+        var tilemapData = new TilemapData(
+            GetSerializableTiles(walkableTilemap),
+            GetSerializableTiles(wallTilemap),
+            GetSerializableTiles(doorTilemap, true)
+        );
         var json = JsonUtility.ToJson(tilemapData);
         System.IO.File.WriteAllText(path, json);
     }
-
-    /// <summary>
-    /// Loads the state of both Tilemaps from a file.
-    /// </summary>
-    /// <param name="path">Path to load the file from.</param>
-    /// <param name="clearBeforeLoading"> Flag to clear</param>
-    public void LoadTilemap(string path, bool clearBeforeLoading = true, Vector3Int offset = default)
     
+    public void LoadTilemap(string path, bool clearBeforeLoading = true, Vector3Int offset = default)
     {
         var json = System.IO.File.ReadAllText(path);
         var tilemapData = JsonUtility.FromJson<TilemapData>(json);
-
+    
         if (clearBeforeLoading) ResetAllTiles();
-
+    
         foreach (var tile in tilemapData.walkableTiles)
         {
             var tileBase = GetTileBaseByGuid(tile.tileGUID);
-            walkableTilemap.SetTile(tile.position+offset, tileBase);
+            walkableTilemap.SetTile(tile.position + offset, tileBase);
         }
-
+    
         foreach (var tile in tilemapData.wallTiles)
         {
             var tileBase = GetTileBaseByGuid(tile.tileGUID);
             wallTilemap.SetTile(tile.position + offset, tileBase);
         }
+        
+        foreach (var tile in tilemapData.doorTiles)
+        {
+            var tileBase = GetTileBaseByGuid(tile.tileGUID);
+            doorTilemap.SetTile(tile.position + offset, tileBase);
+        }
     }
+
+    
 
     private static TileBase GetTileBaseByGuid(string guid)
     {
@@ -456,16 +496,19 @@ public class TilemapData
 {
     public List<SerializableTile> walkableTiles;
     public List<SerializableTile> wallTiles;
+    public List<SerializableTile> doorTiles;
 
     /// <summary>
     /// Initializes a new instance of the TilemapData class.
     /// </summary>
     /// <param name="walkableTiles">List of walkable tiles.</param>
     /// <param name="wallTiles">List of wall tiles.</param>
-    public TilemapData(List<SerializableTile> walkableTiles, List<SerializableTile> wallTiles)
+    /// <param name="doorTiles">List of door tiles</param>
+    public TilemapData(List<SerializableTile> walkableTiles, List<SerializableTile> wallTiles, List<SerializableTile> doorTiles)
     {
         this.walkableTiles = walkableTiles;
         this.wallTiles = wallTiles;
+        this.doorTiles = doorTiles;
     }
 }
 
@@ -477,10 +520,12 @@ public class SerializableTile
 {
     public Vector3Int position;
     public string tileGUID;
+    public bool isDoor;
 
-    public SerializableTile(Vector3Int position, string tileGUID)
+    public SerializableTile(Vector3Int position, string tileGUID, bool isDoor = false)
     {
         this.position = position;
         this.tileGUID = tileGUID;
+        this.isDoor = isDoor;
     }
 }
