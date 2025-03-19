@@ -24,8 +24,6 @@ namespace GraphBasedGenerator
         /// </summary>
         public string JsonFilePath = "";
 
-        private Label _jsonFileLabel = new("None");
-
         #endregion
 
         #region Constructor
@@ -39,17 +37,29 @@ namespace GraphBasedGenerator
         {
             NodeId = Guid.NewGuid().ToString();
 
+            //add style to the title
+            title = "Unnasigned node";
+            titleContainer.AddToClassList("graph-node-title");
+
+            AddToClassList("graph-node");
+
             var rect = new Rect(position, size);
             SetPosition(rect);
 
-            var inputPort = CreatePort(Direction.Input);
+            var inputPort = CreatePort(Direction.Input, "IN");
             inputContainer.Add(inputPort);
 
-            var outputPort = CreatePort(Direction.Output);
+            var outputPort = CreatePort(Direction.Output, "OUT");
             outputContainer.Add(outputPort);
 
             CreateJsonFileUI();
             RefreshExpandedState();
+        }
+
+        public sealed override string title
+        {
+            get { return base.title; }
+            set { base.title = value; }
         }
 
         #endregion
@@ -61,9 +71,10 @@ namespace GraphBasedGenerator
         /// </summary>
         /// <param name="portDirection">The direction of the port (Input/Output).</param>
         /// <returns>The created port.</returns>
-        private static Port CreatePort(Direction portDirection)
+        private static Port CreatePort(Direction portDirection, string name)
         {
             var port = Port.Create<Edge>(Orientation.Vertical, portDirection, Port.Capacity.Multi, typeof(object));
+            port.portName = name;
             return port;
         }
 
@@ -76,29 +87,22 @@ namespace GraphBasedGenerator
         /// </summary>
         private void CreateJsonFileUI()
         {
-            var container = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                    marginTop = 5
-                }
-            };
-
-            _jsonFileLabel = new Label("None");
-            container.Add(_jsonFileLabel);
+            var container = new VisualElement();
+            container.AddToClassList("json-container");
 
             var selectButton = new Button(() =>
             {
                 var path = EditorUtility.OpenFilePanel("JSON selection", "", "json");
                 if (string.IsNullOrEmpty(path)) return;
-                
+
                 JsonFilePath = path;
                 UpdateJsonFileLabel();
             })
             {
                 text = "Select dungeon"
             };
+
+            selectButton.AddToClassList("select-dungeon-button");
 
             container.Add(selectButton);
             extensionContainer.Add(container);
@@ -126,14 +130,8 @@ namespace GraphBasedGenerator
         /// </summary>
         public void UpdateJsonFileLabel()
         {
-            if (_jsonFileLabel == null)
-            {
-                Debug.LogError("JsonFileLabel is not initialized.");
-                return;
-            }
-            
             var fileName = Path.GetFileName(JsonFilePath);
-            _jsonFileLabel.text = fileName.Length > 5 ? fileName[..^5] : fileName;
+            title = fileName.Length > 5 ? fileName[..^5] : fileName;
         }
 
         #endregion

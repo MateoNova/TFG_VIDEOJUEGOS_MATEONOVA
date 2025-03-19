@@ -1,0 +1,58 @@
+﻿/* General style for the node */
+.graph-node {
+    min-width: 200px;
+    background-color: #2E2E2E;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: #CCCCCC;
+    border-style: solid;
+    padding: 4px;
+    margin: 4px;
+    color: #FFFFFF;
+    font-size: 12px;
+}
+    
+/* Style for the node title */
+.graph-node .title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    unity-font-style: bold;
+    color: #FFFFFF;
+}
+
+/* Container for the JSON selection part */
+.json-container {
+    flex-direction: row;
+    margin-top: 4px;
+    align-items: center; /* Vertically centers the elements */
+    justify-content: center; /* Horizontally centers the elements */
+}
+
+/* Style for the JSON file label */
+.json-file-label {
+    color: #CCCCCC;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+/* Style for the selection button */
+.select-dungeon-button {
+    background-color: #007ACC;
+    color: white;
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 12px;
+    unity-text-align: middle;
+}
+
+/* Style for the node path */
+.graph-node-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    unity-font-style: bold;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+}

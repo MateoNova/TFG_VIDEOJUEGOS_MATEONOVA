@@ -1,0 +1,26 @@
+{
+    "nodes": [
+        {
+            "nodeId": "775d70a3-341c-40e7-81db-9214ee7b57c4",
+            "position": {
+                "x": 30.0,
+                "y": 29.0
+            },
+            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/Sala1.json"
+        },
+        {
+            "nodeId": "d7ef4c09-43de-4768-910f-86325a043f7e",
+            "position": {
+                "x": 244.0,
+                "y": 35.0
+            },
+            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/Sala2.json"
+        }
+    ],
+    "edges": [
+        {
+            "sourceId": "775d70a3-341c-40e7-81db-9214ee7b57c4",
+            "targetId": "d7ef4c09-43de-4768-910f-86325a043f7e"
+        }
+    ]
+}

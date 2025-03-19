@@ -12,7 +12,15 @@ namespace GraphBasedGenerator
     /// </summary>
     public class GraphGeneratorView : GraphView
     {
-        #region Constructor
+        /// <summary>
+        /// Indicates whether grid snapping is enabled.
+        /// </summary>
+        private bool _gridSnappingEnabled;
+
+        /// <summary>
+        /// The size of the grid for snapping.
+        /// </summary>
+        private const float GridSize = 25f;
 
         /// <summary>
         /// Initializes a new instance of the GraphGeneratorView class.
@@ -23,14 +31,37 @@ namespace GraphBasedGenerator
             AddBackground();
             AddStyles();
             AddCopyPasteHandlers();
+
+            // Callback to snap selected nodes to the grid when the mouse is released
+            RegisterCallback<MouseUpEvent>(_ =>
+            {
+                if (_gridSnappingEnabled)
+                {
+                    SnapSelectedNodesToGrid();
+                }
+            });
         }
 
-        #endregion
+        /// <summary>
+        /// Snaps the selected nodes to the grid.
+        /// </summary>
+        private void SnapSelectedNodesToGrid()
+        {
+            foreach (var element in selection)
+            {
+                if (element is not GraphNode node) continue;
+
+                var pos = node.GetPosition();
+                var snappedX = Mathf.Round(pos.x / GridSize) * GridSize;
+                var snappedY = Mathf.Round(pos.y / GridSize) * GridSize;
+                node.SetPosition(new Rect(snappedX, snappedY, pos.width, pos.height));
+            }
+        }
 
         #region Manipulators
 
         /// <summary>
-        /// Adds manipulators to the GraphView for dragging, zooming, selecting, and context menu.
+        /// Adds manipulators to the graph view.
         /// </summary>
         private void AddManipulators()
         {
@@ -46,12 +77,15 @@ namespace GraphBasedGenerator
         #region Styles
 
         /// <summary>
-        /// Adds styles to the GraphView from a specified stylesheet.
+        /// Adds styles to the graph view.
         /// </summary>
         private void AddStyles()
         {
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Assets/Editor/GraphBackground.uss");
-            styleSheets.Add(styleSheet);
+            var backgroundStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Assets/Editor/GraphBackground.uss");
+            styleSheets.Add(backgroundStyle);
+
+            var nodeStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Assets/Editor/GraphNodeStyle.uss");
+            styleSheets.Add(nodeStyle);
         }
 
         #endregion
@@ -59,7 +93,7 @@ namespace GraphBasedGenerator
         #region Background
 
         /// <summary>
-        /// Adds a grid background to the GraphView.
+        /// Adds a background to the graph view.
         /// </summary>
         private void AddBackground()
         {
@@ -73,14 +107,15 @@ namespace GraphBasedGenerator
         #region Context Menu
 
         /// <summary>
-        /// Builds the contextual menu for the GraphView.
+        /// Builds the contextual menu for the graph view.
         /// </summary>
-        /// <param name="evt">The event data for the contextual menu.</param>
+        /// <param name="evt">The event holding the menu to populate.</param>
         private new void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             if (evt.target is not GraphGeneratorView) return;
             var localMousePosition = this.ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
             evt.menu.AppendAction("Create Node", _ => CreateNode(localMousePosition));
+            evt.menu.AppendAction("Toggle Grid Snapping", _ => { _gridSnappingEnabled = !_gridSnappingEnabled; });
             evt.menu.AppendAction("Save Graph", _ => SaveGraph());
             evt.menu.AppendAction("Load Graph", _ => LoadGraph());
         }
@@ -106,7 +141,7 @@ namespace GraphBasedGenerator
         /// <summary>
         /// Gets the compatible ports for a given start port.
         /// </summary>
-        /// <param name="startPort">The starting port.</param>
+        /// <param name="startPort">The start port.</param>
         /// <param name="nodeAdapter">The node adapter.</param>
         /// <returns>A list of compatible ports.</returns>
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -125,7 +160,7 @@ namespace GraphBasedGenerator
         #region Copy-Paste Handlers
 
         /// <summary>
-        /// Adds handlers for copy and paste operations.
+        /// Adds copy-paste handlers to the graph view.
         /// </summary>
         private void AddCopyPasteHandlers()
         {
@@ -162,7 +197,7 @@ namespace GraphBasedGenerator
         }
 
         /// <summary>
-        /// Pastes the nodes from the clipboard to the GraphView.
+        /// Pastes the nodes from the clipboard.
         /// </summary>
         private void PasteSelection()
         {
@@ -184,7 +219,7 @@ namespace GraphBasedGenerator
         #region Graph Save/Load
 
         /// <summary>
-        /// Saves the current graph to a JSON file.
+        /// Saves the current graph to a file.
         /// </summary>
         private void SaveGraph()
         {
@@ -211,7 +246,7 @@ namespace GraphBasedGenerator
         }
 
         /// <summary>
-        /// Loads a graph from a JSON file.
+        /// Loads a graph from a file.
         /// </summary>
         private void LoadGraph()
         {
@@ -266,7 +301,7 @@ namespace GraphBasedGenerator
         #region Data Classes
 
         /// <summary>
-        /// Represents the data structure for the graph.
+        /// Represents the data for the graph.
         /// </summary>
         [System.Serializable]
         public class GraphData
@@ -276,7 +311,7 @@ namespace GraphBasedGenerator
         }
 
         /// <summary>
-        /// Represents the data structure for a node.
+        /// Represents the data for a node.
         /// </summary>
         [System.Serializable]
         public class NodeData
@@ -287,7 +322,7 @@ namespace GraphBasedGenerator
         }
 
         /// <summary>
-        /// Represents the data structure for an edge.
+        /// Represents the data for an edge.
         /// </summary>
         [System.Serializable]
         public class EdgeData

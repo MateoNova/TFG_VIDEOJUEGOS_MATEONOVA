@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemapPainter: {fileID: 4841484267194583844}
   origin: {x: 0, y: 0}
-  scalingFactor: 0.1
+  scalingFactor: 0.05
 --- !u!1 &2304021856590278399
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +196,7 @@ Transform:
   m_GameObject: {fileID: 2569884613023258100}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.77, y: 0.65, z: 0}
+  m_LocalPosition: {x: 0.64, y: -3.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -297,7 +297,7 @@ MonoBehaviour:
   origin: {x: 0, y: 0}
   walkIterations: 10
   stepsPerIteration: 10
-  generateCorridors: 1
+  generateCorridors: 0
   corridorLength: 20
   corridorCount: 30
   roomPercentage: 0.8
@@ -463,7 +463,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
