@@ -248,10 +248,10 @@ namespace GraphBasedGenerator
         // Helper class for A*
         private class Node
         {
-            public Vector2Int position;
-            public float g; // cost from start
-            public float f; // g + h
-            public Node parent;
+            public Vector2Int Position;
+            public float G; // cost from start
+            public float F; // g + h
+            public Node Parent;
         }
 
         /// <summary>
@@ -267,57 +267,57 @@ namespace GraphBasedGenerator
             var openList = new List<Node>();
             var closedSet = new HashSet<Vector2Int>();
 
-            var startNode = new Node { position = start, g = 0, f = Heuristic(start, end), parent = null };
+            var startNode = new Node { Position = start, G = 0, F = Heuristic(start, end), Parent = null };
             openList.Add(startNode);
 
             while (openList.Count > 0)
             {
                 // Select the node with the lowest f
-                openList.Sort((a, b) => a.f.CompareTo(b.f));
+                openList.Sort((a, b) => a.F.CompareTo(b.F));
                 var current = openList[0];
 
-                if (current.position == end)
+                if (current.Position == end)
                 {
                     return ReconstructPath(current);
                 }
 
                 openList.Remove(current);
-                closedSet.Add(current.position);
+                closedSet.Add(current.Position);
 
                 // Neighbors in 4 directions
                 foreach (var dir in new Vector2Int[]
                          {
-                             new Vector2Int(0, 1),
-                             new Vector2Int(0, -1),
-                             new Vector2Int(1, 0),
-                             new Vector2Int(-1, 0)
+                             new(0, 1),
+                             new(0, -1),
+                             new(1, 0),
+                             new(-1, 0)
                          })
                 {
-                    var neighborPos = current.position + dir;
+                    var neighborPos = current.Position + dir;
                     if (closedSet.Contains(neighborPos))
                         continue;
 
                     if (!IsWalkable(neighborPos, painter, start, end))
                         continue;
 
-                    var tentativeG = current.g + 1;
-                    var neighbor = openList.Find(n => n.position == neighborPos);
+                    var tentativeG = current.G + 1;
+                    var neighbor = openList.Find(n => n.Position == neighborPos);
                     if (neighbor == null)
                     {
                         neighbor = new Node
                         {
-                            position = neighborPos,
-                            g = tentativeG,
-                            f = tentativeG + Heuristic(neighborPos, end),
-                            parent = current
+                            Position = neighborPos,
+                            G = tentativeG,
+                            F = tentativeG + Heuristic(neighborPos, end),
+                            Parent = current
                         };
                         openList.Add(neighbor);
                     }
-                    else if (tentativeG < neighbor.g)
+                    else if (tentativeG < neighbor.G)
                     {
-                        neighbor.g = tentativeG;
-                        neighbor.f = tentativeG + Heuristic(neighborPos, end);
-                        neighbor.parent = current;
+                        neighbor.G = tentativeG;
+                        neighbor.F = tentativeG + Heuristic(neighborPos, end);
+                        neighbor.Parent = current;
                     }
                 }
             }
@@ -348,8 +348,8 @@ namespace GraphBasedGenerator
             var current = endNode;
             while (current != null)
             {
-                path.Add(current.position);
-                current = current.parent;
+                path.Add(current.Position);
+                current = current.Parent;
             }
 
             path.Reverse();
