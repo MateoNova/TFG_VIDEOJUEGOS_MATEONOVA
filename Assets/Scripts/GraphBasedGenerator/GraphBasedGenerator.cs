@@ -9,12 +9,34 @@ namespace GraphBasedGenerator
     {
         #region Fields
 
+        /// <summary>
+        /// Reference to the GraphGeneratorView.
+        /// </summary>
         private GraphGeneratorView _graphView;
-        [SerializeField] private float scalingFactor = 0.1f;
 
+        /// <summary>
+        /// Scaling factor for adjusting positions.
+        /// </summary>
+        [SerializeField] private float scalingFactor = 0.05f;
+
+        /// <summary>
+        /// Set of occupied door positions.
+        /// </summary>
         private readonly HashSet<Vector2Int> _occupiedDoorPositions = new();
+
+        /// <summary>
+        /// Set of all floor positions.
+        /// </summary>
         private readonly HashSet<Vector2Int> _allFloorPositions = new();
+
+        /// <summary>
+        /// Set of all wall positions.
+        /// </summary>
         private readonly HashSet<Vector2Int> _allWallPositions = new();
+
+        /// <summary>
+        /// List of all door positions.
+        /// </summary>
         private readonly List<Vector2Int> _allDoorsPositions = new();
 
         #endregion
@@ -38,7 +60,7 @@ namespace GraphBasedGenerator
             _allWallPositions.Clear();
             _allDoorsPositions.Clear();
 
-            _graphView = GraphWindow.getGraphGeneratorView();
+            _graphView = GraphWindow.GetGraphGeneratorView();
 
             if (_graphView == null)
             {
@@ -189,7 +211,6 @@ namespace GraphBasedGenerator
             // Try each pair to see if a corridor can be created with A*
             foreach (var candidate in candidatePairs)
             {
-                // Avoid using already occupied doors
                 if (_occupiedDoorPositions.Contains(candidate.door1) ||
                     _occupiedDoorPositions.Contains(candidate.door2))
                     continue;
@@ -198,14 +219,11 @@ namespace GraphBasedGenerator
                 if (corridorPath == null || corridorPath.Count == 0)
                     continue;
 
-                // Mark these doors as used
                 _occupiedDoorPositions.Add(candidate.door1);
                 _occupiedDoorPositions.Add(candidate.door2);
 
-                // Paint the corridor on the walkable tilemap
                 tilemapPainter.PaintWalkableTiles(corridorPath);
 
-                // Add corridor to floor positions
                 foreach (var pos in corridorPath)
                 {
                     _allFloorPositions.Add(pos);
@@ -215,10 +233,7 @@ namespace GraphBasedGenerator
                 corridorPath.Remove(candidate.door1 + new Vector2Int(1, 0));
                 corridorPath.Remove(candidate.door1 + new Vector2Int(-1, 0));
 
-                // Paint the doors on the tilemap
                 tilemapPainter.PaintDoorTiles(new List<Vector2Int> { candidate.door1, candidate.door2 });
-
-                // Exit after creating a valid corridor
                 return;
             }
 

@@ -7,10 +7,16 @@ using System.Linq;
 
 namespace GraphBasedGenerator
 {
+    /// <summary>
+    /// Represents the view for the graph generator, extending the GraphView class.
+    /// </summary>
     public class GraphGeneratorView : GraphView
     {
-        public static GraphNode PendingConnectionNode;
+        #region Constructor
 
+        /// <summary>
+        /// Initializes a new instance of the GraphGeneratorView class.
+        /// </summary>
         public GraphGeneratorView()
         {
             AddManipulators();
@@ -19,6 +25,13 @@ namespace GraphBasedGenerator
             AddCopyPasteHandlers();
         }
 
+        #endregion
+
+        #region Manipulators
+
+        /// <summary>
+        /// Adds manipulators to the GraphView for dragging, zooming, selecting, and context menu.
+        /// </summary>
         private void AddManipulators()
         {
             this.AddManipulator(new ContentDragger());
@@ -28,12 +41,26 @@ namespace GraphBasedGenerator
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
         }
 
+        #endregion
+
+        #region Styles
+
+        /// <summary>
+        /// Adds styles to the GraphView from a specified stylesheet.
+        /// </summary>
         private void AddStyles()
         {
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Assets/Editor/GraphBackground.uss");
             styleSheets.Add(styleSheet);
         }
 
+        #endregion
+
+        #region Background
+
+        /// <summary>
+        /// Adds a grid background to the GraphView.
+        /// </summary>
         private void AddBackground()
         {
             var background = new GridBackground();
@@ -41,24 +68,51 @@ namespace GraphBasedGenerator
             background.StretchToParentSize();
         }
 
+        #endregion
+
+        #region Context Menu
+
+        /// <summary>
+        /// Builds the contextual menu for the GraphView.
+        /// </summary>
+        /// <param name="evt">The event data for the contextual menu.</param>
         private new void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             if (evt.target is not GraphGeneratorView) return;
-
             var localMousePosition = this.ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
             evt.menu.AppendAction("Create Node", _ => CreateNode(localMousePosition));
+            evt.menu.AppendAction("Save Graph", _ => SaveGraph());
+            evt.menu.AppendAction("Load Graph", _ => LoadGraph());
         }
 
+        #endregion
+
+        #region Node Creation
+
+        /// <summary>
+        /// Creates a new node at the specified position.
+        /// </summary>
+        /// <param name="position">The position to create the node at.</param>
         private void CreateNode(Vector2 position)
         {
             var node = new GraphNode(position, new Vector2(200, 200));
             AddElement(node);
         }
 
+        #endregion
+
+        #region Port Compatibility
+
+        /// <summary>
+        /// Gets the compatible ports for a given start port.
+        /// </summary>
+        /// <param name="startPort">The starting port.</param>
+        /// <param name="nodeAdapter">The node adapter.</param>
+        /// <returns>A list of compatible ports.</returns>
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
             var compatiblePorts = new List<Port>();
-            ports.ForEach((port) =>
+            ports.ForEach(port =>
             {
                 if (startPort != port && startPort.node != port.node)
                     compatiblePorts.Add(port);
@@ -66,6 +120,13 @@ namespace GraphBasedGenerator
             return compatiblePorts;
         }
 
+        #endregion
+
+        #region Copy-Paste Handlers
+
+        /// <summary>
+        /// Adds handlers for copy and paste operations.
+        /// </summary>
         private void AddCopyPasteHandlers()
         {
             RegisterCallback<KeyDownEvent>(evt =>
@@ -82,45 +143,159 @@ namespace GraphBasedGenerator
             });
         }
 
+        /// <summary>
+        /// Copies the selected nodes to the clipboard.
+        /// </summary>
         private void CopySelection()
         {
             var selectedNodes = selection.OfType<GraphNode>().ToList();
             if (selectedNodes.Count == 0) return;
 
-            //copy the position and json file path of each node
             var data = selectedNodes.Select(node => new NodeData
             {
-                Position = node.GetPosition().position,
-                JsonFilePath = node.JsonFilePath
+                position = node.GetPosition().position,
+                jsonFilePath = node.JsonFilePath
             }).ToArray();
-            
-            //convert the data to json and copy it to the clipboard
+
             var json = string.Join("\n", data.Select(JsonUtility.ToJson));
             EditorGUIUtility.systemCopyBuffer = json;
         }
 
+        /// <summary>
+        /// Pastes the nodes from the clipboard to the GraphView.
+        /// </summary>
         private void PasteSelection()
         {
             var data = EditorGUIUtility.systemCopyBuffer.Split('\n');
             foreach (var nodeData in data)
             {
                 var deserializedNode = JsonUtility.FromJson<NodeData>(nodeData);
-                // Crea el nodo
-                var newNode = new GraphNode(deserializedNode.Position, new Vector2(200, 200));
-                // Asigna el JsonFilePath copiado
-                newNode.JsonFilePath = deserializedNode.JsonFilePath;
-                // Opcional: si el nodo tiene un label que muestra el nombre del fichero, actualizarlo
-                newNode.UpdateJsonFileLabel(); // si implementas un método para eso
+                var newNode = new GraphNode(deserializedNode.position, new Vector2(200, 200))
+                {
+                    JsonFilePath = deserializedNode.jsonFilePath
+                };
+                newNode.UpdateJsonFileLabel();
                 AddElement(newNode);
             }
         }
 
+        #endregion
 
-        [System.Serializable]
-        private class NodeData
+        #region Graph Save/Load
+
+        /// <summary>
+        /// Saves the current graph to a JSON file.
+        /// </summary>
+        private void SaveGraph()
         {
-            public Vector2 Position;
-            public string JsonFilePath;
+            var graphData = new GraphData
+            {
+                nodes = nodes.OfType<GraphNode>().Select(node => new NodeData
+                {
+                    nodeId = node.NodeId,
+                    position = node.GetPosition().position,
+                    jsonFilePath = node.JsonFilePath
+                }).ToList(),
+                edges = edges.Select(edge => new EdgeData
+                {
+                    sourceId = (edge.output.node as GraphNode)?.NodeId,
+                    targetId = (edge.input.node as GraphNode)?.NodeId
+                }).ToList()
+            };
+
+            var json = JsonUtility.ToJson(graphData, true);
+            var path = EditorUtility.SaveFilePanel("Save graph", "", "GraphData.json", "json");
+
+            if (string.IsNullOrEmpty(path)) return;
+            System.IO.File.WriteAllText(path, json);
         }
+
+        /// <summary>
+        /// Loads a graph from a JSON file.
+        /// </summary>
+        private void LoadGraph()
+        {
+            var path = EditorUtility.OpenFilePanel("Load Graph", "", "json");
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var json = System.IO.File.ReadAllText(path);
+            var graphData = JsonUtility.FromJson<GraphData>(json);
+
+            ClearGraph();
+
+            var nodeDict = new Dictionary<string, GraphNode>();
+
+            foreach (var n in graphData.nodes)
+            {
+                var node = new GraphNode(n.position, new Vector2(200, 200))
+                {
+                    JsonFilePath = n.jsonFilePath
+                };
+                node.UpdateJsonFileLabel();
+                node.NodeId = n.nodeId;
+                AddElement(node);
+                nodeDict.Add(n.nodeId, node);
+            }
+
+            foreach (var edge in from e in graphData.edges
+                     where nodeDict.ContainsKey(e.sourceId) && nodeDict.ContainsKey(e.targetId)
+                     let source = nodeDict[e.sourceId]
+                     let target = nodeDict[e.targetId]
+                     let outputPort = source.outputContainer[0] as Port
+                     let inputPort = target.inputContainer[0] as Port
+                     select outputPort?.ConnectTo(inputPort))
+            {
+                AddElement(edge);
+            }
+        }
+
+        /// <summary>
+        /// Clears the current graph.
+        /// </summary>
+        private void ClearGraph()
+        {
+            foreach (var element in graphElements.ToList())
+            {
+                RemoveElement(element);
+            }
+        }
+
+        #endregion
+
+        #region Data Classes
+
+        /// <summary>
+        /// Represents the data structure for the graph.
+        /// </summary>
+        [System.Serializable]
+        public class GraphData
+        {
+            public List<NodeData> nodes;
+            public List<EdgeData> edges;
+        }
+
+        /// <summary>
+        /// Represents the data structure for a node.
+        /// </summary>
+        [System.Serializable]
+        public class NodeData
+        {
+            public string nodeId;
+            public Vector2 position;
+            public string jsonFilePath;
+        }
+
+        /// <summary>
+        /// Represents the data structure for an edge.
+        /// </summary>
+        [System.Serializable]
+        public class EdgeData
+        {
+            public string sourceId;
+            public string targetId;
+        }
+
+        #endregion
     }
 }

@@ -1,13 +1,18 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphBasedGenerator
 {
+    /// <summary>
+    /// Represents the editor window for the graph generator.
+    /// </summary>
     public class GraphWindow : EditorWindow
     {
-        [MenuItem("Window/Graph Window")]
+        /// <summary>
+        /// Shows the Graph Window.
+        /// </summary>
+        //[MenuItem("Window/Graph Window")]
         public static void ShowWindow()
         {
             var window = GetWindow<GraphWindow>("Graph Window");
@@ -19,6 +24,9 @@ namespace GraphBasedGenerator
             window.rootVisualElement.Add(graphView);
         }
 
+        /// <summary>
+        /// Handles the event when the window is destroyed.
+        /// </summary>
         private void OnDestroy()
         {
             if (EditorUtility.DisplayDialog("Confirm Close", "Are you sure you want to close the Graph Window?", "Yes",
@@ -27,8 +35,13 @@ namespace GraphBasedGenerator
             var window = GetWindow<GraphWindow>("Graph Window");
             window.Show();
         }
-        
-        public static GraphGeneratorView getGraphGeneratorView() {
+
+        /// <summary>
+        /// Gets the GraphGeneratorView from the window.
+        /// </summary>
+        /// <returns>The GraphGeneratorView instance.</returns>
+        public static GraphGeneratorView GetGraphGeneratorView()
+        {
             var window = GetWindow<GraphWindow>("Graph Window");
             return window.rootVisualElement.Q<GraphGeneratorView>();
         }
