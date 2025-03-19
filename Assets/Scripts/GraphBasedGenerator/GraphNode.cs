@@ -23,7 +23,6 @@ namespace GraphBasedGenerator
             outputContainer.Add(outputPort);
 
             CreateJsonFileUI();
-            this.AddManipulator(new ContextualMenuManipulator(AddCustomContextMenu));
             RefreshExpandedState();
         }
 
@@ -31,45 +30,6 @@ namespace GraphBasedGenerator
         {
             var port = Port.Create<Edge>(Orientation.Vertical, portDirection, Port.Capacity.Multi, typeof(object));
             return port;
-        }
-
-        private void AddCustomContextMenu(ContextualMenuPopulateEvent evt)
-        {
-            evt.menu.AppendAction("Create Connection", _ =>
-            {
-                var graphView = this.GetFirstAncestorOfType<GraphGeneratorView>();
-                if (graphView == null)
-                    return;
-
-                if (GraphGeneratorView.PendingConnectionNode == null)
-                {
-                    GraphGeneratorView.PendingConnectionNode = this;
-                    Debug.Log(
-                        "Connection source set. Now right-click on the target node and select 'Create Connection' again.");
-                }
-                else if (GraphGeneratorView.PendingConnectionNode == this)
-                {
-                    GraphGeneratorView.PendingConnectionNode = null;
-                    Debug.Log("Connection source cleared.");
-                }
-                else
-                {
-                    var sourceNode = GraphGeneratorView.PendingConnectionNode;
-                    var sourcePort = sourceNode.outputContainer[0] as Port;
-                    var targetPort = this.inputContainer[0] as Port;
-
-                    var edge = new Edge
-                    {
-                        output = sourcePort,
-                        input = targetPort
-                    };
-                    edge.UpdateEdgeControl();
-
-                    graphView.AddElement(edge);
-                    Debug.Log("Created connection between nodes.");
-                    GraphGeneratorView.PendingConnectionNode = null;
-                }
-            });
         }
 
         private void CreateJsonFileUI()
@@ -91,8 +51,7 @@ namespace GraphBasedGenerator
                 var path = EditorUtility.OpenFilePanel("JSON selection", "", "json");
                 if (string.IsNullOrEmpty(path)) return;
                 JsonFilePath = path;
-                var fileName = Path.GetFileName(JsonFilePath);
-                _jsonFileLabel.text = fileName[..^5];
+                UpdateJsonFileLabel();
             })
             {
                 text = "Select dungeon"
@@ -105,6 +64,12 @@ namespace GraphBasedGenerator
         public sealed override void SetPosition(Rect newPos)
         {
             base.SetPosition(newPos);
+        }
+
+        public void UpdateJsonFileLabel()
+        {
+            var fileName = Path.GetFileName(JsonFilePath);
+            _jsonFileLabel.text = fileName[..^5];
         }
     }
 }

@@ -3,6 +3,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphBasedGenerator
 {
@@ -15,6 +16,7 @@ namespace GraphBasedGenerator
             AddManipulators();
             AddBackground();
             AddStyles();
+            AddCopyPasteHandlers();
         }
 
         private void AddManipulators()
@@ -62,6 +64,63 @@ namespace GraphBasedGenerator
                     compatiblePorts.Add(port);
             });
             return compatiblePorts;
+        }
+
+        private void AddCopyPasteHandlers()
+        {
+            RegisterCallback<KeyDownEvent>(evt =>
+            {
+                switch (evt.ctrlKey)
+                {
+                    case true when evt.keyCode == KeyCode.C:
+                        CopySelection();
+                        break;
+                    case true when evt.keyCode == KeyCode.V:
+                        PasteSelection();
+                        break;
+                }
+            });
+        }
+
+        private void CopySelection()
+        {
+            var selectedNodes = selection.OfType<GraphNode>().ToList();
+            if (selectedNodes.Count == 0) return;
+
+            //copy the position and json file path of each node
+            var data = selectedNodes.Select(node => new NodeData
+            {
+                Position = node.GetPosition().position,
+                JsonFilePath = node.JsonFilePath
+            }).ToArray();
+            
+            //convert the data to json and copy it to the clipboard
+            var json = string.Join("\n", data.Select(JsonUtility.ToJson));
+            EditorGUIUtility.systemCopyBuffer = json;
+        }
+
+        private void PasteSelection()
+        {
+            var data = EditorGUIUtility.systemCopyBuffer.Split('\n');
+            foreach (var nodeData in data)
+            {
+                var deserializedNode = JsonUtility.FromJson<NodeData>(nodeData);
+                // Crea el nodo
+                var newNode = new GraphNode(deserializedNode.Position, new Vector2(200, 200));
+                // Asigna el JsonFilePath copiado
+                newNode.JsonFilePath = deserializedNode.JsonFilePath;
+                // Opcional: si el nodo tiene un label que muestra el nombre del fichero, actualizarlo
+                newNode.UpdateJsonFileLabel(); // si implementas un método para eso
+                AddElement(newNode);
+            }
+        }
+
+
+        [System.Serializable]
+        private class NodeData
+        {
+            public Vector2 Position;
+            public string JsonFilePath;
         }
     }
 }
