@@ -11,10 +11,8 @@ namespace GraphBasedGenerator
         private float _scalingFactor = 0.1f;
 
         private readonly HashSet<Vector2Int> _occupiedDoorPositions = new();
-
         private readonly HashSet<Vector2Int> _allFloorPositions = new();
-        private readonly HashSet<Vector2Int> _allWallPositions = new();
-        
+
 
         public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
@@ -24,8 +22,7 @@ namespace GraphBasedGenerator
             }
 
             _occupiedDoorPositions.Clear();
-            _allFloorPositions.Clear(); // Limpiamos antes de empezar
-            _allWallPositions.Clear();
+            _allFloorPositions.Clear();
 
             _graphView = GraphWindow.getGraphGeneratorView();
 
@@ -35,9 +32,31 @@ namespace GraphBasedGenerator
                 return;
             }
 
-            var roomDoors = new Dictionary<GraphNode, List<Vector2Int>>();
+            var roomDoors = PaintRooms();
+            
+            // 3. Generar corredores entre rooms
+            foreach (var edge in _graphView.edges)
+            {
+                if (edge is null) continue;
 
-            // 1. Cargamos cada habitación
+                var outputPort = edge.output;
+                var inputPort = edge.input;
+                if (outputPort == null || inputPort == null) continue;
+
+                if (outputPort.node is not GraphNode sourceNode || inputPort.node is not GraphNode targetNode)
+                    continue;
+
+                var room1Doors = roomDoors[sourceNode];
+                var room2Doors = roomDoors[targetNode];
+                GenerateCorridor(room1Doors, room2Doors);
+            }
+            
+            WallGenerator.GenerateWalls(_allFloorPositions, tilemapPainter);
+        }
+
+        private Dictionary<GraphNode, List<Vector2Int>> PaintRooms()
+        {
+            var roomDoors = new Dictionary<GraphNode, List<Vector2Int>>();
             foreach (var node in _graphView.nodes)
             {
                 if (node is not GraphNode graphNode) continue;
@@ -56,60 +75,22 @@ namespace GraphBasedGenerator
 
                 // 2. Obtenemos posiciones de puertas y suelo
                 var doors = GetDoorPositions(graphNode.JsonFilePath, gridPos);
-                var floorTiles = GetFloorPositions(graphNode.JsonFilePath, gridPos);
-                GetWallPositions(graphNode.JsonFilePath, gridPos);
-
-                // También añadimos las puertas al set de suelo (para que no genere paredes en ellas)
-                // foreach (var doorPos in doors)
-                //     _allFloorPositions.Add(doorPos);
-
+                GetFloorPositions(graphNode.JsonFilePath, gridPos);
                 roomDoors[graphNode] = doors;
             }
 
-            // 3. Generar corredores entre rooms
-            foreach (var edge in _graphView.edges)
-            {
-                if (edge is null) continue;
-
-                var outputPort = edge.output;
-                var inputPort = edge.input;
-                if (outputPort == null || inputPort == null) continue;
-
-                if (outputPort.node is not GraphNode sourceNode || inputPort.node is not GraphNode targetNode)
-                    continue;
-
-                var room1Doors = roomDoors[sourceNode];
-                var room2Doors = roomDoors[targetNode];
-                GenerateCorridor(room1Doors, room2Doors);
-            }
+            return roomDoors;
         }
 
-        private void GetWallPositions(string graphNodeJsonFilePath, Vector2Int gridPos)
+        private void GetFloorPositions(string jsonFilePath, Vector2Int offset)
         {
-            var json = System.IO.File.ReadAllText(graphNodeJsonFilePath);
-            var tilemapData = JsonUtility.FromJson<TilemapData>(json);
-
-            foreach (var tile in tilemapData.wallTiles)
-            {
-                var wallPos = new Vector2Int(tile.position.x, tile.position.y) + gridPos;
-                _allWallPositions.Add(wallPos);
-            }
-        }
-
-        private List<Vector2Int> GetFloorPositions(string jsonFilePath, Vector2Int offset)
-        {
-            var floorPositions = new List<Vector2Int>();
             var json = System.IO.File.ReadAllText(jsonFilePath);
             var tilemapData = JsonUtility.FromJson<TilemapData>(json);
 
-            // Recorre tilemapData.floorTiles (asumiendo que existe)
             foreach (var tile in tilemapData.walkableTiles)
             {
-                floorPositions.Add(new Vector2Int(tile.position.x, tile.position.y) + offset);
                 _allFloorPositions.Add(new Vector2Int(tile.position.x, tile.position.y) + offset);
             }
-
-            return floorPositions;
         }
 
 
@@ -171,7 +152,12 @@ namespace GraphBasedGenerator
 
                 // Pintamos el corredor en el tilemap walkable
                 tilemapPainter.PaintWalkableTiles(corridorPath);
-
+                
+                //add corridor to floor positions
+                foreach (var pos in corridorPath)
+                {
+                    _allFloorPositions.Add(pos);
+                }
                 // --- Aquí viene la clave ---
                 // Construimos el set de "suelo" para ESTE corredor
                 var corridorFloorPositions = new HashSet<Vector2Int>(corridorPath);
@@ -179,16 +165,15 @@ namespace GraphBasedGenerator
                 // Agregamos las puertas
                 // corridorFloorPositions.Add(candidate.door1);
                 // corridorFloorPositions.Add(candidate.door2);
-                
+
                 corridorPath.Remove(candidate.door1);
                 corridorPath.Remove(candidate.door2);
-                
+
                 //remove the tile next to each door
                 corridorPath.Remove(candidate.door1 + new Vector2Int(1, 0));
                 corridorPath.Remove(candidate.door1 + new Vector2Int(-1, 0));
 
-                // Ahora sí generamos muros SOLO para este corredor
-                WallGenerator.GenerateWalls(corridorFloorPositions, tilemapPainter);
+                
 
                 // Pintamos las puertas en el tilemap
                 tilemapPainter.PaintDoorTiles(new List<Vector2Int> { candidate.door1, candidate.door2 });
