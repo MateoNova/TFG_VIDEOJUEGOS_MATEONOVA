@@ -24,7 +24,7 @@ namespace GraphBasedGenerator
         /// </summary>
         public string JsonFilePath = "";
 
-        private Label _jsonFileLabel;
+        private Label _jsonFileLabel = new("None");
 
         #endregion
 
@@ -92,6 +92,7 @@ namespace GraphBasedGenerator
             {
                 var path = EditorUtility.OpenFilePanel("JSON selection", "", "json");
                 if (string.IsNullOrEmpty(path)) return;
+                
                 JsonFilePath = path;
                 UpdateJsonFileLabel();
             })
@@ -125,6 +126,12 @@ namespace GraphBasedGenerator
         /// </summary>
         public void UpdateJsonFileLabel()
         {
+            if (_jsonFileLabel == null)
+            {
+                Debug.LogError("JsonFileLabel is not initialized.");
+                return;
+            }
+            
             var fileName = Path.GetFileName(JsonFilePath);
             _jsonFileLabel.text = fileName.Length > 5 ? fileName[..^5] : fileName;
         }

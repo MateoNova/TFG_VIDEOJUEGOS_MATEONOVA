@@ -1,1 +1,38 @@
-{"walkableTiles":[{"position":{"x":-2,"y":-2,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":-1,"y":-2,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":0,"y":-2,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":1,"y":-2,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":-2,"y":-1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":-1,"y":-1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":0,"y":-1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":1,"y":-1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":-2,"y":0,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":-1,"y":0,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":0,"y":0,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":1,"y":0,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":-2,"y":1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":-1,"y":1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":0,"y":1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false},{"position":{"x":1,"y":1,"z":0},"tileGUID":"5e44da89d290ff742bc271de8deb2b8a","isDoor":false}],"wallTiles":[{"position":{"x":-3,"y":-3,"z":0},"tileGUID":"88cfb822903fc04439ffbb25f641d331","isDoor":false},{"position":{"x":-2,"y":-3,"z":0},"tileGUID":"2dd6d06681b65db48a8fe37318534abf","isDoor":false},{"position":{"x":-1,"y":-3,"z":0},"tileGUID":"2dd6d06681b65db48a8fe37318534abf","isDoor":false},{"position":{"x":0,"y":-3,"z":0},"tileGUID":"2dd6d06681b65db48a8fe37318534abf","isDoor":false},{"position":{"x":1,"y":-3,"z":0},"tileGUID":"2dd6d06681b65db48a8fe37318534abf","isDoor":false},{"position":{"x":2,"y":-3,"z":0},"tileGUID":"9c80670e202a040408c28a644f7396a3","isDoor":false},{"position":{"x":-3,"y":-2,"z":0},"tileGUID":"8e2ec5d41398d8341a103fdae5c13f61","isDoor":false},{"position":{"x":2,"y":-2,"z":0},"tileGUID":"8acade7a48f897e41bb13155c185e4c5","isDoor":false},{"position":{"x":-3,"y":-1,"z":0},"tileGUID":"8e2ec5d41398d8341a103fdae5c13f61","isDoor":false},{"position":{"x":-3,"y":0,"z":0},"tileGUID":"8e2ec5d41398d8341a103fdae5c13f61","isDoor":false},{"position":{"x":2,"y":0,"z":0},"tileGUID":"b7761e7ab199a5c41b55309bd0eaf54e","isDoor":false},{"position":{"x":-3,"y":1,"z":0},"tileGUID":"8e2ec5d41398d8341a103fdae5c13f61","isDoor":false},{"position":{"x":2,"y":1,"z":0},"tileGUID":"fa67b4a8267305243867e62874ef89ea","isDoor":false},{"position":{"x":-3,"y":2,"z":0},"tileGUID":"acb64021054a09b4eb958bc0a3a976c0","isDoor":false},{"position":{"x":-2,"y":2,"z":0},"tileGUID":"2dd6d06681b65db48a8fe37318534abf","isDoor":false},{"position":{"x":-1,"y":2,"z":0},"tileGUID":"2dd6d06681b65db48a8fe37318534abf","isDoor":false},{"position":{"x":1,"y":2,"z":0},"tileGUID":"2dd6d06681b65db48a8fe37318534abf","isDoor":false},{"position":{"x":2,"y":2,"z":0},"tileGUID":"774240f6dae0c9a4082e63b2780c6264","isDoor":false}],"doorTiles":[{"position":{"x":2,"y":-1,"z":0},"tileGUID":"430b25243673ebb4c829b8db0e2b7cce","isDoor":true},{"position":{"x":0,"y":2,"z":0},"tileGUID":"430b25243673ebb4c829b8db0e2b7cce","isDoor":true}]}
+{
+    "nodes": [
+        {
+            "nodeId": "81fd8ff2-8fc9-40f1-b862-f757127becc8",
+            "position": {
+                "x": -500.0,
+                "y": 37.0
+            },
+            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/Sala1.json"
+        },
+        {
+            "nodeId": "8bcb073c-2fbd-4eb6-9a6b-82c717c6474c",
+            "position": {
+                "x": -503.0,
+                "y": 165.0
+            },
+            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/Sala1.json"
+        },
+        {
+            "nodeId": "54e9a183-1576-492e-b30c-393ae5fb66ea",
+            "position": {
+                "x": -503.0,
+                "y": -91.0
+            },
+            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/Sala1.json"
+        }
+    ],
+    "edges": [
+        {
+            "sourceId": "81fd8ff2-8fc9-40f1-b862-f757127becc8",
+            "targetId": "8bcb073c-2fbd-4eb6-9a6b-82c717c6474c"
+        },
+        {
+            "sourceId": "81fd8ff2-8fc9-40f1-b862-f757127becc8",
+            "targetId": "54e9a183-1576-492e-b30c-393ae5fb66ea"
+        }
+    ]
+}

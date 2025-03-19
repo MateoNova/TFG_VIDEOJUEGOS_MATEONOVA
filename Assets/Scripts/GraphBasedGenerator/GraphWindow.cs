@@ -19,7 +19,7 @@ namespace GraphBasedGenerator
             window.minSize = new Vector2(400, 300);
 
             var graphView = new GraphGeneratorView();
-
+            graphView.name = "GraphGeneratorView";
             graphView.StretchToParentSize();
             window.rootVisualElement.Add(graphView);
         }
@@ -42,8 +42,8 @@ namespace GraphBasedGenerator
         /// <returns>The GraphGeneratorView instance.</returns>
         public static GraphGeneratorView GetGraphGeneratorView()
         {
-            var window = GetWindow<GraphWindow>("Graph Window");
-            return window.rootVisualElement.Q<GraphGeneratorView>();
+            var window = GetWindow<GraphWindow>("Graph Window"); 
+            return window.rootVisualElement.Q<GraphGeneratorView>("GraphGeneratorView");
         }
     }
 }
