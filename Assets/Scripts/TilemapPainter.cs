@@ -241,10 +241,6 @@ public class TilemapPainter : MonoBehaviour
     }
 
     # endregion
-    
-    public readonly HashSet<Vector2Int> _allFloorPositions = new();
-    public readonly HashSet<Vector2Int> _allWallPositions = new();
-
 
     # region Paint: Wall Tiles
 

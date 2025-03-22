@@ -520,8 +520,8 @@ MonoBehaviour:
   walkableTilemap: {fileID: 7209869302509103302}
   walkableTileBases:
   - {fileID: 11400000, guid: a0c98a20c0cf438408755eb877243238, type: 2}
-  walkableTilesPriorities: 00000000
-  randomWalkableTilesPlacement: 1
+  walkableTilesPriorities: 64000000
+  randomWalkableTilesPlacement: 0
   wallTilemap: {fileID: 3826764859063543759}
   upWall: {fileID: 11400000, guid: f0d28abe17ec8b841ace4cffc4ef302e, type: 2}
   downWall: {fileID: 11400000, guid: f0d28abe17ec8b841ace4cffc4ef302e, type: 2}

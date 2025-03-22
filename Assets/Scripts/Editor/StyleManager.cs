@@ -282,21 +282,30 @@ namespace Editor
         private VisualElement CreateTileContainer(List<TileBase> walkableTiles, int index)
         {
             var walkableTile = walkableTiles[index];
-
+        
             var tileContainer = StyleUtils.TileContainer();
-
+        
             var label = GetLaberFromTile(walkableTile);
+            label.AddManipulator(new ContextualMenuManipulator(evt =>
+            {
+                evt.menu.AppendAction("Delete", _ =>
+                {
+                    walkableTiles.RemoveAt(index);
+                    _walkableTilesPriorities.RemoveAt(index);
+                    RefreshUI();
+                });
+            }));
             tileContainer.Add(label);
-
+        
             var imguiPreviewContainer = CreateIMGUIContainer(walkableTiles, index, label);
-            imguiPreviewContainer.style.height = Utils.GemImGuiHeight();
+            imguiPreviewContainer.style.height = Utils.GetPreviewTileSize();
             tileContainer.Add(imguiPreviewContainer);
-
+        
             if (_generatorSelection.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement) return tileContainer;
-
+        
             var priorityContainer = AddPriorityToTilesUI(index);
             tileContainer.Add(priorityContainer);
-
+        
             return tileContainer;
         }
 
