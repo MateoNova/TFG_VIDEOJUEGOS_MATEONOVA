@@ -6,41 +6,35 @@ namespace Editor.Views
     public class ActionsView
     {
         private bool _showGenerationActions = true;
-        private ActionsController _actionsController = new();
+        private ActionsController _actionsController = new ActionsController();
 
-        /// <summary>
-        /// Creates the user interface for the generation actions.
-        /// </summary>
-        /// <returns>A <see cref="VisualElement"/> containing the UI elements.</returns>
         public VisualElement CreateUI()
         {
-            var container = StyleUtils.SimpleContainer();
-
-            var actionsFoldout = new Foldout { text = "Generation Actions", value = _showGenerationActions };
+            VisualElement container = StyleUtils.SimpleContainer();
+            Foldout actionsFoldout = new Foldout { text = "Generation Actions", value = _showGenerationActions };
             actionsFoldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
             container.Add(actionsFoldout);
 
-            if (!_showGenerationActions)
-                return container;
-            AddClearToggle(actionsFoldout);
-
-            var buttonsContainer = AddActionsButtons();
-
-            actionsFoldout.Add(buttonsContainer);
+            if (_showGenerationActions)
+            {
+                AddClearToggle(actionsFoldout);
+                VisualElement buttonsContainer = AddActionsButtons();
+                actionsFoldout.Add(buttonsContainer);
+            }
 
             return container;
         }
-        
+
         private VisualElement AddActionsButtons()
         {
-            var buttonsContainer = new VisualElement();
+            VisualElement buttonsContainer = new VisualElement();
             buttonsContainer.style.flexDirection = FlexDirection.Column;
             buttonsContainer.style.marginTop = 5;
 
-            var generateButton = new Button(_actionsController.Generate) { text = "Generate Dungeon" };
-            var clearButton = new Button(_actionsController.ClearDungeon) { text = "Clear Dungeon" };
-            var saveButton = new Button(_actionsController.SaveDungeon) { text = "Save Dungeon" };
-            var loadButton = new Button(_actionsController.LoadDungeon) { text = "Load Dungeon" };
+            Button generateButton = new Button(_actionsController.Generate) { text = "Generate Dungeon" };
+            Button clearButton = new Button(_actionsController.ClearDungeon) { text = "Clear Dungeon" };
+            Button saveButton = new Button(_actionsController.SaveDungeon) { text = "Save Dungeon" };
+            Button loadButton = new Button(_actionsController.LoadDungeon) { text = "Load Dungeon" };
 
             buttonsContainer.Add(generateButton);
             buttonsContainer.Add(clearButton);
@@ -49,15 +43,12 @@ namespace Editor.Views
 
             return buttonsContainer;
         }
-        
+
         private void AddClearToggle(Foldout actionsFoldout)
         {
-            var clearToggle =
-                StyleUtils.SimpleToggle("Clear Dungeon", _actionsController._clearDungeon, "Clear the dungeon before generating.");
-            clearToggle.RegisterValueChangedCallback(evt =>
-            {
-                _actionsController.clearToggle(evt.newValue);
-            });
+            Toggle clearToggle = StyleUtils.SimpleToggle("Clear Dungeon", _actionsController.ClearDungeonToggle,
+                "Clear the dungeon before generating.");
+            clearToggle.RegisterValueChangedCallback(evt => _actionsController.SetClearDungeon(evt.newValue));
             actionsFoldout.Add(clearToggle);
         }
     }

@@ -1,51 +1,26 @@
-﻿using System;
+﻿using Editor.Models;
 using UnityEditor;
 
 namespace Editor.Controllers
 {
-    /// <summary>
-    /// Controller responsible for handling initialization-related actions.
-    /// </summary>
     public class InitializationController
     {
-        /// <summary>
-        /// Event triggered when a reload action is performed.
-        /// </summary>
-        public static event Action OnReload;
-
-        /// <summary>
-        /// Event triggered when a scene initialization action is performed.
-        /// </summary>
-        public static event Action OnInitScene;
-
-        /// <summary>
-        /// Event triggered when cached data is cleared.
-        /// </summary>
-        public static event Action OnClearCachedData;
-
-        /// <summary>
-        /// Invokes the <see cref="OnInitScene"/> event to initialize the scene.
-        /// </summary>
-        internal void InitScene()
+        public void InitScene()
         {
-            OnInitScene?.Invoke();
+            EventBus.OnInitScene();
         }
 
-        /// <summary>
-        /// Invokes the <see cref="OnReload"/> event to reload all relevant data or states.
-        /// </summary>
-        internal void ReloadAll()
+        public void ReloadAll()
         {
-            OnReload?.Invoke();
+            // Se puede agregar más lógica si es necesario
+            EventBus.OnReload();
         }
 
-        /// <summary>
-        /// Clears all cached data and invokes the <see cref="OnClearCachedData"/> event.
-        /// </summary>
-        internal void ClearCachedData()
+        public void ClearCachedData()
         {
+            // Limpieza de EditorPrefs y demás
             EditorPrefs.DeleteAll();
-            OnClearCachedData?.Invoke();
+            EventBus.OnClearCachedData();
         }
     }
 }

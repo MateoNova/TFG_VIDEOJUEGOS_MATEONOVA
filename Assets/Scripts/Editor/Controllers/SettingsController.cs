@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Editor.Models;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -10,51 +9,30 @@ namespace Editor.Controllers
 {
     public class SettingsController
     {
-        # region Methods
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeneratorSettings"/> class.
-        /// </summary>
-        /// <param name="generatorSelection">The generator selection instance.</param>
         public SettingsController()
         {
         }
 
-
-        /// <summary>
-        /// Adds a field to the settings container that does not have any custom attributes.
-        /// </summary>
-        /// <param name="property">The serialized property to add.</param>
-        /// <param name="serializedObject">The serialized object containing the property.</param>
-        /// <param name="settingsContainer">The container to add the field to.</param>
         public void AddNoCustomAttributesField(SerializedProperty property, SerializedObject serializedObject,
-            VisualElement settingsContainer)
+            VisualElement container)
         {
-            var normalField = new PropertyField(property);
+            PropertyField normalField = new PropertyField(property);
             normalField.Bind(serializedObject);
-            settingsContainer.Add(normalField);
+            container.Add(normalField);
         }
 
-        /// <summary>
-        /// Checks if a field has a ConditionalFieldAttribute and adds it to the settings container if it does.
-        /// </summary>
-        /// <param name="fieldInfo">The field information to check.</param>
-        /// <param name="property">The serialized property to add.</param>
-        /// <param name="serializedObject">The serialized object containing the property.</param>
-        /// <param name="settingsContainer">The container to add the field to.</param>
-        /// <param name="conditionalFields">A dictionary of conditional fields grouped by their condition group.</param>
-        /// <returns>True if the field has a ConditionalFieldAttribute, otherwise false.</returns>
         public bool CheckForConditionalAttribute(FieldInfo fieldInfo, SerializedProperty property,
-            SerializedObject serializedObject, VisualElement settingsContainer,
+            SerializedObject serializedObject, VisualElement container,
             Dictionary<string, List<PropertyField>> conditionalFields)
         {
             if (fieldInfo.GetCustomAttribute(typeof(ConditionalFieldAttribute)) is not ConditionalFieldAttribute
-                conditionalAttr) return false;
+                conditionalAttr)
+                return false;
 
-            var group = conditionalAttr.ConditionGroup ?? property.name;
-            var conditionalPropField = new PropertyField(property);
+            string group = conditionalAttr.ConditionGroup ?? property.name;
+            PropertyField conditionalPropField = new PropertyField(property);
             conditionalPropField.Bind(serializedObject);
-            settingsContainer.Add(conditionalPropField);
+            container.Add(conditionalPropField);
 
             if (!conditionalFields.ContainsKey(group))
             {
@@ -65,33 +43,22 @@ namespace Editor.Controllers
             return true;
         }
 
-        /// <summary>
-        /// Checks if a field has a ConditionAttribute and adds it to the settings container if it does.
-        /// </summary>
-        /// <param name="fieldInfo">The field information to check.</param>
-        /// <param name="property">The serialized property to add.</param>
-        /// <param name="serializedObject">The serialized object containing the property.</param>
-        /// <param name="settingsContainer">The container to add the field to.</param>
-        /// <param name="conditionFields">A dictionary of condition fields grouped by their condition group.</param>
-        /// <param name="conditionalFields">A dictionary of conditional fields grouped by their condition group.</param>
-        /// <returns>True if the field has a ConditionAttribute, otherwise false.</returns>
         public bool CheckForConditionAttribute(FieldInfo fieldInfo, SerializedProperty property,
-            SerializedObject serializedObject, VisualElement settingsContainer,
+            SerializedObject serializedObject, VisualElement container,
             Dictionary<string, PropertyField> conditionFields,
             Dictionary<string, List<PropertyField>> conditionalFields)
         {
             if (fieldInfo.GetCustomAttribute(typeof(ConditionAttribute)) is not ConditionAttribute conditionAttr)
                 return false;
 
-            // If no group is specified, use the field name.
-            var group = conditionAttr.Group ?? property.name;
-            var conditionPropField = new PropertyField(property);
+            // Si no se especifica grupo, se usa el nombre del campo.
+            string group = conditionAttr.Group ?? property.name;
+            PropertyField conditionPropField = new PropertyField(property);
             conditionPropField.Bind(serializedObject);
-            settingsContainer.Add(conditionPropField);
+            container.Add(conditionPropField);
 
             conditionFields[group] = conditionPropField;
-
-            // Add a callback to update the visibility of the conditional fields.
+            // Se añade callback para actualizar la visibilidad de los campos condicionales.
             conditionPropField.RegisterValueChangeCallback(_ =>
             {
                 UpdateConditionalVisibility(group, serializedObject, conditionalFields);
@@ -99,40 +66,31 @@ namespace Editor.Controllers
             return true;
         }
 
-        /// <summary>
-        /// Updates the visibility of conditional fields based on the value of their condition field.
-        /// </summary>
-        /// <param name="group">The condition group to update.</param>
-        /// <param name="serializedObject">The serialized object containing the fields.</param>
-        /// <param name="conditionalFields">A dictionary of conditional fields grouped by their condition group.</param>
-        internal void UpdateConditionalVisibility(string group, SerializedObject serializedObject,
+        public void UpdateConditionalVisibility(string group, SerializedObject serializedObject,
             Dictionary<string, List<PropertyField>> conditionalFields)
         {
-            var target = serializedObject.targetObject;
-            var conditionField = target.GetType()
+            object target = serializedObject.targetObject;
+            FieldInfo conditionField = target.GetType()
                 .GetField(group, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
             if (conditionField == null)
             {
-                Debug.LogWarning($"No condition attribute found for group: '{group}'.");
+                Debug.LogWarning($"No se encontró el campo condición para el grupo: '{group}'.");
                 return;
             }
 
             if (conditionField.FieldType != typeof(bool))
             {
-                Debug.LogWarning($"The condition field '{group}' isn't boolean.");
+                Debug.LogWarning($"El campo condición '{group}' no es de tipo booleano.");
                 return;
             }
 
-            var conditionValue = (bool)conditionField.GetValue(target);
+            bool conditionValue = (bool)conditionField.GetValue(target);
+            if (!conditionalFields.TryGetValue(group, out List<PropertyField> fields)) return;
 
-            if (!conditionalFields.TryGetValue(group, out var conditionalField)) return;
-            foreach (var field in conditionalField)
+            foreach (var field in fields)
             {
                 field.style.display = conditionValue ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }
-
-        # endregion
     }
 }
