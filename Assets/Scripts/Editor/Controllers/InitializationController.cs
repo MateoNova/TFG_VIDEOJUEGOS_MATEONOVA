@@ -5,17 +5,18 @@ namespace Editor.Controllers
 {
     public class InitializationController
     {
-        public Action _onReload;
+        public static Action _onReload;
+        public static Action _onInitScene;
+        public static Action _onClearCachedData;
         
-        public InitializationController(/*GeneratorSelection generatorSelection*/)
+        public InitializationController()
         {
             //_generatorSelection = generatorSelection;
         }
         internal void InitScene()
         {
-            /*_generatorSelection.RetrieveOrInitializeCachedGenerationManager();
-            _generatorSelection.FindAllGenerators();
-            _generatorSelection.SelectGenerator(0);*/
+            _onInitScene.Invoke();
+            
         }
 
         internal void ReloadAll()
@@ -26,6 +27,7 @@ namespace Editor.Controllers
         internal void ClearCachedData()
         {
             EditorPrefs.DeleteAll();
+            _onClearCachedData?.Invoke();
             //_generatorSelection.ClearCacheData();
         }
     }

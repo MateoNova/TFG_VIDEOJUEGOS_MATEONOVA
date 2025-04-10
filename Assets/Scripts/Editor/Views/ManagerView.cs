@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using System;
+using Editor.Controllers;
+using UnityEditor;
 using Vector2 = UnityEngine.Vector2;
 
 namespace Editor.Views
@@ -7,6 +9,7 @@ namespace Editor.Views
     {
         
         private InitializationView _initializationView;
+        private SelectionView _selectionView;
         
         [MenuItem("Window/Generation Manager 2")]
         public static void ShowWindow()
@@ -17,14 +20,26 @@ namespace Editor.Views
         
         private void OnEnable()
         {
+            InitializationController._onReload += Reload;
             InitializeDependencies();
             //_initializationManager.InitScene(); todo
+        }
+
+        private void OnDisable()
+        {
+            InitializationController._onReload -= Reload;
+        }
+
+        private void Reload()
+        {
+            CreateGUI();
         }
 
         private void InitializeDependencies()
         {
             //todo init
             _initializationView = new InitializationView();
+            _selectionView = new SelectionView();
             
         }
         
@@ -37,6 +52,7 @@ namespace Editor.Views
             
             //todo add gui
             scrollView.Add(_initializationView.CreateUI());
+            scrollView.Add(_selectionView.CreateUI());
 
             
             root.Add(scrollView);

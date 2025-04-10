@@ -5,7 +5,7 @@ namespace Editor.Views
 {
     public class InitializationView
     {
-        private InitializationController _initializationController = new();
+        private readonly InitializationController _initializationController = new();
         public VisualElement CreateUI()
         {
             var container = StyleUtils.SimpleContainer();

@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -13,6 +14,7 @@ namespace Editor
         private Foldout _foldout;
         
         public Action _onReload;
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InitializationManager"/> class.
