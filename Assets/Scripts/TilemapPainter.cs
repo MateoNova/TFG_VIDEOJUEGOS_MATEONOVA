@@ -171,15 +171,20 @@ public class TilemapPainter : MonoBehaviour
     {
         InitializeWalkableTilesProbabilities();
 
+        var vector2Ints = tilesPositions.ToList();
         if (randomWalkableTilesPlacement)
         {
-            PaintTilesRandomly(tilesPositions, walkableTilemap, walkableTileBases);
+            PaintTilesRandomly(vector2Ints, walkableTilemap, walkableTileBases);
         }
         else
         {
-            PaintTilesWithProbabilities(tilesPositions, walkableTilemap, walkableTileBases,
+            PaintTilesWithProbabilities(vector2Ints, walkableTilemap, walkableTileBases,
                 _walkableTilesProbabilities);
         }
+        
+        Debug.Log($"Number of walkable tiles painted: {vector2Ints.Count}");
+
+        
     }
 
     /// <summary>

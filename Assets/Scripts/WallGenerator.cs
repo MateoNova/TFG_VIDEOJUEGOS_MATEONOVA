@@ -18,25 +18,24 @@ public class WallGenerator : MonoBehaviour
     public static void GenerateWalls(HashSet<Vector2Int> walkableTilesPositions, TilemapPainter tilemapPainter,
         HashSet<Vector2Int> nonWallPositions = null)
     {
-        // 1. Build the initial dictionary of wall positions
         var wallPositionsByType = BuildInitialWallPositions(walkableTilesPositions);
+        var initialWallCount = wallPositionsByType.Values.Sum(set => set.Count);
+        Debug.Log("Cantidad inicial de paredes generadas: " + initialWallCount);
 
-        // 2. Apply override rules to adjust the classification of walls
-        ApplyWallOverrides(wallPositionsByType, walkableTilesPositions);
+        var overrideCount = ApplyWallOverrides(wallPositionsByType, walkableTilesPositions);
+        Debug.Log("Cantidad de overrides aplicados: " + overrideCount);
 
-        // 3. Paint the walls (iterate through each type and paint the corresponding positions)
         foreach (var kvp in wallPositionsByType)
         {
-            // Filter out non-wall positions
             var filteredPositions = kvp.Value;
             if (nonWallPositions != null)
             {
                 filteredPositions = new HashSet<Vector2Int>(kvp.Value.Except(nonWallPositions));
             }
-
             tilemapPainter.PaintWallTiles(filteredPositions, kvp.Key);
         }
     }
+
 
     #region Wall Positions Construction
 
@@ -125,71 +124,68 @@ public class WallGenerator : MonoBehaviour
     /// <summary>
     /// Applies override rules to adjust the classification of wall positions.
     /// </summary>
-    private static void ApplyWallOverrides(
+    private static int ApplyWallOverrides(
         Dictionary<Utils.WallPosition, HashSet<Vector2Int>> wallPositionsByType,
         HashSet<Vector2Int> floorPositions)
+{
+    var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
+
+    var overrideRules = new List<IWallOverrideCase>
     {
-        // Combine all wall positions into a single set for easier checks.
-        var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
+        new DownWallToUpCase(),
+        new LeftWallToTopRightInnerCase(),
+        new RightWallToTopLeftInnerCase(),
+        new LeftWallToBottomRightInnerCase(),
+        new RightWallToBottomLeftInnerCase(),
+        new RightWallToDownCase(),
+        new LeftWallToDownCase(),
+        new TopRightWallToTripleCornerExceptUp(),
+        new TopLeftWallToTripleCornerExceptUpCase(),
+        new DownWallToTripleWallCornerExceptUp(),
+        new DownWallToTripleWallCornerExceptDown(),
+        new BottomRightWallToTripleWallCornerExceptDown(),
+        new BottomLeftWallToTripleWallCornerExceptDown(),
+        new BottomLeftWallToTripleWallCornerExceptLeft(),
+        new BottomRightWallToTripleWallCornerExceptRight(),
+        new BottomLeftWallToAllWallCorner(),
+        new BottomRightWallToAllWallCorner(),
+        new RightWallAloneToDownCase(),
+        new LeftWallAloneToDownCase(),
+        new RightWallToAloneCase(),
+        new TopLeftWallToAllWallCornerCase(),
+        new TopRightWallToAllWallCornerCase(),
+        new RightWallToTripleWallCornerExceptLeftInnerCase(),
+        new RightWallToTripleWallCornerExceptRightInnerCase(),
+        new TopLeftWallAllCornerCase(),
+        new TopRightWallToTripleCornerExceptRightInner()
+    };
 
-        // List of defined override rules (these classes implement IWallOverrideCase).
-        var overrideRules = new List<IWallOverrideCase>
+    var changes = new List<(Vector2Int pos, Utils.WallPosition oldType, Utils.WallPosition newType)>();
+
+    foreach (var wallType in wallPositionsByType.Keys.ToList())
+    {
+        foreach (var pos in wallPositionsByType[wallType])
         {
-            new DownWallToUpCase(),
-            new LeftWallToTopRightInnerCase(),
-            new RightWallToTopLeftInnerCase(),
-            new LeftWallToBottomRightInnerCase(),
-            new RightWallToBottomLeftInnerCase(),
-            new RightWallToDownCase(),
-            new LeftWallToDownCase(),
-            new TopRightWallToTripleCornerExceptUp(),
-            new TopLeftWallToTripleCornerExceptUpCase(),
-            new DownWallToTripleWallCornerExceptUp(),
-            new DownWallToTripleWallCornerExceptDown(),
-            new BottomRightWallToTripleWallCornerExceptDown(),
-            new BottomLeftWallToTripleWallCornerExceptDown(),
-            new BottomLeftWallToTripleWallCornerExceptLeft(),
-            new BottomRightWallToTripleWallCornerExceptRight(),
-            new BottomLeftWallToAllWallCorner(),
-            new BottomRightWallToAllWallCorner(),
-            new RightWallAloneToDownCase(),
-            new LeftWallAloneToDownCase(),
-            new RightWallToAloneCase(),
-            new TopLeftWallToAllWallCornerCase(),
-            new TopRightWallToAllWallCornerCase(),
-            new RightWallToTripleWallCornerExceptLeftInnerCase(),
-            new RightWallToTripleWallCornerExceptRightInnerCase(),
-            new TopLeftWallAllCornerCase(),
-            new TopRightWallToTripleCornerExceptRightInner()
-        };
-
-        // Store changes without modifying sets while iterating.
-        var changes = new List<(Vector2Int pos, Utils.WallPosition oldType, Utils.WallPosition newType)>();
-
-        // Iterate through each wall type and its positions
-        foreach (var wallType in wallPositionsByType.Keys.ToList())
-        {
-            foreach (var pos in wallPositionsByType[wallType])
+            foreach (var rule in overrideRules)
             {
-                // Evaluate override rules until one applies.
-                foreach (var rule in overrideRules)
+                if (rule.IsMatch(pos, floorPositions, allWallPositions, wallType))
                 {
-                    if (rule.IsMatch(pos, floorPositions, allWallPositions, wallType))
-                    {
-                        changes.Add((pos, wallType, rule.OverrideWallPosition));
-                        break; // Exit after applying the first matching rule
-                    }
+                    changes.Add((pos, wallType, rule.OverrideWallPosition));
+                    break; 
                 }
             }
         }
-
-        // Apply changes: remove the position from the original type and add it to the new type.
-        foreach (var (pos, oldType, newType) in changes)
-        {
-            wallPositionsByType[oldType].Remove(pos);
-            wallPositionsByType[newType].Add(pos);
-        }
     }
+
+    foreach (var (pos, oldType, newType) in changes)
+    {
+        wallPositionsByType[oldType].Remove(pos);
+        wallPositionsByType[newType].Add(pos);
+    }
+    
+    return changes.Count;
+}
+
 
     #endregion
 }

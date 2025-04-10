@@ -15,11 +15,11 @@ namespace RandomWalkGeneration
 
         [SerializeField,
          Tooltip(RandomWalkTooltips.WalkIterationsTooltip)]
-        public int walkIterations = 10;
+        private int walkIterations = 10;
 
         [SerializeField,
          Tooltip(RandomWalkTooltips.StepsPerIterationTooltip)]
-        public int stepsPerIteration = 10;
+        private int stepsPerIteration = 10;
 
         [SerializeField,
          Condition("generateCorridors"),
