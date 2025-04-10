@@ -1,3 +1,5 @@
+using Editor.Controllers;
+using Editor.Views;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,7 +14,10 @@ namespace Editor
         private GeneratorSelection _generatorSelection;
         private GeneratorSettings _generatorSettings;
         private StyleManager _styleManager;
-        private GenerationActions _generationActions;
+
+        private ActionsView _actionsView;
+        private ActionsController _actionsController;
+        //private GenerationActions _generationActions;
 
         /// <summary>
         /// Opens the Generation Manager window.
@@ -39,11 +44,13 @@ namespace Editor
         /// </summary>
         private void InitializeDependencies()
         {
+            _actionsView = new ActionsView();
+            
+            
             _generatorSelection = new GeneratorSelection();
             _initializationManager = new InitializationManager(_generatorSelection);
             _generatorSettings = new GeneratorSettings(_generatorSelection);
             _styleManager = new StyleManager(_generatorSelection);
-            _generationActions = new GenerationActions(_generatorSelection);
             
             _initializationManager._onReload += CreateGUI;
         }
@@ -62,7 +69,7 @@ namespace Editor
             scrollView.Add(_generatorSelection.CreateUI());
             scrollView.Add(_generatorSettings.CreateUI());
             scrollView.Add(_styleManager.CreateUI());
-            scrollView.Add(_generationActions.CreateUI());
+            scrollView.Add(_actionsView.CreateUI(new ActionsController(_generatorSelection)));
 
             root.Add(scrollView);
         }
