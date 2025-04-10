@@ -10,6 +10,7 @@ namespace Editor.Views
         
         private InitializationView _initializationView;
         private SelectionView _selectionView;
+        private SettingsView _settingsView;
         
         [MenuItem("Window/Generation Manager 2")]
         public static void ShowWindow()
@@ -40,6 +41,7 @@ namespace Editor.Views
             //todo init
             _initializationView = new InitializationView();
             _selectionView = new SelectionView();
+            _settingsView = new SettingsView();
             
         }
         
@@ -53,6 +55,7 @@ namespace Editor.Views
             //todo add gui
             scrollView.Add(_initializationView.CreateUI());
             scrollView.Add(_selectionView.CreateUI());
+            scrollView.Add(_settingsView.CreateUI());
 
             
             root.Add(scrollView);

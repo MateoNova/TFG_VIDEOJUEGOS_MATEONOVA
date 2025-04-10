@@ -30,6 +30,7 @@ namespace Editor.Controllers
         public int SelectedGeneratorIndex => _selectedGeneratorIndex;
 
         public static Action OnGeneratorChanged;
+        public static Action<BaseGenerator> OnGeneratorChanged2;
         public static Action<bool> ShowButtonOpenGraphWindow;
 
         private BaseGenerator CurrentGenerator { get; set; }
@@ -94,6 +95,9 @@ namespace Editor.Controllers
             }
 
             OnGeneratorChanged?.Invoke();
+            //create new action and send the current generator
+            OnGeneratorChanged2.Invoke(CurrentGenerator);
+            
         }
 
         /// <summary>
