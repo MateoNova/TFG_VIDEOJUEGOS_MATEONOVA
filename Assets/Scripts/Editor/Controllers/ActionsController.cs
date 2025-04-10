@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using Editor.Models;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,30 +7,14 @@ namespace Editor.Controllers
 {
     public class ActionsController
     {
-        private BaseGenerator currentGenerator;
-        
         public bool _clearDungeon = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerationActions"/> class.
         /// </summary>
         /// <param name="generatorSelection">The generator selection instance.</param>
-        public ActionsController()
-        {
-            SelectionController.OnGeneratorChanged2 += OnGeneratorChanged;
-        }
+     
         
-        ~ActionsController()
-        {
-            SelectionController.OnGeneratorChanged2 -= OnGeneratorChanged;
-          
-
-        }
-
-        private void OnGeneratorChanged(BaseGenerator obj)
-        {
-            currentGenerator = obj;
-        }
 
 
         /// <summary>
@@ -49,10 +34,10 @@ namespace Editor.Controllers
         /// </summary>
         internal void Generate()
         {
-            if (currentGenerator)
+            if (GeneratorService.Instance.CurrentGenerator)
             {
-                currentGenerator.RunGeneration(_clearDungeon,
-                    currentGenerator.Origin);
+                GeneratorService.Instance.CurrentGenerator.RunGeneration(_clearDungeon,
+                    GeneratorService.Instance.CurrentGenerator.Origin);
             }
             else
             {
@@ -65,7 +50,7 @@ namespace Editor.Controllers
         /// </summary>
         internal void ClearDungeon()
         {
-            currentGenerator?.ClearDungeon();
+            GeneratorService.Instance.CurrentGenerator?.ClearDungeon();
         }
 
         /// <summary>
@@ -77,7 +62,7 @@ namespace Editor.Controllers
             if (string.IsNullOrEmpty(path))
                 return;
 
-            currentGenerator.SaveDungeon(path);
+            GeneratorService.Instance.CurrentGenerator.SaveDungeon(path);
         }
 
         /// <summary>
@@ -88,7 +73,7 @@ namespace Editor.Controllers
             var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
             if (!string.IsNullOrEmpty(path))
             {
-                currentGenerator.LoadDungeon(path);
+                GeneratorService.Instance.CurrentGenerator.LoadDungeon(path);
             }
         }
 

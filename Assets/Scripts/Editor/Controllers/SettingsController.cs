@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using Editor.Models;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -9,12 +10,7 @@ namespace Editor.Controllers
 {
     public class SettingsController
     {
-         private BaseGenerator currentGenerator;
-         
-         public BaseGenerator getCurrentGenerator()
-         {
-             return currentGenerator;
-         }
+        
 
         # region Methods
 
@@ -24,22 +20,9 @@ namespace Editor.Controllers
         /// <param name="generatorSelection">The generator selection instance.</param>
         public SettingsController()
         {
-            SelectionController.OnGeneratorChanged2 += OnGeneratorChanged;
         }
 
-        private void OnGeneratorChanged(BaseGenerator obj)
-        {
-            currentGenerator = obj;
-            if (obj != null) return;
-            Debug.LogWarning("No generator selected.");
-        }
-
-        ~SettingsController()
-        {
-            SelectionController.OnGeneratorChanged2 -= OnGeneratorChanged;
-          
-
-        }
+        
 
 
         /// <summary>

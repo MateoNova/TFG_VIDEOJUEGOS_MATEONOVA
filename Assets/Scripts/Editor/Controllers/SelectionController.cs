@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Editor.Models;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -29,12 +30,8 @@ namespace Editor.Controllers
         }
         public int SelectedGeneratorIndex => _selectedGeneratorIndex;
 
-        public static Action OnGeneratorChanged;
-        public static Action<BaseGenerator> OnGeneratorChanged2;
         public static Action<bool> ShowButtonOpenGraphWindow;
-
-        private BaseGenerator CurrentGenerator { get; set; }
-
+        
         private GameObject CachedGenerationManager { get; set; }
 
 
@@ -81,10 +78,12 @@ namespace Editor.Controllers
             }
 
             _selectedGeneratorIndex = index;
-            CurrentGenerator = _generators[_selectedGeneratorIndex];
+            var selectedGenerator = _generators[_selectedGeneratorIndex];
+            GeneratorService.Instance.SetCurrentGenerator(selectedGenerator);
+
 
             // Check if the selected generator has the OpenGraphEditor attribute
-            switch (Attribute.IsDefined(CurrentGenerator.GetType(), typeof(OpenGraphEditorAttribute)))
+            switch (Attribute.IsDefined( GeneratorService.Instance.CurrentGenerator.GetType(), typeof(OpenGraphEditorAttribute)))
             {
                 case true:
                     ShowButtonOpenGraphWindow?.Invoke(true);
@@ -94,9 +93,7 @@ namespace Editor.Controllers
                     break;
             }
 
-            OnGeneratorChanged?.Invoke();
-            //create new action and send the current generator
-            OnGeneratorChanged2.Invoke(CurrentGenerator);
+          
             
         }
 
@@ -210,7 +207,7 @@ namespace Editor.Controllers
 
             CachedGenerationManager = null;
             _cachedPrefab = null;
-            CurrentGenerator = null;
+            GeneratorService.Instance.SetCurrentGenerator(null);
             _cachedGeneratorNames.Clear();
             _generators.Clear();
             _selectedGeneratorIndex = 0;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using Editor.Controllers;
+using Editor.Models;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -23,17 +24,14 @@ namespace Editor.Views
         public SettingsView()
         {
             SelectionController.ShowButtonOpenGraphWindow += ShowOpenGraphWindowButton;
-            SelectionController.OnGeneratorChanged += Repaint;
+            GeneratorService.OnGeneratorChanged += Repaint;
 
         }
         
         ~SettingsView()
         {
             SelectionController.ShowButtonOpenGraphWindow -= ShowOpenGraphWindowButton;
-            SelectionController.OnGeneratorChanged -= Repaint;
-
-
-
+            GeneratorService.OnGeneratorChanged -= Repaint;
         }
         
         
@@ -50,7 +48,7 @@ namespace Editor.Views
 
             _foldout = new Foldout { text = "Generator Settings", value = true };
 
-            if (_settingsController.getCurrentGenerator() == null)
+            if (GeneratorService.Instance.CurrentGenerator == null)
             {
                 var infoLabel = StyleUtils.HelpLabel("No generator selected.");
                 _foldout.Add(infoLabel);
@@ -58,7 +56,7 @@ namespace Editor.Views
             else
             {
                 var settingsContainer = new VisualElement();
-                var serializedObject = new SerializedObject(_settingsController.getCurrentGenerator());
+                var serializedObject = new SerializedObject(GeneratorService.Instance.CurrentGenerator);
 
                 var conditionFields = new Dictionary<string, PropertyField>();
                 var conditionalFields = new Dictionary<string, List<PropertyField>>();
@@ -97,7 +95,7 @@ namespace Editor.Views
                 _foldout.Add(settingsContainer);
             }
 
-            _openGraphButton = new Button(() => _settingsController.getCurrentGenerator().OpenGraphWindow())
+            _openGraphButton = new Button(() => GeneratorService.Instance.CurrentGenerator.OpenGraphWindow())
             {
                 text = "Open Graph Window",
                 style = { display = _showOpenGraphButton ? DisplayStyle.Flex : DisplayStyle.None }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Editor.Controllers;
+using Editor.Models;
 using GeneralUtils;
 using UnityEditor;
 using UnityEngine;
@@ -27,22 +28,22 @@ namespace Editor.Views
         public VisualElement CreateUI()
         {
             
-            if (_styleController.currentGenerator == null)
+            if (GeneratorService.Instance.CurrentGenerator == null)
             {
                 Debug.LogError("Current generator is null. Ensure the generator is properly initialized.");
                 return null;
             }
 
-            if (_styleController.currentGenerator.TilemapPainter == null)
+            if (GeneratorService.Instance.CurrentGenerator.TilemapPainter == null)
             {
                 Debug.LogError("TilemapPainter is null. Ensure the TilemapPainter is properly assigned.");
                 return null;
             }
             
-            if (_styleController.currentGenerator.TilemapPainter == null) return null;
-            _walkableTileBases = _styleController.currentGenerator.TilemapPainter.walkableTileBases;
-            _walkableTilesPriorities = _styleController.currentGenerator.TilemapPainter.walkableTilesPriorities;
-            _randomPlacement = _styleController.currentGenerator.TilemapPainter.randomWalkableTilesPlacement;
+            if (GeneratorService.Instance.CurrentGenerator.TilemapPainter == null) return null;
+            _walkableTileBases = GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTileBases;
+            _walkableTilesPriorities = GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTilesPriorities;
+            _randomPlacement = GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement;
 
             if (_root == null)
             {
@@ -164,9 +165,9 @@ namespace Editor.Views
 
             return new IMGUIContainer(() =>
             {
-                if (_styleController.currentGenerator == null) return;
+                if (GeneratorService.Instance.CurrentGenerator == null) return;
 
-                var tilemapPainter = _styleController.currentGenerator.TilemapPainter;
+                var tilemapPainter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
                 if (tilemapPainter == null) return;
                 var currentTile = field.GetValue(tilemapPainter) as TileBase;
                 var previewTexture = GetPreviewTexture(currentTile);
@@ -196,7 +197,7 @@ namespace Editor.Views
             var newTile = EditorGUIUtility.GetObjectPickerObject() as TileBase;
             if (newTile == null) return;
 
-            var tilemapPainter = _styleController.currentGenerator.TilemapPainter;
+            var tilemapPainter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
             field.SetValue(tilemapPainter, newTile);
         }
 
@@ -226,8 +227,8 @@ namespace Editor.Views
 
             toggle.RegisterValueChangedCallback(evt =>
             {
-                _styleController.currentGenerator.TilemapPainter.randomWalkableTilesPlacement = evt.newValue;
-                EditorUtility.SetDirty(_styleController.currentGenerator.TilemapPainter);
+                GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement = evt.newValue;
+                EditorUtility.SetDirty(GeneratorService.Instance.CurrentGenerator.TilemapPainter);
                 RefreshUI();
             });
             container.Add(toggle);
@@ -266,9 +267,9 @@ namespace Editor.Views
             var button = new Button(() =>
             {
                 if (isWalkable)
-                    _styleController.currentGenerator.TilemapPainter.RemoveAllWalkableTiles();
+                    GeneratorService.Instance.CurrentGenerator.TilemapPainter.RemoveAllWalkableTiles();
                 else
-                    _styleController.currentGenerator.TilemapPainter.RemoveAllWallTiles();
+                    GeneratorService.Instance.CurrentGenerator.TilemapPainter.RemoveAllWallTiles();
 
                 RefreshUI();
             })
@@ -286,7 +287,7 @@ namespace Editor.Views
                 var path = EditorUtility.OpenFolderPanel("Select a folder", "", "");
                 if (isWalkable)
                 {
-                    _styleController.currentGenerator.TilemapPainter.SelectWalkableTilesFromFolder(path);
+                    GeneratorService.Instance.CurrentGenerator.TilemapPainter.SelectWalkableTilesFromFolder(path);
                 }
 
                 AssetDatabase.Refresh();
@@ -309,7 +310,7 @@ namespace Editor.Views
                 return container;
             }
 
-            var walkableTiles = _styleController.currentGenerator.TilemapPainter.walkableTileBases;
+            var walkableTiles = GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTileBases;
             var horizontalContainer = StyleUtils.HorizontalContainerWrapped();
 
             for (var index = 0; index < walkableTiles.Count; index++)
@@ -344,7 +345,7 @@ namespace Editor.Views
             imguiPreviewContainer.style.height = Utils.GetPreviewTileSize();
             tileContainer.Add(imguiPreviewContainer);
         
-            if (_styleController.currentGenerator.TilemapPainter.randomWalkableTilesPlacement) return tileContainer;
+            if (GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement) return tileContainer;
         
             var priorityContainer = AddPriorityToTilesUI(index);
             tileContainer.Add(priorityContainer);
@@ -394,7 +395,7 @@ namespace Editor.Views
 
             if (newTile == null) return;
 
-            _styleController.currentGenerator.TilemapPainter.walkableTileBases[currentIndex] = newTile;
+            GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTileBases[currentIndex] = newTile;
             var newName = newTile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase);
             label.text = Utils.AddSpacesToCamelCase(newName);
         }
@@ -421,7 +422,7 @@ namespace Editor.Views
             intField.RegisterValueChangedCallback(evt =>
             {
                 _walkableTilesPriorities[index] = evt.newValue;
-                EditorUtility.SetDirty(_styleController.currentGenerator.TilemapPainter);
+                EditorUtility.SetDirty(GeneratorService.Instance.CurrentGenerator.TilemapPainter);
             });
 
             container.Add(label);

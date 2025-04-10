@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Editor.Models;
 using GeneralUtils;
 using UnityEditor;
 using UnityEngine;
@@ -17,30 +18,13 @@ namespace Editor.Controllers
 
         
         
-        public BaseGenerator currentGenerator;
 
         #endregion
 
         #region General Methods
         
-        public StyleController()
-        {
-            SelectionController.OnGeneratorChanged2 += UpdateGenerator;
-
-        }
-
-        private void UpdateGenerator(BaseGenerator obj)
-        {
-            currentGenerator = obj;
-        }
-
-        ~StyleController()
-        {
-            SelectionController.OnGeneratorChanged2 -= UpdateGenerator;
-
-
-
-        }
+     
+      
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StyleManager"/> class.
@@ -107,8 +91,8 @@ namespace Editor.Controllers
         /// <returns>True if the tilemap painter is valid, otherwise false.</returns>
         internal bool HasValidTilemapPainter()
         {
-            return currentGenerator &&
-                   currentGenerator.TilemapPainter;
+            return GeneratorService.Instance.CurrentGenerator &&
+                   GeneratorService.Instance.CurrentGenerator.TilemapPainter;
         }
 
         #endregion
@@ -127,8 +111,8 @@ namespace Editor.Controllers
         /// <returns>True if the generator selection is valid, otherwise false.</returns>
         internal bool IsGeneratorSelectionValid()
         {
-            return currentGenerator != null &&
-                   currentGenerator.TilemapPainter != null;
+            return GeneratorService.Instance.CurrentGenerator != null &&
+                   GeneratorService.Instance.CurrentGenerator.TilemapPainter != null;
         }
 
         /// <summary>

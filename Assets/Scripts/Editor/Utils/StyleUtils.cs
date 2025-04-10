@@ -30,7 +30,7 @@ namespace Editor
             };
         }
 
-        public static VisualElement ButtonInRowContainer(string text, Action action, bool first = false)
+        public static Button ButtonInRowContainer(string text, Action action, bool first = false)
         {
             return new Button(action)
             {

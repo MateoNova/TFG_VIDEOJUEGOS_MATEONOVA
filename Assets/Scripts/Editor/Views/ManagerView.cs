@@ -56,7 +56,6 @@ namespace Editor.Views
 
             var scrollView = StyleUtils.SimpleScrollView();
             
-            //todo add gui
             scrollView.Add(_initializationView.CreateUI());
             scrollView.Add(_selectionView.CreateUI());
             scrollView.Add(_settingsView.CreateUI());
