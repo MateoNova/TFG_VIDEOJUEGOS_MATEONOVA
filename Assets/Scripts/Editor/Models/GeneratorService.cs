@@ -1,4 +1,6 @@
-﻿namespace Editor.Models
+﻿using Generators.Controllers;
+
+namespace Editor.Models
 {
     public class GeneratorService
     {

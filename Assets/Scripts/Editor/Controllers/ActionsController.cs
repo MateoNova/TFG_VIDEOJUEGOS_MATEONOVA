@@ -6,14 +6,13 @@ namespace Editor.Controllers
 {
     public class ActionsController
     {
-        private bool _clearDungeon = true;
-        public bool ClearDungeonToggle => _clearDungeon;
+        public bool ClearDungeonToggle { get; private set; } = true;
 
         public void Generate()
         {
             if (GeneratorService.Instance.CurrentGenerator != null)
             {
-                GeneratorService.Instance.CurrentGenerator.RunGeneration(_clearDungeon,
+                GeneratorService.Instance.CurrentGenerator.RunGeneration(ClearDungeonToggle,
                     GeneratorService.Instance.CurrentGenerator.Origin);
             }
             else
@@ -22,14 +21,14 @@ namespace Editor.Controllers
             }
         }
 
-        public void ClearDungeon()
+        public static void ClearDungeon()
         {
             GeneratorService.Instance.CurrentGenerator?.ClearDungeon();
         }
 
         public void SaveDungeon()
         {
-            string path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
+            var path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
             if (string.IsNullOrEmpty(path))
                 return;
             GeneratorService.Instance.CurrentGenerator.SaveDungeon(path);
@@ -37,7 +36,7 @@ namespace Editor.Controllers
 
         public void LoadDungeon()
         {
-            string path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
+            var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
             if (!string.IsNullOrEmpty(path))
             {
                 GeneratorService.Instance.CurrentGenerator.LoadDungeon(path);
@@ -46,7 +45,7 @@ namespace Editor.Controllers
 
         public void SetClearDungeon(bool newValue)
         {
-            _clearDungeon = newValue;
+            ClearDungeonToggle = newValue;
         }
     }
 }

@@ -4,7 +4,7 @@ using GeneralUtils;
 using GeneralUtils.Tooltipls;
 using UnityEngine;
 
-namespace RandomWalkGeneration
+namespace Generators.Controllers
 {
     /// <summary>
     /// Generates a random walk dungeon and renders it on a tilemap.

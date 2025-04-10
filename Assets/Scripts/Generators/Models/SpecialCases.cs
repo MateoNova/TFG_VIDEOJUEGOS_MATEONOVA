@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using GeneralUtils;
+using SpecialCases;
 using UnityEngine;
 
-namespace SpecialCases
+namespace Generators.Models
 {
     #region Interface and Base Classes
 
@@ -601,8 +602,6 @@ namespace SpecialCases
                    allWallPositions.IsWall(position + Vector2Int.right);
         }
     }
-
-   
 
     #endregion
 

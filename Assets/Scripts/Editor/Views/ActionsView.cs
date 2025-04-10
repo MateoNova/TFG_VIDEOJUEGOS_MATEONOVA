@@ -58,7 +58,7 @@ namespace Editor.Views
             var generateButton = new Button(_actionsController.Generate) { text = "Generate Dungeon" };
             buttonsContainer.Add(generateButton);
 
-            var clearButton = new Button(_actionsController.ClearDungeon) { text = "Clear Dungeon" };
+            var clearButton = new Button(ActionsController.ClearDungeon) { text = "Clear Dungeon" };
             buttonsContainer.Add(clearButton);
 
             var saveButton = new Button(_actionsController.SaveDungeon) { text = "Save Dungeon" };

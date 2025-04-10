@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Generators.Controllers;
+using Generators.Models;
 using UnityEngine;
 
 namespace GraphBasedGenerator
 {
     [OpenGraphEditor]
-    public class GraphBasedGenerator : BaseGenerator
+    public class GraphBasedGenerator : Generators.Controllers.BaseGenerator
     {
         #region Fields
 
