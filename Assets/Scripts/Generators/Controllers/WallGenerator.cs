@@ -123,6 +123,23 @@ namespace Generators.Controllers
                 new LeftWallToDownCase(),
                 new TopRightWallToTripleCornerExceptUp(),
                 new TopLeftWallToTripleCornerExceptUpCase(),
+                new DownWallToTripleWallCornerExceptUp(),
+                new DownWallToTripleWallCornerExceptDown(),
+                new BottomRightWallToTripleWallCornerExceptDown(),
+                new BottomLeftWallToTripleWallCornerExceptDown(),
+                new BottomLeftWallToTripleWallCornerExceptLeft(),
+                new BottomRightWallToTripleWallCornerExceptRight(),
+                new BottomLeftWallToAllWallCorner(),
+                new BottomRightWallToAllWallCorner(),
+                new RightWallAloneToDownCase(),
+                new LeftWallAloneToDownCase(),
+                new RightWallToAloneCase(),
+                new TopLeftWallToAllWallCornerCase(),
+                new TopRightWallToAllWallCornerCase(),
+                new RightWallToTripleWallCornerExceptLeftInnerCase(),
+                new RightWallToTripleWallCornerExceptRightInnerCase(),
+                new TopLeftWallAllCornerCase(),
+                new TopRightWallToTripleCornerExceptRightInner()
             };
 
             var changes = new List<(Vector2Int pos, Utils.WallPosition oldType, Utils.WallPosition newType)>();
