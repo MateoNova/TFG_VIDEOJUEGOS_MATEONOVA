@@ -1,7 +1,6 @@
 ﻿using Editor.Models;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Editor.Controllers
 {
@@ -9,29 +8,6 @@ namespace Editor.Controllers
     {
         public bool _clearDungeon = true;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenerationActions"/> class.
-        /// </summary>
-        /// <param name="generatorSelection">The generator selection instance.</param>
-     
-        
-
-
-        /// <summary>
-        /// Adds the action buttons to the UI.
-        /// </summary>
-        /// <returns>A <see cref="VisualElement"/> containing the action buttons.</returns>
-        
-
-        /// <summary>
-        /// Adds the clear toggle to the UI.
-        /// </summary>
-        /// <param name="actionsFoldout">The foldout to add the toggle to.</param>
-        
-
-        /// <summary>
-        /// Generates the dungeon.
-        /// </summary>
         internal void Generate()
         {
             if (GeneratorService.Instance.CurrentGenerator)

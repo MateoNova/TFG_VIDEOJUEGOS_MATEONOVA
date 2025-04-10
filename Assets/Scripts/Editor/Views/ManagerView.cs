@@ -1,5 +1,4 @@
-﻿using System;
-using Editor.Controllers;
+﻿using Editor.Controllers;
 using UnityEditor;
 using Vector2 = UnityEngine.Vector2;
 
@@ -40,7 +39,6 @@ namespace Editor.Views
 
         private void InitializeDependencies()
         {
-            //todo init
             _initializationView = new InitializationView();
             _selectionView = new SelectionView();
             _settingsView = new SettingsView();

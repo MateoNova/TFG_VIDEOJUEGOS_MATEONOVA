@@ -114,50 +114,7 @@ namespace Editor.Controllers
             return GeneratorService.Instance.CurrentGenerator != null &&
                    GeneratorService.Instance.CurrentGenerator.TilemapPainter != null;
         }
-
-        /// <summary>
-        /// Creates a container for a tile.
-        /// </summary>
-        /// <param name="walkableTiles">The list of walkable tiles.</param>
-        /// <param name="index">The index of the tile.</param>
-        /// <returns>A <see cref="VisualElement"/> containing the tile container UI elements.</returns>
         
-
-        /// <summary>
-        /// Creates an IMGUI container for a tile.
-        /// </summary>
-        /// <param name="walkableTiles">The list of walkable tiles.</param>
-        /// <param name="currentIndex">The index of the current tile.</param>
-        /// <param name="label">The label for the tile.</param>
-        /// <returns>An <see cref="IMGUIContainer"/> containing the IMGUI container UI elements.</returns>
-        
-
-        /// <summary>
-        /// Gets the preview texture for a tile.
-        /// </summary>
-        /// <param name="currentTile">The current tile.</param>
-        /// <returns>The preview texture for the tile.</returns>
-        
-
-        /// <summary>
-        /// Updates the tile on selection.
-        /// </summary>
-        /// <param name="currentIndex">The index of the current tile.</param>
-        /// <param name="label">The label for the tile.</param>
-        
-
-        /// <summary>
-        /// Gets the label for a tile.
-        /// </summary>
-        /// <param name="walkableTile">The walkable tile.</param>
-        /// <returns>The label for the tile.</returns>
-       
-
-        /// <summary>
-        /// Adds priority to the tiles UI.
-        /// </summary>
-        /// <param name="index">The index of the tile.</param>
-        /// <returns>A <see cref="VisualElement"/> containing the priority UI elements.</returns>
         
 
         #endregion
