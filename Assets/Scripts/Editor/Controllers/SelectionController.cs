@@ -37,15 +37,15 @@ namespace Editor.Controllers
 
         public SelectionController()
         {
-            InitializationController._onInitScene += InitScene;
-            InitializationController._onClearCachedData += ClearCacheData;
+            InitializationController.OnInitScene += InitScene;
+            InitializationController.OnClearCachedData += ClearCacheData;
             
         }
         
         ~SelectionController()
         {
-            InitializationController._onInitScene -= InitScene;
-            InitializationController._onClearCachedData -= ClearCacheData;
+            InitializationController.OnInitScene -= InitScene;
+            InitializationController.OnClearCachedData -= ClearCacheData;
 
         }
         

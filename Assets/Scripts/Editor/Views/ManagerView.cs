@@ -23,14 +23,14 @@ namespace Editor.Views
         
         private void OnEnable()
         {
-            InitializationController._onReload += Reload;
             InitializeDependencies();
+            InitializationController.OnReload += Reload;
             //_initializationManager.InitScene(); todo
         }
 
         private void OnDisable()
         {
-            InitializationController._onReload -= Reload;
+            InitializationController.OnReload -= Reload;
         }
 
         private void Reload()

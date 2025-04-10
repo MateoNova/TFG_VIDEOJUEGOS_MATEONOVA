@@ -3,32 +3,49 @@ using UnityEditor;
 
 namespace Editor.Controllers
 {
+    /// <summary>
+    /// Controller responsible for handling initialization-related actions.
+    /// </summary>
     public class InitializationController
     {
-        public static Action _onReload;
-        public static Action _onInitScene;
-        public static Action _onClearCachedData;
-        
-        public InitializationController()
-        {
-            //_generatorSelection = generatorSelection;
-        }
+        /// <summary>
+        /// Event triggered when a reload action is performed.
+        /// </summary>
+        public static event Action OnReload;
+
+        /// <summary>
+        /// Event triggered when a scene initialization action is performed.
+        /// </summary>
+        public static event Action OnInitScene;
+
+        /// <summary>
+        /// Event triggered when cached data is cleared.
+        /// </summary>
+        public static event Action OnClearCachedData;
+
+        /// <summary>
+        /// Invokes the <see cref="OnInitScene"/> event to initialize the scene.
+        /// </summary>
         internal void InitScene()
         {
-            _onInitScene.Invoke();
-            
+            OnInitScene?.Invoke();
         }
 
+        /// <summary>
+        /// Invokes the <see cref="OnReload"/> event to reload all relevant data or states.
+        /// </summary>
         internal void ReloadAll()
         {
-            _onReload?.Invoke();
+            OnReload?.Invoke();
         }
 
+        /// <summary>
+        /// Clears all cached data and invokes the <see cref="OnClearCachedData"/> event.
+        /// </summary>
         internal void ClearCachedData()
         {
             EditorPrefs.DeleteAll();
-            _onClearCachedData?.Invoke();
-            //_generatorSelection.ClearCacheData();
+            OnClearCachedData?.Invoke();
         }
     }
 }

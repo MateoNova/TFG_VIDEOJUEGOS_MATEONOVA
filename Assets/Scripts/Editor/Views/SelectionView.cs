@@ -10,8 +10,7 @@ namespace Editor.Views
        
        public SelectionView()
        {
-           InitializationController._onClearCachedData += ClearCacheData;
-
+           InitializationController.OnClearCachedData += ClearCacheData;
        }
        
        
@@ -24,7 +23,7 @@ namespace Editor.Views
 
        ~SelectionView()
        {
-           InitializationController._onClearCachedData -= ClearCacheData;
+           InitializationController.OnClearCachedData -= ClearCacheData;
        }
 
        private void ClearCacheData()
