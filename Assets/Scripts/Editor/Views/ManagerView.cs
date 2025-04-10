@@ -1,41 +1,79 @@
 ﻿using Editor.Models;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Editor.Views
 {
+    /// <summary>
+    /// Represents the main editor window for the Generation Manager.
+    /// Responsible for initializing and displaying various views related to generation management.
+    /// </summary>
     public class ManagerView : EditorWindow
     {
+        /// <summary>
+        /// View responsible for initialization actions.
+        /// </summary>
         private InitializationView _initializationView;
+
+        /// <summary>
+        /// View responsible for generator selection.
+        /// </summary>
         private SelectionView _selectionView;
+
+        /// <summary>
+        /// View responsible for settings management.
+        /// </summary>
         private SettingsView _settingsView;
+
+        /// <summary>
+        /// View responsible for style customization.
+        /// </summary>
         private StyleView _styleView;
+
+        /// <summary>
+        /// View responsible for generation-related actions.
+        /// </summary>
         private ActionsView _actionsView;
 
+        /// <summary>
+        /// Displays the Generation Manager window in the Unity Editor.
+        /// </summary>
         [MenuItem("Window/Generation Manager 2")]
         public static void ShowWindow()
         {
-            ManagerView window = GetWindow<ManagerView>("Generation Manager 2");
+            // Create and display the window with a minimum size.
+            var window = GetWindow<ManagerView>("Generation Manager 2");
             window.minSize = new Vector2(400, 600);
         }
 
+        /// <summary>
+        /// Called when the window is enabled.
+        /// Initializes dependencies, subscribes to events, and creates the UI.
+        /// </summary>
         private void OnEnable()
         {
             InitializeDependencies();
-            // Se suscribe al evento de recarga desde el EventBus si es necesario
             EventBus.Reload += Reload;
-            // Es una buena práctica reconstruir la UI cuando se inicializa
             CreateGUI();
         }
 
+        /// <summary>
+        /// Called when the window is disabled.
+        /// Unsubscribes from events to prevent memory leaks.
+        /// </summary>
         private void OnDisable()
         {
             EventBus.Reload -= Reload;
         }
 
+        /// <summary>
+        /// Reloads the UI by recreating it.
+        /// </summary>
         private void Reload() => CreateGUI();
 
+        /// <summary>
+        /// Initializes the dependencies for the various views used in the window.
+        /// </summary>
         private void InitializeDependencies()
         {
             _initializationView = new InitializationView();
@@ -45,13 +83,15 @@ namespace Editor.Views
             _actionsView = new ActionsView();
         }
 
+        /// <summary>
+        /// Creates and sets up the UI for the editor window.
+        /// </summary>
         public void CreateGUI()
         {
-            VisualElement root = rootVisualElement;
+            var root = rootVisualElement;
             root.Clear();
 
-            ScrollView scrollView = StyleUtils.SimpleScrollView();
-
+            var scrollView = StyleUtils.SimpleScrollView();
             scrollView.Add(_initializationView.CreateUI());
             scrollView.Add(_selectionView.CreateUI());
             scrollView.Add(_settingsView.CreateUI());
