@@ -10,8 +10,6 @@ namespace Editor.Controllers
 {
     public class SettingsController
     {
-        
-
         # region Methods
 
         /// <summary>
@@ -21,8 +19,6 @@ namespace Editor.Controllers
         public SettingsController()
         {
         }
-
-        
 
 
         /// <summary>
@@ -136,8 +132,6 @@ namespace Editor.Controllers
                 field.style.display = conditionValue ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }
-
-        
 
         # endregion
     }

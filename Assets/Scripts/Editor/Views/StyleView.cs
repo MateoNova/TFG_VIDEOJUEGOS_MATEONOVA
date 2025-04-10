@@ -16,7 +16,7 @@ namespace Editor.Views
     {
         private VisualElement _root;
         private readonly StyleController _styleController = new();
-        
+
         private List<TileBase> _walkableTileBases;
         private List<int> _walkableTilesPriorities;
         private bool _randomPlacement;
@@ -27,7 +27,6 @@ namespace Editor.Views
         /// <returns>A <see cref="VisualElement"/> containing the UI elements.</returns>
         public VisualElement CreateUI()
         {
-            
             if (GeneratorService.Instance.CurrentGenerator == null)
             {
                 Debug.LogError("Current generator is null. Ensure the generator is properly initialized.");
@@ -39,10 +38,11 @@ namespace Editor.Views
                 Debug.LogError("TilemapPainter is null. Ensure the TilemapPainter is properly assigned.");
                 return null;
             }
-            
+
             if (GeneratorService.Instance.CurrentGenerator.TilemapPainter == null) return null;
             _walkableTileBases = GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTileBases;
-            _walkableTilesPriorities = GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTilesPriorities;
+            _walkableTilesPriorities =
+                GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTilesPriorities;
             _randomPlacement = GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement;
 
             if (_root == null)
@@ -235,7 +235,7 @@ namespace Editor.Views
 
             return container;
         }
-        
+
         private VisualElement CreateWalkableOptionsButtons()
         {
             var container = StyleUtils.HorizontalContainerCentered();
@@ -246,7 +246,7 @@ namespace Editor.Views
 
             return container;
         }
-        
+
         private Button CreateTileToUIButton(string buttonText)
         {
             var button = new Button(() =>
@@ -261,7 +261,7 @@ namespace Editor.Views
 
             return button;
         }
-        
+
         private Button CreateClearTilesButton(string buttonText, bool isWalkable)
         {
             var button = new Button(() =>
@@ -279,7 +279,7 @@ namespace Editor.Views
 
             return button;
         }
-        
+
         private Button CreateSelectWalkableTilesFromFolderButton(string buttonText, bool isWalkable)
         {
             var button = new Button(() =>
@@ -299,7 +299,7 @@ namespace Editor.Views
 
             return button;
         }
-        
+
         private VisualElement CreateWalkableTileGroupSettings()
         {
             var container = new VisualElement();
@@ -322,13 +322,13 @@ namespace Editor.Views
             container.Add(horizontalContainer);
             return container;
         }
-        
+
         private VisualElement CreateTileContainer(List<TileBase> walkableTiles, int index)
         {
             var walkableTile = walkableTiles[index];
-        
+
             var tileContainer = StyleUtils.TileContainer();
-        
+
             var label = GetLaberFromTile(walkableTile);
             label.AddManipulator(new ContextualMenuManipulator(evt =>
             {
@@ -340,19 +340,20 @@ namespace Editor.Views
                 });
             }));
             tileContainer.Add(label);
-        
+
             var imguiPreviewContainer = CreateIMGUIContainer(walkableTiles, index, label);
             imguiPreviewContainer.style.height = Utils.GetPreviewTileSize();
             tileContainer.Add(imguiPreviewContainer);
-        
-            if (GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement) return tileContainer;
-        
+
+            if (GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement)
+                return tileContainer;
+
             var priorityContainer = AddPriorityToTilesUI(index);
             tileContainer.Add(priorityContainer);
-        
+
             return tileContainer;
         }
-        
+
         private IMGUIContainer CreateIMGUIContainer(List<TileBase> walkableTiles, int currentIndex, Label label)
         {
             return new IMGUIContainer(() =>
@@ -369,7 +370,7 @@ namespace Editor.Views
                 UpdateTileOnSelection(currentIndex, label);
             });
         }
-        
+
         private static Texture GetPreviewTexture(TileBase currentTile)
         {
             if (currentTile == null) return EditorGUIUtility.IconContent(Utils.GetDefaultIconContent()).image;
@@ -382,7 +383,7 @@ namespace Editor.Views
 
             return previewTexture;
         }
-        
+
         private void UpdateTileOnSelection(int currentIndex, Label label)
         {
             if (Event.current == null || Event.current.commandName != Utils.GetObjectSelectorUpdateCommand()) return;
@@ -399,7 +400,7 @@ namespace Editor.Views
             var newName = newTile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase);
             label.text = Utils.AddSpacesToCamelCase(newName);
         }
-        
+
         private static Label GetLaberFromTile(TileBase walkableTile)
         {
             var labelText = walkableTile?.name ?? "No selected";
@@ -408,7 +409,7 @@ namespace Editor.Views
 
             return StyleUtils.LabelForTile(labelText);
         }
-        
+
         private VisualElement AddPriorityToTilesUI(int index)
         {
             var container = StyleUtils.HorizontalContainerCentered();
@@ -430,7 +431,7 @@ namespace Editor.Views
 
             return container;
         }
-        
+
         private void RefreshUI()
         {
             if (_root == null)
@@ -445,14 +446,5 @@ namespace Editor.Views
             _root.MarkDirtyRepaint();
             CreateUI();
         }
-        
-        
-
     }
-    
-    
-
-
-
-
 }

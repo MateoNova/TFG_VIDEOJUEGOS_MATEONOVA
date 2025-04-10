@@ -12,12 +12,12 @@ namespace Editor.Views
     {
         private static bool _showOpenGraphButton;
 
-        
+
         private SettingsController _settingsController = new();
-        
+
         private VisualElement _container;
 
-        
+
         private Button _openGraphButton;
         private Foldout _foldout;
 
@@ -25,16 +25,15 @@ namespace Editor.Views
         {
             SelectionController.ShowButtonOpenGraphWindow += ShowOpenGraphWindowButton;
             GeneratorService.OnGeneratorChanged += Repaint;
-
         }
-        
+
         ~SettingsView()
         {
             SelectionController.ShowButtonOpenGraphWindow -= ShowOpenGraphWindowButton;
             GeneratorService.OnGeneratorChanged -= Repaint;
         }
-        
-        
+
+
         public VisualElement CreateUI()
         {
             if (_container == null)
@@ -77,10 +76,12 @@ namespace Editor.Views
                         continue;
                     }
 
-                    if (_settingsController.CheckForConditionAttribute(fieldInfo, property, serializedObject, settingsContainer,
+                    if (_settingsController.CheckForConditionAttribute(fieldInfo, property, serializedObject,
+                            settingsContainer,
                             conditionFields, conditionalFields)) continue;
 
-                    if (!_settingsController.CheckForConditionalAttribute(fieldInfo, property, serializedObject, settingsContainer,
+                    if (!_settingsController.CheckForConditionalAttribute(fieldInfo, property, serializedObject,
+                            settingsContainer,
                             conditionalFields))
                     {
                         _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
@@ -104,14 +105,14 @@ namespace Editor.Views
             _container.Add(_foldout);
             return _container;
         }
-        
+
         private void ShowOpenGraphWindowButton(bool show)
         {
             _showOpenGraphButton = show;
         }
 
         public static bool GetShowOpenGraphButton() => _showOpenGraphButton;
-        
+
         private void Repaint()
         {
             if (_container == null)
@@ -127,6 +128,4 @@ namespace Editor.Views
             _container.MarkDirtyRepaint();
         }
     }
-    
-    
 }
