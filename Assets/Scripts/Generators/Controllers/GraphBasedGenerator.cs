@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GraphBasedGenerator
 {
     [OpenGraphEditor]
-    public class GraphBasedGenerator : Generators.Controllers.BaseGenerator
+    public class GraphBasedGenerator : BaseGenerator
     {
         #region Fields
 

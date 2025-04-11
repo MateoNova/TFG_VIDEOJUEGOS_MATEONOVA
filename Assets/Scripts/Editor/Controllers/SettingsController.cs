@@ -9,14 +9,10 @@ namespace Editor.Controllers
 {
     public class SettingsController
     {
-        public SettingsController()
-        {
-        }
-
         public void AddNoCustomAttributesField(SerializedProperty property, SerializedObject serializedObject,
             VisualElement container)
         {
-            PropertyField normalField = new PropertyField(property);
+            var normalField = new PropertyField(property);
             normalField.Bind(serializedObject);
             container.Add(normalField);
         }
@@ -29,8 +25,8 @@ namespace Editor.Controllers
                 conditionalAttr)
                 return false;
 
-            string group = conditionalAttr.ConditionGroup ?? property.name;
-            PropertyField conditionalPropField = new PropertyField(property);
+            var group = conditionalAttr.ConditionGroup ?? property.name;
+            var conditionalPropField = new PropertyField(property);
             conditionalPropField.Bind(serializedObject);
             container.Add(conditionalPropField);
 
@@ -52,8 +48,8 @@ namespace Editor.Controllers
                 return false;
 
             // Si no se especifica grupo, se usa el nombre del campo.
-            string group = conditionAttr.Group ?? property.name;
-            PropertyField conditionPropField = new PropertyField(property);
+            var group = conditionAttr.Group ?? property.name;
+            var conditionPropField = new PropertyField(property);
             conditionPropField.Bind(serializedObject);
             container.Add(conditionPropField);
 
@@ -70,7 +66,7 @@ namespace Editor.Controllers
             Dictionary<string, List<PropertyField>> conditionalFields)
         {
             object target = serializedObject.targetObject;
-            FieldInfo conditionField = target.GetType()
+            var conditionField = target.GetType()
                 .GetField(group, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (conditionField == null)
             {
@@ -84,8 +80,8 @@ namespace Editor.Controllers
                 return;
             }
 
-            bool conditionValue = (bool)conditionField.GetValue(target);
-            if (!conditionalFields.TryGetValue(group, out List<PropertyField> fields)) return;
+            var conditionValue = (bool)conditionField.GetValue(target);
+            if (!conditionalFields.TryGetValue(group, out var fields)) return;
 
             foreach (var field in fields)
             {
