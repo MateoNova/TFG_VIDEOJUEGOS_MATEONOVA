@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Editor.Controllers;
 using Editor.Models;
-using GeneralUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -232,7 +231,7 @@ namespace Editor.Views
 
             // Add the IMGUI container for selecting the tile
             var previewContainer = CreateIMGUIContainer_ForWalkableTile(walkableTiles, index, tileLabel);
-            previewContainer.style.height = Utils.GetPreviewTileSize();
+            previewContainer.style.height = Utils.Utils.GetPreviewTileSize();
             tileContainer.Add(previewContainer);
 
             if (!GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement)
@@ -251,7 +250,7 @@ namespace Editor.Views
         private static Label GetLabelForWalkableTile(TileBase tile)
         {
             var labelText = tile != null
-                ? Utils.AddSpacesToCamelCase(tile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase))
+                ? Utils.Utils.AddSpacesToCamelCase(tile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase))
                 : "No selected";
             return StyleUtils.LabelForTile(labelText);
         }
@@ -270,7 +269,7 @@ namespace Editor.Views
             {
                 var currentTile = walkableTiles[index];
                 var previewTexture = GetPreviewTexture(currentTile);
-                var size = Utils.GetPreviewTileSize();
+                var size = Utils.Utils.GetPreviewTileSize();
 
                 if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
                 {
@@ -390,7 +389,7 @@ namespace Editor.Views
 
                 var currentTile = field.GetValue(tilemapPainter) as TileBase;
                 var previewTexture = GetPreviewTexture(currentTile);
-                var size = Utils.GetPreviewTileSize();
+                var size = Utils.Utils.GetPreviewTileSize();
 
                 if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
                 {
@@ -414,7 +413,7 @@ namespace Editor.Views
         {
             if (tile == null)
             {
-                return EditorGUIUtility.IconContent(Utils.GetDefaultIconContent()).image;
+                return EditorGUIUtility.IconContent(Utils.Utils.GetDefaultIconContent()).image;
             }
 
             Texture preview = AssetPreview.GetAssetPreview(tile);
@@ -434,7 +433,7 @@ namespace Editor.Views
         /// <param name="label">The label associated with the tile.</param>
         private static void UpdateWalkableTileOnSelection(int index, Label label)
         {
-            if (Event.current == null || Event.current.commandName != Utils.GetObjectSelectorUpdateCommand())
+            if (Event.current == null || Event.current.commandName != Utils.Utils.GetObjectSelectorUpdateCommand())
                 return;
 
             if (EditorGUIUtility.GetObjectPickerControlID() != index)
@@ -446,7 +445,7 @@ namespace Editor.Views
 
             GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTileBases[index] = newTile;
             label.text =
-                Utils.AddSpacesToCamelCase(newTile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase));
+                Utils.Utils.AddSpacesToCamelCase(newTile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -456,7 +455,7 @@ namespace Editor.Views
         /// <param name="controlID">The control ID associated with the field.</param>
         private static void UpdateWallTileOnSelection(FieldInfo field, int controlID)
         {
-            if (Event.current == null || Event.current.commandName != Utils.GetObjectSelectorUpdateCommand())
+            if (Event.current == null || Event.current.commandName != Utils.Utils.GetObjectSelectorUpdateCommand())
                 return;
             if (EditorGUIUtility.GetObjectPickerControlID() != controlID)
                 return;

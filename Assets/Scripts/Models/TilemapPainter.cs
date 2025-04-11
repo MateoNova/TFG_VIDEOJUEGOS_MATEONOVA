@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GeneralUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -183,30 +182,30 @@ namespace Generators.Models
             }
         }
 
-        public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, Utils.WallPosition position)
+        public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, Utils.Utils.WallPosition position)
         {
             TileBase tile = position switch
             {
-                Utils.WallPosition.Up => upWall,
-                Utils.WallPosition.Down => downWall,
-                Utils.WallPosition.Left => leftWall,
-                Utils.WallPosition.Right => rightWall,
-                Utils.WallPosition.TopLeft => topLeftWall,
-                Utils.WallPosition.BottomLeft => bottomLeftWall,
-                Utils.WallPosition.TopRight => topRightWall,
-                Utils.WallPosition.BottomRight => bottomRightWall,
-                Utils.WallPosition.TripleExceptUp => tripleExceptUpWall,
-                Utils.WallPosition.TripleExceptDown => tripleExcetDownWall,
-                Utils.WallPosition.TripleExceptLeft => tripleExceptLeftWall,
-                Utils.WallPosition.TripleExceptRight => tripleExceptRightWall,
-                Utils.WallPosition.AllWallCorner => allCornersWall,
-                Utils.WallPosition.TopLeftInner => topLeftInnerWall,
-                Utils.WallPosition.TopRightInner => topRightInnerWall,
-                Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
-                Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
-                Utils.WallPosition.Alone => aloneWall,
-                Utils.WallPosition.TripleExceptLeftInner => tripleExceptLeftInnerWall,
-                Utils.WallPosition.TripleExceptRightInner => tripleExceptRightInnerWall,
+                Utils.Utils.WallPosition.Up => upWall,
+                Utils.Utils.WallPosition.Down => downWall,
+                Utils.Utils.WallPosition.Left => leftWall,
+                Utils.Utils.WallPosition.Right => rightWall,
+                Utils.Utils.WallPosition.TopLeft => topLeftWall,
+                Utils.Utils.WallPosition.BottomLeft => bottomLeftWall,
+                Utils.Utils.WallPosition.TopRight => topRightWall,
+                Utils.Utils.WallPosition.BottomRight => bottomRightWall,
+                Utils.Utils.WallPosition.TripleExceptUp => tripleExceptUpWall,
+                Utils.Utils.WallPosition.TripleExceptDown => tripleExcetDownWall,
+                Utils.Utils.WallPosition.TripleExceptLeft => tripleExceptLeftWall,
+                Utils.Utils.WallPosition.TripleExceptRight => tripleExceptRightWall,
+                Utils.Utils.WallPosition.AllWallCorner => allCornersWall,
+                Utils.Utils.WallPosition.TopLeftInner => topLeftInnerWall,
+                Utils.Utils.WallPosition.TopRightInner => topRightInnerWall,
+                Utils.Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
+                Utils.Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
+                Utils.Utils.WallPosition.Alone => aloneWall,
+                Utils.Utils.WallPosition.TripleExceptLeftInner => tripleExceptLeftInnerWall,
+                Utils.Utils.WallPosition.TripleExceptRightInner => tripleExceptRightInnerWall,
                 _ => null
             };
 

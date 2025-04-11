@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
-namespace GeneralUtils
+namespace Utils
 {
     /// <summary>
     /// Utility class providing helper methods.

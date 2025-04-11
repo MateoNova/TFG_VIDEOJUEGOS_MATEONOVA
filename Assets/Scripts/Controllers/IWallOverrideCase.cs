@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using GeneralUtils;
 using UnityEngine;
 
 namespace Generators.Controllers
@@ -21,12 +20,12 @@ namespace Generators.Controllers
             Vector2Int position,
             HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions,
-            Utils.WallPosition originalWallPosition
+            Utils.Utils.WallPosition originalWallPosition
         );
 
         /// <summary>
         /// Gets the new wall position to assign if the override condition is met.
         /// </summary>
-        Utils.WallPosition OverrideWallPosition { get; }
+        Utils.Utils.WallPosition OverrideWallPosition { get; }
     }
 }

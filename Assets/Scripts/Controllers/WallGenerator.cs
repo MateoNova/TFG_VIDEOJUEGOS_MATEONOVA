@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using GeneralUtils;
 using Generators.Models;
 
 namespace Generators.Controllers
@@ -38,34 +37,34 @@ namespace Generators.Controllers
 
         #region Construcción de Posiciones de Muro
 
-        private static Dictionary<Utils.WallPosition, HashSet<Vector2Int>> BuildInitialWallPositions(
+        private static Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>> BuildInitialWallPositions(
             HashSet<Vector2Int> floorPositions)
         {
-            return new Dictionary<Utils.WallPosition, HashSet<Vector2Int>>
+            return new Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>>
             {
-                { Utils.WallPosition.Up, GetSpecificWallPositions(floorPositions, Vector2Int.up) },
-                { Utils.WallPosition.Down, GetSpecificWallPositions(floorPositions, Vector2Int.down) },
-                { Utils.WallPosition.Left, GetSpecificWallPositions(floorPositions, Vector2Int.left) },
-                { Utils.WallPosition.Right, GetSpecificWallPositions(floorPositions, Vector2Int.right) },
-                { Utils.WallPosition.TopLeft, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.left) },
-                { Utils.WallPosition.BottomLeft, GetCornerPositions(floorPositions, Vector2Int.down, Vector2Int.left) },
-                { Utils.WallPosition.TopRight, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.right) },
+                { Utils.Utils.WallPosition.Up, GetSpecificWallPositions(floorPositions, Vector2Int.up) },
+                { Utils.Utils.WallPosition.Down, GetSpecificWallPositions(floorPositions, Vector2Int.down) },
+                { Utils.Utils.WallPosition.Left, GetSpecificWallPositions(floorPositions, Vector2Int.left) },
+                { Utils.Utils.WallPosition.Right, GetSpecificWallPositions(floorPositions, Vector2Int.right) },
+                { Utils.Utils.WallPosition.TopLeft, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.left) },
+                { Utils.Utils.WallPosition.BottomLeft, GetCornerPositions(floorPositions, Vector2Int.down, Vector2Int.left) },
+                { Utils.Utils.WallPosition.TopRight, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.right) },
                 {
-                    Utils.WallPosition.BottomRight,
+                    Utils.Utils.WallPosition.BottomRight,
                     GetCornerPositions(floorPositions, Vector2Int.down, Vector2Int.right)
                 },
-                { Utils.WallPosition.TripleExceptUp, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.TripleExceptDown, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.TripleExceptLeft, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.TripleExceptRight, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.AllWallCorner, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.TopLeftInner, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.TopRightInner, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.BottomLeftInner, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.BottomRightInner, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.Alone, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.TripleExceptLeftInner, new HashSet<Vector2Int>() },
-                { Utils.WallPosition.TripleExceptRightInner, new HashSet<Vector2Int>() }
+                { Utils.Utils.WallPosition.TripleExceptUp, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.TripleExceptDown, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.TripleExceptLeft, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.TripleExceptRight, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.AllWallCorner, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.TopLeftInner, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.TopRightInner, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.BottomLeftInner, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.BottomRightInner, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.Alone, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.TripleExceptLeftInner, new HashSet<Vector2Int>() },
+                { Utils.Utils.WallPosition.TripleExceptRightInner, new HashSet<Vector2Int>() }
             };
         }
 
@@ -104,7 +103,7 @@ namespace Generators.Controllers
 
         #region Aplicación de Overwrites
 
-        private static int ApplyWallOverrides(Dictionary<Utils.WallPosition, HashSet<Vector2Int>> wallPositionsByType,
+        private static int ApplyWallOverrides(Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>> wallPositionsByType,
             HashSet<Vector2Int> floorPositions)
         {
             var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
@@ -139,7 +138,7 @@ namespace Generators.Controllers
                 new TopRightWallToTripleCornerExceptRightInner()
             };
 
-            var changes = new List<(Vector2Int pos, Utils.WallPosition oldType, Utils.WallPosition newType)>();
+            var changes = new List<(Vector2Int pos, Utils.Utils.WallPosition oldType, Utils.Utils.WallPosition newType)>();
 
             foreach (var wallType in wallPositionsByType.Keys.ToList())
             {

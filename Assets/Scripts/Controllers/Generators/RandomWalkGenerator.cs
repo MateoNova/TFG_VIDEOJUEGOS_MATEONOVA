@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GeneralUtils;
 using Generators.Controllers;
 using UnityEngine;
 using RandomWalkTooltips = Views.Tooltips.RandomWalkTooltips;
@@ -159,7 +158,7 @@ namespace Controllers.Generators
                 .Where(pos =>
                 {
                     // Count the number of directions with continuous floor tiles (based on corridor width).
-                    var validDirections = Utils.Directions.Count(direction =>
+                    var validDirections = Utils.Utils.Directions.Count(direction =>
                         Enumerable.Range(1, corridorWidth)
                             .All(offset => floorPositions.Contains(pos + direction * offset))
                     );
@@ -196,7 +195,7 @@ namespace Controllers.Generators
         private List<Vector2Int> RandomWalkCorridor(Vector2Int startPos, int length)
         {
             var currentPos = startPos;
-            var direction = Utils.GetRandomCardinalDirection();
+            var direction = Utils.Utils.GetRandomCardinalDirection();
             List<Vector2Int> path = new() { startPos };
 
             for (var i = 0; i < length; i++)
@@ -207,7 +206,7 @@ namespace Controllers.Generators
                 // Expand corridor width by adding perpendicular positions.
                 for (var w = 1; w < corridorWidth; w++)
                 {
-                    path.Add(currentPos + Utils.GetPerpendicularDirection(direction) * w);
+                    path.Add(currentPos + Utils.Utils.GetPerpendicularDirection(direction) * w);
                 }
             }
 
@@ -250,7 +249,7 @@ namespace Controllers.Generators
 
             for (var i = 0; i < steps; i++)
             {
-                currentPos += Utils.GetRandomCardinalDirection();
+                currentPos += Utils.Utils.GetRandomCardinalDirection();
                 path.Add(currentPos);
             }
 

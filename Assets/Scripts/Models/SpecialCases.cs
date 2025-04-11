@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using GeneralUtils;
 using Generators.Controllers;
 using UnityEngine;
 
@@ -15,12 +14,12 @@ namespace Generators.Models
         /// <summary>
         /// The expected original wall type for this override to apply.
         /// </summary>
-        protected abstract Utils.WallPosition ExpectedOriginalWall { get; }
+        protected abstract Utils.Utils.WallPosition ExpectedOriginalWall { get; }
 
         /// <summary>
         /// The new wall position to assign if the condition is met.
         /// </summary>
-        public abstract Utils.WallPosition OverrideWallPosition { get; }
+        public abstract Utils.Utils.WallPosition OverrideWallPosition { get; }
 
         /// <summary>
         /// Method to check the specific conditions for the override.
@@ -36,7 +35,7 @@ namespace Generators.Models
             Vector2Int position,
             HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions,
-            Utils.WallPosition originalWallPosition
+            Utils.Utils.WallPosition originalWallPosition
         )
         {
             if (originalWallPosition != ExpectedOriginalWall)
@@ -90,8 +89,8 @@ namespace Generators.Models
     /// </summary>
     public class TopRightWallToTripleCornerExceptUp : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptUp;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.TopRight;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptUp;
 
         protected override bool Matches(
             Vector2Int position,
@@ -113,8 +112,8 @@ namespace Generators.Models
 
     public class TopRightWallToTripleCornerExceptRightInner : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptRightInner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.TopRight;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptRightInner;
 
         protected override bool Matches(
             Vector2Int position,
@@ -129,8 +128,8 @@ namespace Generators.Models
 
     public class TopRightWallToAllWallCornerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.AllWallCorner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.TopRight;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.AllWallCorner;
 
         protected override bool Matches(
             Vector2Int position,
@@ -158,8 +157,8 @@ namespace Generators.Models
     /// </summary>
     public class TopLeftWallToTripleCornerExceptUpCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptUp;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.TopLeft;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptUp;
 
         protected override bool Matches(
             Vector2Int position,
@@ -182,8 +181,8 @@ namespace Generators.Models
 
     public class TopLeftWallAllCornerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.AllWallCorner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.TopLeft;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.AllWallCorner;
 
         protected override bool Matches(
             Vector2Int position,
@@ -204,8 +203,8 @@ namespace Generators.Models
 
     public class TopLeftWallToAllWallCornerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.TopLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.AllWallCorner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.TopLeft;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.AllWallCorner;
 
         protected override bool Matches(
             Vector2Int position,
@@ -236,8 +235,8 @@ namespace Generators.Models
     /// </summary>
     public class BottomRightWallToTripleWallCornerExceptRight : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptRight;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.BottomRight;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptRight;
 
         protected override bool Matches(
             Vector2Int position,
@@ -275,8 +274,8 @@ namespace Generators.Models
     /// </summary>
     public class BottomRightWallToTripleWallCornerExceptDown : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptDown;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.BottomRight;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptDown;
 
         protected override bool Matches(
             Vector2Int position,
@@ -299,8 +298,8 @@ namespace Generators.Models
     /// </summary>
     public class BottomRightWallToAllWallCorner : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomRight;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.AllWallCorner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.BottomRight;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.AllWallCorner;
 
         protected override bool Matches(
             Vector2Int position,
@@ -330,8 +329,8 @@ namespace Generators.Models
     /// </summary>
     public class BottomLeftWallToTripleWallCornerExceptDown : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptDown;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.BottomLeft;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptDown;
 
         protected override bool Matches(
             Vector2Int position,
@@ -361,8 +360,8 @@ namespace Generators.Models
     /// </summary>
     public class BottomLeftWallToTripleWallCornerExceptLeft : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptLeft;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.BottomLeft;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptLeft;
 
         protected override bool Matches(
             Vector2Int position,
@@ -399,8 +398,8 @@ namespace Generators.Models
     /// </summary>
     public class BottomLeftWallToAllWallCorner : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.BottomLeft;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.AllWallCorner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.BottomLeft;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.AllWallCorner;
 
         protected override bool Matches(
             Vector2Int position,
@@ -434,8 +433,8 @@ namespace Generators.Models
     /// </summary>
     public class RightWallToTopLeftInnerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TopLeftInner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Right;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TopLeftInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -452,8 +451,8 @@ namespace Generators.Models
     /// </summary>
     public class RightWallToDownCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.Down;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Right;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.Down;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -470,8 +469,8 @@ namespace Generators.Models
     /// </summary>
     public class RightWallToBottomLeftInnerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.BottomLeftInner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Right;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.BottomLeftInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -488,8 +487,8 @@ namespace Generators.Models
     /// </summary>
     public class RightWallAloneToDownCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.Down;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Right;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.Down;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -506,8 +505,8 @@ namespace Generators.Models
     /// </summary>
     public class RightWallToAloneCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.Alone;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Right;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.Alone;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -519,8 +518,8 @@ namespace Generators.Models
 
     public class RightWallToTripleWallCornerExceptLeftInnerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptLeftInner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Right;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptLeftInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -534,8 +533,8 @@ namespace Generators.Models
 
     public class RightWallToTripleWallCornerExceptRightInnerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Right;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptRightInner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Right;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptRightInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -553,8 +552,8 @@ namespace Generators.Models
     /// </summary>
     public class DownWallToUpCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Down;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.Up;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Down;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.Up;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -569,8 +568,8 @@ namespace Generators.Models
     /// </summary>
     public class DownWallToTripleWallCornerExceptUp : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Down;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptUp;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Down;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptUp;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -591,8 +590,8 @@ namespace Generators.Models
     /// </summary>
     public class DownWallToTripleWallCornerExceptDown : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Down;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TripleExceptDown;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Down;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TripleExceptDown;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -612,8 +611,8 @@ namespace Generators.Models
     /// </summary>
     public class LeftWallToTopRightInnerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Left;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.TopRightInner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Left;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.TopRightInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -630,8 +629,8 @@ namespace Generators.Models
     /// </summary>
     public class LeftWallToBottomRightInnerCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Left;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.BottomRightInner;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Left;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.BottomRightInner;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -648,8 +647,8 @@ namespace Generators.Models
     /// </summary>
     public class LeftWallToDownCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Left;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.Down;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Left;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.Down;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
@@ -663,8 +662,8 @@ namespace Generators.Models
 
     public class LeftWallAloneToDownCase : BaseWallOverrideCase
     {
-        protected override Utils.WallPosition ExpectedOriginalWall => Utils.WallPosition.Left;
-        public override Utils.WallPosition OverrideWallPosition => Utils.WallPosition.Down;
+        protected override Utils.Utils.WallPosition ExpectedOriginalWall => Utils.Utils.WallPosition.Left;
+        public override Utils.Utils.WallPosition OverrideWallPosition => Utils.Utils.WallPosition.Down;
 
         protected override bool Matches(Vector2Int position, HashSet<Vector2Int> floorPositions,
             HashSet<Vector2Int> allWallPositions)
