@@ -12,10 +12,10 @@ namespace Models
 
         [SerializeField] internal Tilemap walkableTilemap;
 
-        [SerializeField, WalkableTileGroup(isTileBases: true)]
+        [SerializeField, /*WalkableTileGroup(isTileBases: true)*/]
         public List<TileBase> walkableTileBases = new();
 
-        [SerializeField, WalkableTileGroup(isTilePriorities: true)]
+        [SerializeField,/* WalkableTileGroup(isTilePriorities: true)*/]
         public List<int> walkableTilesPriorities = new();
 
         [SerializeField] public bool randomWalkableTilesPlacement;
