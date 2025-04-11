@@ -1,7 +1,33 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Generators.Models;
+using BottomLeftWallToAllWallCorner = Models.BottomLeftWallToAllWallCorner;
+using BottomLeftWallToTripleWallCornerExceptDown = Models.BottomLeftWallToTripleWallCornerExceptDown;
+using BottomLeftWallToTripleWallCornerExceptLeft = Models.BottomLeftWallToTripleWallCornerExceptLeft;
+using BottomRightWallToAllWallCorner = Models.BottomRightWallToAllWallCorner;
+using BottomRightWallToTripleWallCornerExceptDown = Models.BottomRightWallToTripleWallCornerExceptDown;
+using BottomRightWallToTripleWallCornerExceptRight = Models.BottomRightWallToTripleWallCornerExceptRight;
+using DownWallToTripleWallCornerExceptDown = Models.DownWallToTripleWallCornerExceptDown;
+using DownWallToTripleWallCornerExceptUp = Models.DownWallToTripleWallCornerExceptUp;
+using DownWallToUpCase = Models.DownWallToUpCase;
+using LeftWallAloneToDownCase = Models.LeftWallAloneToDownCase;
+using LeftWallToBottomRightInnerCase = Models.LeftWallToBottomRightInnerCase;
+using LeftWallToDownCase = Models.LeftWallToDownCase;
+using LeftWallToTopRightInnerCase = Models.LeftWallToTopRightInnerCase;
+using RightWallAloneToDownCase = Models.RightWallAloneToDownCase;
+using RightWallToAloneCase = Models.RightWallToAloneCase;
+using RightWallToBottomLeftInnerCase = Models.RightWallToBottomLeftInnerCase;
+using RightWallToDownCase = Models.RightWallToDownCase;
+using RightWallToTopLeftInnerCase = Models.RightWallToTopLeftInnerCase;
+using RightWallToTripleWallCornerExceptLeftInnerCase = Models.RightWallToTripleWallCornerExceptLeftInnerCase;
+using RightWallToTripleWallCornerExceptRightInnerCase = Models.RightWallToTripleWallCornerExceptRightInnerCase;
+using TilemapPainter = Models.TilemapPainter;
+using TopLeftWallAllCornerCase = Models.TopLeftWallAllCornerCase;
+using TopLeftWallToAllWallCornerCase = Models.TopLeftWallToAllWallCornerCase;
+using TopLeftWallToTripleCornerExceptUpCase = Models.TopLeftWallToTripleCornerExceptUpCase;
+using TopRightWallToAllWallCornerCase = Models.TopRightWallToAllWallCornerCase;
+using TopRightWallToTripleCornerExceptRightInner = Models.TopRightWallToTripleCornerExceptRightInner;
+using TopRightWallToTripleCornerExceptUp = Models.TopRightWallToTripleCornerExceptUp;
 
 namespace Generators.Controllers
 {
@@ -46,9 +72,17 @@ namespace Generators.Controllers
                 { Utils.Utils.WallPosition.Down, GetSpecificWallPositions(floorPositions, Vector2Int.down) },
                 { Utils.Utils.WallPosition.Left, GetSpecificWallPositions(floorPositions, Vector2Int.left) },
                 { Utils.Utils.WallPosition.Right, GetSpecificWallPositions(floorPositions, Vector2Int.right) },
-                { Utils.Utils.WallPosition.TopLeft, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.left) },
-                { Utils.Utils.WallPosition.BottomLeft, GetCornerPositions(floorPositions, Vector2Int.down, Vector2Int.left) },
-                { Utils.Utils.WallPosition.TopRight, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.right) },
+                {
+                    Utils.Utils.WallPosition.TopLeft, GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.left)
+                },
+                {
+                    Utils.Utils.WallPosition.BottomLeft,
+                    GetCornerPositions(floorPositions, Vector2Int.down, Vector2Int.left)
+                },
+                {
+                    Utils.Utils.WallPosition.TopRight,
+                    GetCornerPositions(floorPositions, Vector2Int.up, Vector2Int.right)
+                },
                 {
                     Utils.Utils.WallPosition.BottomRight,
                     GetCornerPositions(floorPositions, Vector2Int.down, Vector2Int.right)
@@ -103,7 +137,8 @@ namespace Generators.Controllers
 
         #region Aplicación de Overwrites
 
-        private static int ApplyWallOverrides(Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>> wallPositionsByType,
+        private static int ApplyWallOverrides(
+            Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>> wallPositionsByType,
             HashSet<Vector2Int> floorPositions)
         {
             var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
@@ -138,7 +173,8 @@ namespace Generators.Controllers
                 new TopRightWallToTripleCornerExceptRightInner()
             };
 
-            var changes = new List<(Vector2Int pos, Utils.Utils.WallPosition oldType, Utils.Utils.WallPosition newType)>();
+            var changes =
+                new List<(Vector2Int pos, Utils.Utils.WallPosition oldType, Utils.Utils.WallPosition newType)>();
 
             foreach (var wallType in wallPositionsByType.Keys.ToList())
             {

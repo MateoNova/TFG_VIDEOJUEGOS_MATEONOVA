@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Generators.Controllers;
 using UnityEngine;
 
-namespace Generators.Models
+namespace Models
 {
     #region Interface and Base Classes
 

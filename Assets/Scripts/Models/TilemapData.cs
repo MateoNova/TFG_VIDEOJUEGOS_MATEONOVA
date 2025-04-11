@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Generators.Models
+namespace Models
 {
     [System.Serializable]
     public class TilemapData

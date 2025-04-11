@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Editor.Models;
-using Generators.Models;
+using Models;
 using UnityEngine.Tilemaps;
 
 namespace Editor.Controllers

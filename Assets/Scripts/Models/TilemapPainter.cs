@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Generators.Models
+namespace Models
 {
     public class TilemapPainter : MonoBehaviour
     {
@@ -241,17 +241,17 @@ namespace Generators.Models
             doorTilemap?.ClearAllTiles();
         }
 
-        private static List<Generators.Models.SerializableTile> GetSerializableTiles(Tilemap tilemap,
+        private static List<global::Models.SerializableTile> GetSerializableTiles(Tilemap tilemap,
             bool isDoor = false)
         {
-            var list = new List<Generators.Models.SerializableTile>();
+            var list = new List<global::Models.SerializableTile>();
             foreach (var pos in tilemap.cellBounds.allPositionsWithin)
             {
                 var tile = tilemap.GetTile(pos);
                 if (tile == null) continue;
                 var assetPath = AssetDatabase.GetAssetPath(tile);
                 var guid = AssetDatabase.AssetPathToGUID(assetPath);
-                list.Add(new Generators.Models.SerializableTile(pos, guid, isDoor));
+                list.Add(new global::Models.SerializableTile(pos, guid, isDoor));
             }
 
             return list;
@@ -259,7 +259,7 @@ namespace Generators.Models
 
         public void SaveTilemap(string path)
         {
-            var data = new Generators.Models.TilemapData(
+            var data = new global::Models.TilemapData(
                 GetSerializableTiles(walkableTilemap),
                 GetSerializableTiles(wallTilemap),
                 GetSerializableTiles(doorTilemap, true)
@@ -271,7 +271,7 @@ namespace Generators.Models
         public void LoadTilemap(string path, bool clearBeforeLoading = true, Vector3Int offset = default)
         {
             var json = System.IO.File.ReadAllText(path);
-            var data = JsonUtility.FromJson<Generators.Models.TilemapData>(json);
+            var data = JsonUtility.FromJson<global::Models.TilemapData>(json);
             if (clearBeforeLoading)
                 ResetAllTiles();
             foreach (var tile in data.walkableTiles)

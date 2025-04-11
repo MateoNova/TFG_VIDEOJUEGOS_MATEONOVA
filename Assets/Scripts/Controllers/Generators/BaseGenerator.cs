@@ -1,5 +1,5 @@
-using Generators.Models;
 using UnityEngine;
+using TilemapPainter = Models.TilemapPainter;
 
 namespace Controllers.Generators
 {
