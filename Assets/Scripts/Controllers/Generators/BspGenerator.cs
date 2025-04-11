@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Generators.Controllers;
 using UnityEngine;
 
-namespace Generators.Controllers
+namespace Controllers.Generators
 {
     /// <summary>
     /// Generates a dungeon using the Binary Space Partitioning (BSP) algorithm.

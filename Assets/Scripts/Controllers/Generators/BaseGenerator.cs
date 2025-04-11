@@ -1,8 +1,7 @@
-
 using Generators.Models;
 using UnityEngine;
 
-namespace Generators.Controllers
+namespace Controllers.Generators
 {
     public abstract class BaseGenerator : MonoBehaviour
     {

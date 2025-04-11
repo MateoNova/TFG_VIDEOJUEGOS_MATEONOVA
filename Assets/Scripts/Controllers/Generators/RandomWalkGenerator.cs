@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using GeneralUtils;
+using Generators.Controllers;
 using UnityEngine;
 using RandomWalkTooltips = Views.Tooltips.RandomWalkTooltips;
 
-namespace Generators.Controllers
+namespace Controllers.Generators
 {
     /// <summary>
     /// Generates a random walk dungeon and renders it on a tilemap.
