@@ -54,7 +54,7 @@ namespace Editor.Views
         {
             InitializeDependencies();
             EventBus.Reload += Reload;
-            CreateGUI();
+            EventBus.OnToolOpened();
         }
 
         /// <summary>

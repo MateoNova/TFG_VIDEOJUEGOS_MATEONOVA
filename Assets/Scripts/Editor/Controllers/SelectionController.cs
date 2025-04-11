@@ -9,6 +9,10 @@ using Object = UnityEngine.Object;
 
 namespace Editor.Controllers
 {
+    /// <summary>
+    /// Controller responsible for managing the selection of generators in the editor.
+    /// Handles initialization, caching, and generator selection logic.
+    /// </summary>
     public class SelectionController
     {
         private const string CachedGeneratorNamesKey = "CachedGeneratorNames";
@@ -19,32 +23,55 @@ namespace Editor.Controllers
         private List<BaseGenerator> _generators = new();
         private static GameObject _cachedPrefab;
         private List<string> _cachedGeneratorNames = new();
+        private GameObject _generationManager;
 
-        // Propiedades públicas para la vista
+        /// <summary>
+        /// Gets the cached generator names for display in the UI.
+        /// </summary>
+        /// <returns>A list of cached generator names.</returns>
         public List<string> CachedGeneratorNames() => _cachedGeneratorNames;
+
+        /// <summary>
+        /// Gets the index of the currently selected generator.
+        /// </summary>
+        /// <returns>The index of the selected generator.</returns>
         public int SelectedGeneratorIndex() => _selectedGeneratorIndex;
 
-        // Se subscriben al evento de inicialización mediante el EventBus (por ejemplo, en el constructor o inicialización)
+        /// <summary>
+        /// Constructor that subscribes to initialization and cache clearing events.
+        /// </summary>
         public SelectionController()
         {
             EventBus.InitScene += InitScene;
             EventBus.ClearCachedData += ClearCacheData;
         }
 
-        // Método invocado al cambiar el valor del dropdown
+        /// <summary>
+        /// Changes the selected generator based on the provided name.
+        /// </summary>
+        /// <param name="newGeneratorName">The name of the new generator to select.</param>
         public void ChangeGenerator(string newGeneratorName)
         {
             _selectedGeneratorIndex = _cachedGeneratorNames.IndexOf(newGeneratorName);
             SelectGenerator(_selectedGeneratorIndex);
         }
 
+        /// <summary>
+        /// Initializes the scene by retrieving or initializing the generation manager,
+        /// finding all generators, and selecting the first generator.
+        /// </summary>
         private void InitScene()
         {
             RetrieveOrInitializeCachedGenerationManager();
             FindAllGenerators();
             SelectGenerator(0);
+            EventBus.OnReload();
         }
 
+        /// <summary>
+        /// Selects a generator by its index and updates the current generator in the service.
+        /// </summary>
+        /// <param name="index">The index of the generator to select.</param>
         private void SelectGenerator(int index)
         {
             if (index < 0 || index >= _generators.Count)
@@ -54,27 +81,21 @@ namespace Editor.Controllers
             }
 
             _selectedGeneratorIndex = index;
-            BaseGenerator selectedGenerator = _generators[_selectedGeneratorIndex];
+            var selectedGenerator = _generators[_selectedGeneratorIndex];
             GeneratorService.Instance.SetCurrentGenerator(selectedGenerator);
 
-            // Se detecta si el generador tiene el atributo OpenGraphEditor y se notifica para mostrar u ocultar el botón
-            if (Attribute.IsDefined(selectedGenerator.GetType(), typeof(OpenGraphEditorAttribute)))
-            {
-                EventBus.OnToggleOpenGraphButton(true);
-            }
-            else
-            {
-                // Se puede tener una configuración predeterminada en GeneratorSettings, en este ejemplo se envía false.
-                EventBus.OnToggleOpenGraphButton(false);
-            }
+            EventBus.OnToggleOpenGraphButton(Attribute.IsDefined(selectedGenerator.GetType(),
+                typeof(OpenGraphEditorAttribute)));
         }
 
+        /// <summary>
+        /// Finds all generators in the scene and caches their names.
+        /// </summary>
         private void FindAllGenerators()
         {
-            GameObject generationManager = RetrieveCachedGenerationManager();
-            if (generationManager != null)
+            if (_generationManager != null)
             {
-                _generators = new List<BaseGenerator>(generationManager.GetComponentsInChildren<BaseGenerator>());
+                _generators = new List<BaseGenerator>(_generationManager.GetComponentsInChildren<BaseGenerator>());
                 _cachedGeneratorNames = _generators.Where(g => g != null).Select(g => g.name).ToList();
 
                 if (_cachedGeneratorNames.Count > 0)
@@ -89,6 +110,9 @@ namespace Editor.Controllers
             }
         }
 
+        /// <summary>
+        /// Clears the generator lists and removes cached generator names from editor preferences.
+        /// </summary>
         private void ClearGeneratorLists()
         {
             _generators.Clear();
@@ -96,17 +120,28 @@ namespace Editor.Controllers
             EditorPrefs.DeleteKey(CachedGeneratorNamesKey);
         }
 
+        /// <summary>
+        /// Retrieves or initializes the cached generation manager in the scene.
+        /// </summary>
         private void RetrieveOrInitializeCachedGenerationManager()
         {
-            GameObject generationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
+            _generationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
         }
 
+        /// <summary>
+        /// Retrieves the cached generation manager from editor preferences.
+        /// </summary>
+        /// <returns>The cached generation manager GameObject, or null if not found.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
-            int cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
+            var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
             return cachedId != -1 ? EditorUtility.InstanceIDToObject(cachedId) as GameObject : null;
         }
 
+        /// <summary>
+        /// Instantiates the generation manager prefab and caches its instance ID.
+        /// </summary>
+        /// <returns>The instantiated generation manager GameObject.</returns>
         private GameObject InstantiateGenerationManager()
         {
             if (_cachedPrefab == null)
@@ -120,14 +155,18 @@ namespace Editor.Controllers
                 return null;
             }
 
-            GameObject generationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
+            var generationManager = (GameObject)PrefabUtility.InstantiatePrefab(_cachedPrefab);
             EditorPrefs.SetInt(CachedGenerationManagerIdKey, generationManager.GetInstanceID());
+
             return generationManager;
         }
 
+        /// <summary>
+        /// Clears cached data, including the cached generation manager and generator lists.
+        /// </summary>
         private void ClearCacheData()
         {
-            GameObject cachedGenerationManager = RetrieveCachedGenerationManager();
+            var cachedGenerationManager = RetrieveCachedGenerationManager();
             if (cachedGenerationManager)
             {
                 Object.DestroyImmediate(cachedGenerationManager);

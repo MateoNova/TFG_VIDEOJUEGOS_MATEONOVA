@@ -1,5 +1,6 @@
 ﻿using System;
 using Editor.Controllers;
+using Editor.Models;
 using UnityEngine.UIElements;
 
 namespace Editor.Views
@@ -10,6 +11,24 @@ namespace Editor.Views
     /// </summary>
     public class InitializationView
     {
+        /// <summary>
+        /// Constructor that subscribes to the ToolOpened event.
+        /// Initializes the scene when the tool is opened.
+        /// </summary>
+        public InitializationView()
+        {
+            EventBus.ToolOpened += _controller.InitScene;
+        }
+
+        /// <summary>
+        /// Called when the view is destroyed.
+        /// Unsubscribes from the ToolOpened event to prevent memory leaks.
+        /// </summary>
+        ~InitializationView()
+        {
+            EventBus.ToolOpened -= _controller.InitScene;
+        }
+
         /// <summary>
         /// The controller responsible for handling initialization logic.
         /// </summary>
@@ -25,7 +44,7 @@ namespace Editor.Views
             var foldout = new Foldout { text = "Initialization", value = true };
             foldout.Add(CreateButtonContainer());
             container.Add(foldout);
-            
+
             return container;
         }
 
