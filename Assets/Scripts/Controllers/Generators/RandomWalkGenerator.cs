@@ -2,6 +2,7 @@
 using System.Linq;
 using Generators.Controllers;
 using UnityEngine;
+using Views.Attributes;
 using RandomWalkTooltips = Views.Tooltips.RandomWalkTooltips;
 
 namespace Controllers.Generators

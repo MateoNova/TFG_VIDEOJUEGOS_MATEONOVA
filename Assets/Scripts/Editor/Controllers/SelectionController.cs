@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Controllers.Generators;
 using Editor.Models;
-using Generators.Controllers;
 using UnityEditor;
 using UnityEngine;
+using Views.Attributes;
 using Object = UnityEngine.Object;
 
 namespace Editor.Controllers

@@ -4,6 +4,7 @@ using Generators.Controllers;
 using GraphBasedGenerator;
 using Models;
 using UnityEngine;
+using Views.Attributes;
 using TilemapData = Models.TilemapData;
 
 namespace Controllers.Generators
@@ -121,12 +122,18 @@ namespace Controllers.Generators
                 var gridPos = new Vector2Int(Mathf.RoundToInt(adjustedPos.x), Mathf.RoundToInt(adjustedPos.y));
 
                 // Paint the room on the Tilemap
-                tilemapPainter.LoadTilemap(
-                    graphNode.JsonFilePath,
-                    offset: new Vector3Int(gridPos.x, gridPos.y, 0),
-                    clearBeforeLoading: false
+                var persistenceManager = new TilemapPersistenceManager(
+                    tilemapPainter.walkableTilemap,
+                    tilemapPainter.wallTilemap,
+                    tilemapPainter.doorTilemap
                 );
-
+                persistenceManager.LoadTilemap(
+                    graphNode.JsonFilePath,
+                    tilemapPainter,
+                    clearBeforeLoading: false,
+                    offset: new Vector3Int(gridPos.x, gridPos.y, 0)
+                );
+                
                 // Get door and floor positions
                 var doors = GetDoorPositions(graphNode.JsonFilePath, gridPos);
                 foreach (var door in doors)

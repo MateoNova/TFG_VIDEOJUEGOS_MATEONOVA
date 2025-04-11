@@ -1,23 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Views.Attributes;
 
 namespace Models
 {
-    public class TilemapPainter : MonoBehaviour
+    public interface ITilemapPainter
     {
+        void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions);
+        void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition);
+        void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions);
+        void ResetAllTiles();
+    }
+
+    public class TilemapPainter : MonoBehaviour, ITilemapPainter
+    {
+        // Constructor se mantiene para compatibilidad, aunque en Unity se suele usar Awake o Start.
+        public TilemapPainter(bool randomPlacement)
+        {
+            randomWalkableTilesPlacement = randomPlacement;
+        }
+
         #region Walkable Tiles
 
         [SerializeField] internal Tilemap walkableTilemap;
-
-        [SerializeField, /*WalkableTileGroup(isTileBases: true)*/]
-        public List<TileBase> walkableTileBases = new();
-
-        [SerializeField,/* WalkableTileGroup(isTilePriorities: true)*/]
-        public List<int> walkableTilesPriorities = new();
-
+        [SerializeField] public List<TileBase> walkableTileBases = new();
+        [SerializeField] public List<int> walkableTilesPriorities = new();
         [SerializeField] public bool randomWalkableTilesPlacement;
         private Dictionary<TileBase, float> _walkableTilesProbabilities = new();
 
@@ -96,95 +105,105 @@ namespace Models
 
         #endregion
 
-        #region Inicialización de Walkable Tiles
+        #region Initialization Helpers
 
-        private void InitializeWalkableTilesProbabilities() =>
-            _walkableTilesProbabilities = InitializeProbabilities(walkableTileBases, walkableTilesPriorities);
-
-        private static Dictionary<TileBase, float> InitializeProbabilities(List<TileBase> tileBases,
-            List<int> priorities)
+        private void InitializeWalkableTilesProbabilities()
         {
-            var probabilities = new Dictionary<TileBase, float>();
-            var totalPriority = priorities.Sum();
-
-            for (var i = 0; i < tileBases.Count; i++)
+            _walkableTilesProbabilities = new Dictionary<TileBase, float>();
+            int totalPriority = walkableTilesPriorities.Sum();
+            for (var i = 0; i < walkableTileBases.Count; i++)
             {
-                if (i < priorities.Count)
-                    probabilities[tileBases[i]] = totalPriority != 0 ? (float)priorities[i] / totalPriority : 0f;
-                else
-                {
+                float prob = (i < walkableTilesPriorities.Count && totalPriority != 0)
+                    ? (float)walkableTilesPriorities[i] / totalPriority
+                    : 0f;
+                if (i >= walkableTilesPriorities.Count)
                     Debug.LogWarning($"No priority defined for tile at index {i}. Defaulting to 0.");
-                    probabilities[tileBases[i]] = 0f;
-                }
+                _walkableTilesProbabilities[walkableTileBases[i]] = prob;
+            }
+        }
+
+        /// <summary>
+        /// Pre-calcula la conversión de posiciones en mundo a posiciones de celda para optimizar el proceso de pintado.
+        /// </summary>
+        private List<(Vector2Int worldPos, Vector3Int cellPos)> GetCellPositions(IEnumerable<Vector2Int> positions,
+            Tilemap tilemap)
+        {
+            var list = new List<(Vector2Int, Vector3Int)>();
+            foreach (var pos in positions)
+            {
+                // Convertir cada posición de forma única
+                Vector3Int cellPos = tilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0));
+                list.Add((pos, cellPos));
             }
 
-            return probabilities;
+            return list;
         }
 
         #endregion
 
-        #region Métodos de Pintado
+        #region Painting Tiles
 
-        public void PaintWalkableTiles(IEnumerable<Vector2Int> tilesPositions)
+        public void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions)
         {
             InitializeWalkableTilesProbabilities();
-            var positions = tilesPositions.ToList();
+            List<Vector2Int> positions = tilePositions.ToList();
+            var cellPositions = GetCellPositions(positions, walkableTilemap);
+
             if (randomWalkableTilesPlacement)
-                PaintTilesRandomly(positions, walkableTilemap, walkableTileBases);
+                PaintTilesRandomly(cellPositions);
             else
-                PaintTilesWithProbabilities(positions, walkableTilemap, walkableTileBases, _walkableTilesProbabilities);
+                PaintTilesWithProbabilities(cellPositions);
+
             Debug.Log($"Number of walkable tiles painted: {positions.Count}");
         }
 
-        private static void PaintTilesRandomly(IEnumerable<Vector2Int> positions, Tilemap tilemap,
-            List<TileBase> tileBases)
+        private void PaintTilesRandomly(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
-            var rnd = new System.Random();
-            foreach (var pos in positions)
+            System.Random rnd = new System.Random();
+            foreach (var (_, cellPos) in cellPositions)
             {
-                var tilePos = tilemap.WorldToCell((Vector3Int)pos);
-                tilemap.SetTile(tilePos, tileBases[rnd.Next(tileBases.Count)]);
+                // Selecciona un tile aleatorio
+                var tile = walkableTileBases[rnd.Next(walkableTileBases.Count)];
+                walkableTilemap.SetTile(cellPos, tile);
             }
         }
 
-        private static void PaintTilesWithProbabilities(IEnumerable<Vector2Int> positions, Tilemap tilemap,
-            List<TileBase> tileBases, Dictionary<TileBase, float> probabilities)
+        private void PaintTilesWithProbabilities(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
-            var cumulativeProbabilities = new List<float>();
-            var total = probabilities.Values.Sum();
-            var rnd = new System.Random();
-
-            foreach (var tileBase in tileBases)
+            // Precalcular probabilidades acumuladas (una única vez)
+            float total = _walkableTilesProbabilities.Values.Sum();
+            List<(TileBase tile, float cumulative)> cumulativeList = new List<(TileBase, float)>();
+            float accumulator = 0f;
+            foreach (var tile in walkableTileBases)
             {
-                if (!probabilities.TryGetValue(tileBase, out var p))
+                if (!_walkableTilesProbabilities.TryGetValue(tile, out var prob))
                 {
-                    Debug.LogError($"Probability for tile {tileBase.name} is not set.");
-                    return;
+                    Debug.LogError($"Probability for tile {tile.name} is not set.");
+                    continue;
                 }
 
-                cumulativeProbabilities.Add(p / total);
+                accumulator += prob / total;
+                cumulativeList.Add((tile, accumulator));
             }
 
-            foreach (var pos in positions)
+            System.Random rnd = new System.Random();
+            foreach (var (_, cellPos) in cellPositions)
             {
-                var tilePos = tilemap.WorldToCell((Vector3Int)pos);
                 float randomValue = (float)rnd.NextDouble();
-                float sum = 0f;
-                for (int i = 0; i < tileBases.Count; i++)
+                foreach (var (tile, cumulative) in cumulativeList)
                 {
-                    sum += cumulativeProbabilities[i];
-                    if (randomValue <= sum)
+                    if (randomValue <= cumulative)
                     {
-                        tilemap.SetTile(tilePos, tileBases[i]);
+                        walkableTilemap.SetTile(cellPos, tile);
                         break;
                     }
                 }
             }
         }
 
-        public void PaintWallTiles(IEnumerable<Vector2Int> tilesPositions, Utils.Utils.WallPosition position)
+        public void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition)
         {
-            TileBase tile = position switch
+            TileBase tile = wallPosition switch
             {
                 Utils.Utils.WallPosition.Up => upWall,
                 Utils.Utils.WallPosition.Down => downWall,
@@ -210,29 +229,30 @@ namespace Models
             };
 
             if (tile == null)
-                return;
-
-            foreach (var pos in tilesPositions)
             {
-                // Conversión explícita: en lugar de (Vector3Int)pos usamos new Vector3Int(x, y, 0)
-                Vector3Int tileCellPos = wallTilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0));
-                wallTilemap.SetTile(tileCellPos, tile);
+                Debug.LogWarning($"No se ha definido tile para la posición de muro: {wallPosition}");
+                return;
+            }
+
+            var cellPositions = GetCellPositions(tilePositions, wallTilemap);
+            foreach (var (_, cellPos) in cellPositions)
+            {
+                wallTilemap.SetTile(cellPos, tile);
             }
         }
 
-
-        public void PaintDoorTiles(IEnumerable<Vector2Int> tilesPositions)
+        public void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions)
         {
-            foreach (var pos in tilesPositions)
+            var cellPositions = GetCellPositions(tilePositions, doorTilemap);
+            foreach (var (_, cellPos) in cellPositions)
             {
-                var tilePos = doorTilemap.WorldToCell((Vector3Int)pos);
-                doorTilemap.SetTile(tilePos, doorTileBase);
+                doorTilemap.SetTile(cellPos, doorTileBase);
             }
         }
 
         #endregion
 
-        #region Save & Load & Gestión de Colecciones
+        #region Reset Tiles
 
         public void ResetAllTiles()
         {
@@ -241,77 +261,58 @@ namespace Models
             doorTilemap?.ClearAllTiles();
         }
 
-        private static List<global::Models.SerializableTile> GetSerializableTiles(Tilemap tilemap,
-            bool isDoor = false)
+        #endregion
+
+        #region (Opcional) Selección de Tiles desde Carpeta
+
+        private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
+            Dictionary<TileBase, float> probabilities, string path)
         {
-            var list = new List<global::Models.SerializableTile>();
-            foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+            tileBases.Clear();
+            priorities.Clear();
+            probabilities.Clear();
+
+            var files = System.IO.Directory.GetFiles(path, "*.asset");
+            foreach (var file in files)
             {
-                var tile = tilemap.GetTile(pos);
+                var relPath = "Assets" + file.Replace(Application.dataPath, "").Replace('\\', '/');
+                var tile = UnityEditor.AssetDatabase.LoadAssetAtPath<TileBase>(relPath);
                 if (tile == null) continue;
-                var assetPath = AssetDatabase.GetAssetPath(tile);
-                var guid = AssetDatabase.AssetPathToGUID(assetPath);
-                list.Add(new global::Models.SerializableTile(pos, guid, isDoor));
-            }
-
-            return list;
-        }
-
-        public void SaveTilemap(string path)
-        {
-            var data = new global::Models.TilemapData(
-                GetSerializableTiles(walkableTilemap),
-                GetSerializableTiles(wallTilemap),
-                GetSerializableTiles(doorTilemap, true)
-            );
-            var json = JsonUtility.ToJson(data);
-            System.IO.File.WriteAllText(path, json);
-        }
-
-        public void LoadTilemap(string path, bool clearBeforeLoading = true, Vector3Int offset = default)
-        {
-            var json = System.IO.File.ReadAllText(path);
-            var data = JsonUtility.FromJson<global::Models.TilemapData>(json);
-            if (clearBeforeLoading)
-                ResetAllTiles();
-            foreach (var tile in data.walkableTiles)
-            {
-                var tileBase = GetTileBaseByGuid(tile.tileGUID);
-                walkableTilemap.SetTile(tile.position + offset, tileBase);
-            }
-
-            foreach (var tile in data.wallTiles)
-            {
-                var tileBase = GetTileBaseByGuid(tile.tileGUID);
-                wallTilemap.SetTile(tile.position + offset, tileBase);
-            }
-
-            foreach (var tile in data.doorTiles)
-            {
-                var tileBase = GetTileBaseByGuid(tile.tileGUID);
-                doorTilemap.SetTile(tile.position + offset, tileBase);
+                tileBases.Add(tile);
+                priorities.Add(0);
             }
         }
 
-        private static TileBase GetTileBaseByGuid(string guid)
+        public void SelectWalkableTilesFromFolder(string path)
         {
-            var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-            return AssetDatabase.LoadAssetAtPath<TileBase>(assetPath);
+            SelectTilesFromFolder(walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities, path);
         }
 
-        private static void ClearTileCollections(List<TileBase> tileBases, List<int> priorities,
-            Dictionary<TileBase, float> probabilities)
+        #endregion
+        
+        #region Tile Collections Clearing
+
+        /// <summary>
+        /// Limpia las colecciones de tiles walkable.
+        /// </summary>
+        public void RemoveAllWalkableTiles()
         {
-            tileBases?.Clear();
-            priorities?.Clear();
-            probabilities?.Clear();
+            // Limpia las colecciones para tiles walkable
+            walkableTileBases.Clear();
+            walkableTilesPriorities.Clear();
+            _walkableTilesProbabilities.Clear();
+    
+            // Si también deseas limpiar el tilemap visual:
+            walkableTilemap?.ClearAllTiles();
         }
 
-        public void RemoveAllWalkableTiles() =>
-            ClearTileCollections(walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities);
-
+        /// <summary>
+        /// Reinicia (o elimina) la asignación de tiles de paredes.
+        /// </summary>
         public void RemoveAllWallTiles()
         {
+            // Se pone a null las referencias de los tiles de pared para que se pueda reinicializar si se
+            // desea, además se borra el tilemap en caso de ser necesario.
             upWall = null;
             downWall = null;
             leftWall = null;
@@ -329,43 +330,15 @@ namespace Models
             tripleExcetDownWall = null;
             tripleExceptLeftWall = null;
             tripleExceptRightWall = null;
+            tripleExceptLeftInnerWall = null;
+            tripleExceptRightInnerWall = null;
             aloneWall = null;
-        }
-
-        private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
-            Dictionary<TileBase, float> probabilities, string path)
-        {
-            tileBases ??= new List<TileBase>();
-            priorities ??= new List<int>();
-            probabilities ??= new Dictionary<TileBase, float>();
-
-            tileBases.Clear();
-            priorities.Clear();
-            probabilities.Clear();
-
-            var files = System.IO.Directory.GetFiles(path, "*.asset");
-            foreach (var file in files)
-            {
-                var relPath = "Assets" + file.Replace(Application.dataPath, "").Replace('\\', '/');
-                var tile = AssetDatabase.LoadAssetAtPath<TileBase>(relPath);
-                if (tile == null)
-                    continue;
-                tileBases.Add(tile);
-                priorities.Add(0);
-            }
-        }
-
-        public void SelectWalkableTilesFromFolder(string path)
-        {
-            SelectTilesFromFolder(walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities, path);
+    
+            // Limpia visualmente el tilemap de paredes.
+            wallTilemap?.ClearAllTiles();
         }
 
         #endregion
 
-        // Constructor auxiliar para instanciar programáticamente (si se requiere).
-        public TilemapPainter(bool randomPlacement)
-        {
-            this.randomWalkableTilesPlacement = randomPlacement;
-        }
     }
 }

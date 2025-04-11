@@ -1,60 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using BottomLeftWallToAllWallCorner = Models.BottomLeftWallToAllWallCorner;
-using BottomLeftWallToTripleWallCornerExceptDown = Models.BottomLeftWallToTripleWallCornerExceptDown;
-using BottomLeftWallToTripleWallCornerExceptLeft = Models.BottomLeftWallToTripleWallCornerExceptLeft;
-using BottomRightWallToAllWallCorner = Models.BottomRightWallToAllWallCorner;
-using BottomRightWallToTripleWallCornerExceptDown = Models.BottomRightWallToTripleWallCornerExceptDown;
-using BottomRightWallToTripleWallCornerExceptRight = Models.BottomRightWallToTripleWallCornerExceptRight;
-using DownWallToTripleWallCornerExceptDown = Models.DownWallToTripleWallCornerExceptDown;
-using DownWallToTripleWallCornerExceptUp = Models.DownWallToTripleWallCornerExceptUp;
-using DownWallToUpCase = Models.DownWallToUpCase;
-using LeftWallAloneToDownCase = Models.LeftWallAloneToDownCase;
-using LeftWallToBottomRightInnerCase = Models.LeftWallToBottomRightInnerCase;
-using LeftWallToDownCase = Models.LeftWallToDownCase;
-using LeftWallToTopRightInnerCase = Models.LeftWallToTopRightInnerCase;
-using RightWallAloneToDownCase = Models.RightWallAloneToDownCase;
-using RightWallToAloneCase = Models.RightWallToAloneCase;
-using RightWallToBottomLeftInnerCase = Models.RightWallToBottomLeftInnerCase;
-using RightWallToDownCase = Models.RightWallToDownCase;
-using RightWallToTopLeftInnerCase = Models.RightWallToTopLeftInnerCase;
-using RightWallToTripleWallCornerExceptLeftInnerCase = Models.RightWallToTripleWallCornerExceptLeftInnerCase;
-using RightWallToTripleWallCornerExceptRightInnerCase = Models.RightWallToTripleWallCornerExceptRightInnerCase;
-using TilemapPainter = Models.TilemapPainter;
-using TopLeftWallAllCornerCase = Models.TopLeftWallAllCornerCase;
-using TopLeftWallToAllWallCornerCase = Models.TopLeftWallToAllWallCornerCase;
-using TopLeftWallToTripleCornerExceptUpCase = Models.TopLeftWallToTripleCornerExceptUpCase;
-using TopRightWallToAllWallCornerCase = Models.TopRightWallToAllWallCornerCase;
-using TopRightWallToTripleCornerExceptRightInner = Models.TopRightWallToTripleCornerExceptRightInner;
-using TopRightWallToTripleCornerExceptUp = Models.TopRightWallToTripleCornerExceptUp;
+using Models; // Asumiendo que las clases de override están en Models o un namespace similar.
 
 namespace Generators.Controllers
 {
     public class WallGenerator : MonoBehaviour
     {
-        /// <summary>
-        /// Genera y pinta las paredes a partir de las posiciones walkables.
-        /// </summary>
-        /// <param name="walkablePositions">Conjunto de posiciones walkables (Vector2Int).</param>
-        /// <param name="painter">Instancia de TilemapPainter a usar para pintar.</param>
-        /// <param name="nonWallPositions">Opcional. Conjunto de posiciones que no se pintarán como muro.</param>
-        public static void GenerateWalls(HashSet<Vector2Int> walkablePositions, TilemapPainter painter,
+        public static void GenerateWalls(HashSet<Vector2Int> walkablePositions, ITilemapPainter painter,
             HashSet<Vector2Int> nonWallPositions = null)
         {
-            // 1. Construir posiciones iniciales de muro a partir del área de piso.
+            // 1. Construir posiciones iniciales de muro
             var wallPositionsByType = BuildInitialWallPositions(walkablePositions);
-            int initialCount = wallPositionsByType.Values.Sum(set => set.Count);
-            Debug.Log("Initial wall count: " + initialCount);
+            Debug.Log("Initial wall count: " + wallPositionsByType.Values.Sum(set => set.Count));
 
-            // 2. Aplicar las reglas de override para afinar la clasificación de muros.
+            // 2. Aplicar override rules de manera optimizada
             int overridesCount = ApplyWallOverrides(wallPositionsByType, walkablePositions);
             Debug.Log("Overrides applied: " + overridesCount);
 
-            // 3. Pintar cada tipo de muro mediante el TilemapPainter
+            // 3. Pintar cada tipo de muro
             foreach (var kvp in wallPositionsByType)
             {
-                var positions = nonWallPositions != null
+                var positions = (nonWallPositions != null)
                     ? new HashSet<Vector2Int>(kvp.Value.Except(nonWallPositions))
                     : kvp.Value;
                 painter.PaintWallTiles(positions, kvp.Key);
@@ -122,9 +89,9 @@ namespace Generators.Controllers
             var corners = new HashSet<Vector2Int>();
             foreach (var pos in floorPositions)
             {
-                var neighbor1 = pos + direction1;
-                var neighbor2 = pos + direction2;
-                var corner = pos + direction1 + direction2;
+                Vector2Int neighbor1 = pos + direction1;
+                Vector2Int neighbor2 = pos + direction2;
+                Vector2Int corner = pos + direction1 + direction2;
                 if (!floorPositions.Contains(neighbor1) && !floorPositions.Contains(neighbor2) &&
                     !floorPositions.Contains(corner))
                     corners.Add(corner);
@@ -135,50 +102,51 @@ namespace Generators.Controllers
 
         #endregion
 
-        #region Aplicación de Overwrites
+        #region Aplicación de Overrides
 
         private static int ApplyWallOverrides(
             Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>> wallPositionsByType,
             HashSet<Vector2Int> floorPositions)
         {
-            var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
-
+            // Consolidar todas las posiciones de muro para optimizar las búsquedas
+            HashSet<Vector2Int> allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
             var overrideRules = new List<IWallOverrideCase>
             {
                 new DownWallToUpCase(),
                 new LeftWallToTopRightInnerCase(),
                 new RightWallToTopLeftInnerCase(),
                 new LeftWallToBottomRightInnerCase(),
-                new RightWallToBottomLeftInnerCase(),
-                new RightWallToDownCase(),
-                new LeftWallToDownCase(),
-                new TopRightWallToTripleCornerExceptUp(),
-                new TopLeftWallToTripleCornerExceptUpCase(),
-                new DownWallToTripleWallCornerExceptUp(),
-                new DownWallToTripleWallCornerExceptDown(),
-                new BottomRightWallToTripleWallCornerExceptDown(),
-                new BottomLeftWallToTripleWallCornerExceptDown(),
-                new BottomLeftWallToTripleWallCornerExceptLeft(),
-                new BottomRightWallToTripleWallCornerExceptRight(),
-                new BottomLeftWallToAllWallCorner(),
-                new BottomRightWallToAllWallCorner(),
-                new RightWallAloneToDownCase(),
-                new LeftWallAloneToDownCase(),
-                new RightWallToAloneCase(),
-                new TopLeftWallToAllWallCornerCase(),
-                new TopRightWallToAllWallCornerCase(),
-                new RightWallToTripleWallCornerExceptLeftInnerCase(),
-                new RightWallToTripleWallCornerExceptRightInnerCase(),
-                new TopLeftWallAllCornerCase(),
-                new TopRightWallToTripleCornerExceptRightInner()
+                new Models.RightWallToBottomLeftInnerCase(),
+                new Models.RightWallToDownCase(),
+                new Models.LeftWallToDownCase(),
+                new Models.TopRightWallToTripleCornerExceptUp(),
+                new Models.TopLeftWallToTripleCornerExceptUpCase(),
+                new Models.DownWallToTripleWallCornerExceptUp(),
+                new Models.DownWallToTripleWallCornerExceptDown(),
+                new Models.BottomRightWallToTripleWallCornerExceptDown(),
+                new Models.BottomLeftWallToTripleWallCornerExceptDown(),
+                new Models.BottomLeftWallToTripleWallCornerExceptLeft(),
+                new Models.BottomRightWallToTripleWallCornerExceptRight(),
+                new Models.BottomLeftWallToAllWallCorner(),
+                new Models.BottomRightWallToAllWallCorner(),
+                new Models.RightWallAloneToDownCase(),
+                new Models.LeftWallAloneToDownCase(),
+                new Models.RightWallToAloneCase(),
+                new Models.TopLeftWallToAllWallCornerCase(),
+                new Models.TopRightWallToAllWallCornerCase(),
+                new Models.RightWallToTripleWallCornerExceptLeftInnerCase(),
+                new Models.RightWallToTripleWallCornerExceptRightInnerCase(),
+                new Models.TopLeftWallAllCornerCase(),
+                new Models.TopRightWallToTripleCornerExceptRightInner()
             };
 
             var changes =
                 new List<(Vector2Int pos, Utils.Utils.WallPosition oldType, Utils.Utils.WallPosition newType)>();
-
             foreach (var wallType in wallPositionsByType.Keys.ToList())
             {
-                foreach (var pos in wallPositionsByType[wallType])
+                foreach (var pos in
+                         wallPositionsByType[wallType]
+                             .ToList()) // ToList para evitar modificar la colección durante el recorrido
                 {
                     foreach (var rule in overrideRules)
                     {
