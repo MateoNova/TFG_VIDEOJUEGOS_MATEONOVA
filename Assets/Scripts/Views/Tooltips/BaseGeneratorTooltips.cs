@@ -1,4 +1,4 @@
-﻿namespace RandomWalkGeneration
+﻿namespace Views.Tooltips
 {
     public class BaseGeneratorTooltips
     {

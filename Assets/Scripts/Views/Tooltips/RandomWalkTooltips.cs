@@ -1,4 +1,4 @@
-﻿namespace GeneralUtils.Tooltipls
+﻿namespace Views.Tooltips
 {
     public static class RandomWalkTooltips
     {
