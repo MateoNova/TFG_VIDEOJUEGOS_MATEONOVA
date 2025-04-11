@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using GeneralUtils;
-using SpecialCases;
+using Generators.Controllers;
 using UnityEngine;
 
 namespace Generators.Models

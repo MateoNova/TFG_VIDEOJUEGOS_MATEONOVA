@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using GeneralUtils;
 using UnityEngine;
 
-namespace SpecialCases
+namespace Generators.Controllers
 {
     /// <summary>
     /// Interface representing an override rule for reclassifying walls.

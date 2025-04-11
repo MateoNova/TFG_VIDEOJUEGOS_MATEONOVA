@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using SpecialCases;
 using GeneralUtils;
 using Generators.Models;
 
@@ -110,7 +109,7 @@ namespace Generators.Controllers
         {
             var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
 
-            var overrideRules = new List<SpecialCases.IWallOverrideCase>
+            var overrideRules = new List<IWallOverrideCase>
             {
                 new DownWallToUpCase(),
                 new LeftWallToTopRightInnerCase(),
