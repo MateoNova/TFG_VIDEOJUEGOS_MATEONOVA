@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using GeneralUtils;
-using GeneralUtils.Tooltipls;
 using UnityEngine;
 using RandomWalkTooltips = Views.Tooltips.RandomWalkTooltips;
 
