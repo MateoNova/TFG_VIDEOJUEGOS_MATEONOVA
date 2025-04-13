@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Controllers.Generators;
-using Editor.Models;
 using UnityEditor;
 using UnityEngine;
 using Views.Attributes;
+using EventBus = Models.Editor.EventBus;
+using GeneratorService = Models.Editor.GeneratorService;
 using Object = UnityEngine.Object;
 
-namespace Editor.Controllers
+namespace Controllers.Editor
 {
     /// <summary>
     /// Controller responsible for managing the selection of generators in the editor.

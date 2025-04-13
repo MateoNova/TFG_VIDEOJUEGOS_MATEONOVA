@@ -1,8 +1,8 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using Editor.Models;
+using GeneratorService = Models.Editor.GeneratorService;
 
-namespace Editor.Controllers
+namespace Controllers.Editor
 {
     /// <summary>
     /// Controller responsible for managing actions related to dungeon generation, clearing, saving, and loading.

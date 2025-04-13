@@ -1,6 +1,6 @@
 ﻿using Controllers.Generators;
 
-namespace Editor.Models
+namespace Models.Editor
 {
     public class GeneratorService
     {
@@ -17,7 +17,7 @@ namespace Editor.Models
         {
             if (CurrentGenerator == generator) return;
             CurrentGenerator = generator;
-            EventBus.OnGeneratorChanged();
+            global::Models.Editor.EventBus.OnGeneratorChanged();
         }
     }
 }

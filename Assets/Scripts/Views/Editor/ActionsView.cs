@@ -1,7 +1,8 @@
-﻿using Editor.Controllers;
+﻿using Editor;
 using UnityEngine.UIElements;
+using ActionsController = Controllers.Editor.ActionsController;
 
-namespace Editor.Views
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the view for generation actions in the editor.

@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Editor.Controllers;
-using Editor.Models;
+using Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using EventBus = Models.Editor.EventBus;
+using GeneratorService = Models.Editor.GeneratorService;
+using SettingsController = Controllers.Editor.SettingsController;
 
-namespace Editor.Views
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the settings view for the editor.

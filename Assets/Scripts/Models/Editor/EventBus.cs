@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Editor.Models
+namespace Models.Editor
 {
     public static class EventBus
     {

@@ -1,11 +1,11 @@
 ﻿using System;
+using System.IO;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.IO;
 
-namespace GraphBasedGenerator
+namespace Views.Editor
 {
     /// <summary>
     /// Represents a node in the graph, extending the Node class.

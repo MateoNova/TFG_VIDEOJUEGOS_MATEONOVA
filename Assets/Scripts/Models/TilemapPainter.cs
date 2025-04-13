@@ -6,17 +6,45 @@ using Views.Attributes;
 
 namespace Models
 {
+    /// <summary>
+    /// Interface defining the contract for a TilemapPainter.
+    /// </summary>
     public interface ITilemapPainter
     {
+        /// <summary>
+        /// Paints walkable tiles on the tilemap.
+        /// </summary>
+        /// <param name="tilePositions">The positions of the tiles to paint.</param>
         void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions);
+
+        /// <summary>
+        /// Paints wall tiles on the tilemap.
+        /// </summary>
+        /// <param name="tilePositions">The positions of the tiles to paint.</param>
+        /// <param name="wallPosition">The type of wall to paint.</param>
         void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition);
+
+        /// <summary>
+        /// Paints door tiles on the tilemap.
+        /// </summary>
+        /// <param name="tilePositions">The positions of the tiles to paint.</param>
         void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions);
+
+        /// <summary>
+        /// Resets all tiles on the tilemap.
+        /// </summary>
         void ResetAllTiles();
     }
 
+    /// <summary>
+    /// A class responsible for managing and painting tiles on a tilemap.
+    /// </summary>
     public class TilemapPainter : MonoBehaviour, ITilemapPainter
     {
-        // Constructor se mantiene para compatibilidad, aunque en Unity se suele usar Awake o Start.
+        /// <summary>
+        /// Constructor for TilemapPainter.
+        /// </summary>
+        /// <param name="randomPlacement">Determines if walkable tiles should be placed randomly.</param>
         public TilemapPainter(bool randomPlacement)
         {
             randomWalkableTilesPlacement = randomPlacement;
@@ -24,7 +52,7 @@ namespace Models
 
         #region Walkable Tiles
 
-        [SerializeField] internal Tilemap walkableTilemap;
+        [SerializeField] public Tilemap walkableTilemap;
         [SerializeField] public List<TileBase> walkableTileBases = new();
         [SerializeField] public List<int> walkableTilesPriorities = new();
         [SerializeField] public bool randomWalkableTilesPlacement;
@@ -34,8 +62,9 @@ namespace Models
 
         #region Wall Tiles
 
-        [SerializeField] internal Tilemap wallTilemap;
+        [SerializeField] public Tilemap wallTilemap; // Tilemap for wall tiles.
 
+        // Various wall tile types categorized by their positions.
         [SerializeField, WallTileGroup("Cardinal Directions")]
         private TileBase upWall;
 
@@ -100,20 +129,23 @@ namespace Models
 
         #region Door Tiles
 
-        [SerializeField] internal Tilemap doorTilemap;
+        [SerializeField] public Tilemap doorTilemap;
         [SerializeField] private TileBase doorTileBase;
 
         #endregion
 
         #region Initialization Helpers
 
+        /// <summary>
+        /// Initializes the probabilities for walkable tiles based on their priorities.
+        /// </summary>
         private void InitializeWalkableTilesProbabilities()
         {
             _walkableTilesProbabilities = new Dictionary<TileBase, float>();
-            int totalPriority = walkableTilesPriorities.Sum();
+            var totalPriority = walkableTilesPriorities.Sum();
             for (var i = 0; i < walkableTileBases.Count; i++)
             {
-                float prob = (i < walkableTilesPriorities.Count && totalPriority != 0)
+                var prob = (i < walkableTilesPriorities.Count && totalPriority != 0)
                     ? (float)walkableTilesPriorities[i] / totalPriority
                     : 0f;
                 if (i >= walkableTilesPriorities.Count)
@@ -123,16 +155,18 @@ namespace Models
         }
 
         /// <summary>
-        /// Pre-calcula la conversión de posiciones en mundo a posiciones de celda para optimizar el proceso de pintado.
+        /// Converts world positions to cell positions for a given tilemap.
         /// </summary>
+        /// <param name="positions">World positions to convert.</param>
+        /// <param name="tilemap">The tilemap to use for conversion.</param>
+        /// <returns>A list of tuples containing world and cell positions.</returns>
         private List<(Vector2Int worldPos, Vector3Int cellPos)> GetCellPositions(IEnumerable<Vector2Int> positions,
             Tilemap tilemap)
         {
             var list = new List<(Vector2Int, Vector3Int)>();
             foreach (var pos in positions)
             {
-                // Convertir cada posición de forma única
-                Vector3Int cellPos = tilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0));
+                var cellPos = tilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0));
                 list.Add((pos, cellPos));
             }
 
@@ -143,10 +177,14 @@ namespace Models
 
         #region Painting Tiles
 
+        /// <summary>
+        /// Paints walkable tiles on the tilemap.
+        /// </summary>
+        /// <param name="tilePositions">The positions of the tiles to paint.</param>
         public void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions)
         {
             InitializeWalkableTilesProbabilities();
-            List<Vector2Int> positions = tilePositions.ToList();
+            var positions = tilePositions.ToList();
             var cellPositions = GetCellPositions(positions, walkableTilemap);
 
             if (randomWalkableTilesPlacement)
@@ -157,23 +195,29 @@ namespace Models
             Debug.Log($"Number of walkable tiles painted: {positions.Count}");
         }
 
+        /// <summary>
+        /// Paints walkable tiles randomly.
+        /// </summary>
+        /// <param name="cellPositions">The cell positions to paint.</param>
         private void PaintTilesRandomly(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
-            System.Random rnd = new System.Random();
+            var rnd = new System.Random();
             foreach (var (_, cellPos) in cellPositions)
             {
-                // Selecciona un tile aleatorio
                 var tile = walkableTileBases[rnd.Next(walkableTileBases.Count)];
                 walkableTilemap.SetTile(cellPos, tile);
             }
         }
 
+        /// <summary>
+        /// Paints walkable tiles based on their probabilities.
+        /// </summary>
+        /// <param name="cellPositions">The cell positions to paint.</param>
         private void PaintTilesWithProbabilities(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
-            // Precalcular probabilidades acumuladas (una única vez)
-            float total = _walkableTilesProbabilities.Values.Sum();
-            List<(TileBase tile, float cumulative)> cumulativeList = new List<(TileBase, float)>();
-            float accumulator = 0f;
+            var total = _walkableTilesProbabilities.Values.Sum();
+            List<(TileBase tile, float cumulative)> cumulativeList = new();
+            var accumulator = 0f;
             foreach (var tile in walkableTileBases)
             {
                 if (!_walkableTilesProbabilities.TryGetValue(tile, out var prob))
@@ -186,24 +230,28 @@ namespace Models
                 cumulativeList.Add((tile, accumulator));
             }
 
-            System.Random rnd = new System.Random();
+            var rnd = new System.Random();
             foreach (var (_, cellPos) in cellPositions)
             {
-                float randomValue = (float)rnd.NextDouble();
+                var randomValue = (float)rnd.NextDouble();
                 foreach (var (tile, cumulative) in cumulativeList)
                 {
-                    if (randomValue <= cumulative)
-                    {
-                        walkableTilemap.SetTile(cellPos, tile);
-                        break;
-                    }
+                    if (!(randomValue <= cumulative)) continue;
+                    
+                    walkableTilemap.SetTile(cellPos, tile);
+                    break;
                 }
             }
         }
 
+        /// <summary>
+        /// Paints wall tiles on the tilemap.
+        /// </summary>
+        /// <param name="tilePositions">The positions of the tiles to paint.</param>
+        /// <param name="wallPosition">The type of wall to paint.</param>
         public void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition)
         {
-            TileBase tile = wallPosition switch
+            var tile = wallPosition switch
             {
                 Utils.Utils.WallPosition.Up => upWall,
                 Utils.Utils.WallPosition.Down => downWall,
@@ -230,7 +278,7 @@ namespace Models
 
             if (tile == null)
             {
-                Debug.LogWarning($"No se ha definido tile para la posición de muro: {wallPosition}");
+                Debug.LogWarning($"No tile defined for wall position: {wallPosition}");
                 return;
             }
 
@@ -241,6 +289,10 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// Paints door tiles on the tilemap.
+        /// </summary>
+        /// <param name="tilePositions">The positions of the tiles to paint.</param>
         public void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions)
         {
             var cellPositions = GetCellPositions(tilePositions, doorTilemap);
@@ -254,6 +306,9 @@ namespace Models
 
         #region Reset Tiles
 
+        /// <summary>
+        /// Clears all tiles from the tilemaps.
+        /// </summary>
         public void ResetAllTiles()
         {
             walkableTilemap?.ClearAllTiles();
@@ -263,8 +318,15 @@ namespace Models
 
         #endregion
 
-        #region (Opcional) Selección de Tiles desde Carpeta
+        #region Optional: Tile Selection from Folder
 
+        /// <summary>
+        /// Selects tiles from a folder and populates the provided collections.
+        /// </summary>
+        /// <param name="tileBases">The list to store tile bases.</param>
+        /// <param name="priorities">The list to store tile priorities.</param>
+        /// <param name="probabilities">The dictionary to store tile probabilities.</param>
+        /// <param name="path">The folder path to search for tiles.</param>
         private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
             Dictionary<TileBase, float> probabilities, string path)
         {
@@ -283,36 +345,35 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// Selects walkable tiles from a folder.
+        /// </summary>
+        /// <param name="path">The folder path to search for tiles.</param>
         public void SelectWalkableTilesFromFolder(string path)
         {
             SelectTilesFromFolder(walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities, path);
         }
 
         #endregion
-        
+
         #region Tile Collections Clearing
 
         /// <summary>
-        /// Limpia las colecciones de tiles walkable.
+        /// Clears all walkable tile collections and the associated tilemap.
         /// </summary>
         public void RemoveAllWalkableTiles()
         {
-            // Limpia las colecciones para tiles walkable
             walkableTileBases.Clear();
             walkableTilesPriorities.Clear();
             _walkableTilesProbabilities.Clear();
-    
-            // Si también deseas limpiar el tilemap visual:
             walkableTilemap?.ClearAllTiles();
         }
 
         /// <summary>
-        /// Reinicia (o elimina) la asignación de tiles de paredes.
+        /// Clears all wall tile references and the associated tilemap.
         /// </summary>
         public void RemoveAllWallTiles()
         {
-            // Se pone a null las referencias de los tiles de pared para que se pueda reinicializar si se
-            // desea, además se borra el tilemap en caso de ser necesario.
             upWall = null;
             downWall = null;
             leftWall = null;
@@ -333,12 +394,10 @@ namespace Models
             tripleExceptLeftInnerWall = null;
             tripleExceptRightInnerWall = null;
             aloneWall = null;
-    
-            // Limpia visualmente el tilemap de paredes.
+
             wallTilemap?.ClearAllTiles();
         }
 
         #endregion
-
     }
 }

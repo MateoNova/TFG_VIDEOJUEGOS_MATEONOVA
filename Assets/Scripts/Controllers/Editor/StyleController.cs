@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Editor.Models;
 using Models;
 using UnityEngine.Tilemaps;
+using GeneratorService = Models.Editor.GeneratorService;
 
-namespace Editor.Controllers
+namespace Controllers.Editor
 {
     public class StyleController
     {

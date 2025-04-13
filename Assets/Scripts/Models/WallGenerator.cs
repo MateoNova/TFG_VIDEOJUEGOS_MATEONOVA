@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Generators.Controllers;
 using UnityEngine;
-using Models; // Asumiendo que las clases de override están en Models o un namespace similar.
 
-namespace Generators.Controllers
+// Asumiendo que las clases de override están en Models o un namespace similar.
+
+namespace Models
 {
     public class WallGenerator : MonoBehaviour
     {
@@ -116,28 +118,28 @@ namespace Generators.Controllers
                 new LeftWallToTopRightInnerCase(),
                 new RightWallToTopLeftInnerCase(),
                 new LeftWallToBottomRightInnerCase(),
-                new Models.RightWallToBottomLeftInnerCase(),
-                new Models.RightWallToDownCase(),
-                new Models.LeftWallToDownCase(),
-                new Models.TopRightWallToTripleCornerExceptUp(),
-                new Models.TopLeftWallToTripleCornerExceptUpCase(),
-                new Models.DownWallToTripleWallCornerExceptUp(),
-                new Models.DownWallToTripleWallCornerExceptDown(),
-                new Models.BottomRightWallToTripleWallCornerExceptDown(),
-                new Models.BottomLeftWallToTripleWallCornerExceptDown(),
-                new Models.BottomLeftWallToTripleWallCornerExceptLeft(),
-                new Models.BottomRightWallToTripleWallCornerExceptRight(),
-                new Models.BottomLeftWallToAllWallCorner(),
-                new Models.BottomRightWallToAllWallCorner(),
-                new Models.RightWallAloneToDownCase(),
-                new Models.LeftWallAloneToDownCase(),
-                new Models.RightWallToAloneCase(),
-                new Models.TopLeftWallToAllWallCornerCase(),
-                new Models.TopRightWallToAllWallCornerCase(),
-                new Models.RightWallToTripleWallCornerExceptLeftInnerCase(),
-                new Models.RightWallToTripleWallCornerExceptRightInnerCase(),
-                new Models.TopLeftWallAllCornerCase(),
-                new Models.TopRightWallToTripleCornerExceptRightInner()
+                new RightWallToBottomLeftInnerCase(),
+                new RightWallToDownCase(),
+                new LeftWallToDownCase(),
+                new TopRightWallToTripleCornerExceptUp(),
+                new TopLeftWallToTripleCornerExceptUpCase(),
+                new DownWallToTripleWallCornerExceptUp(),
+                new DownWallToTripleWallCornerExceptDown(),
+                new BottomRightWallToTripleWallCornerExceptDown(),
+                new BottomLeftWallToTripleWallCornerExceptDown(),
+                new BottomLeftWallToTripleWallCornerExceptLeft(),
+                new BottomRightWallToTripleWallCornerExceptRight(),
+                new BottomLeftWallToAllWallCorner(),
+                new BottomRightWallToAllWallCorner(),
+                new RightWallAloneToDownCase(),
+                new LeftWallAloneToDownCase(),
+                new RightWallToAloneCase(),
+                new TopLeftWallToAllWallCornerCase(),
+                new TopRightWallToAllWallCornerCase(),
+                new RightWallToTripleWallCornerExceptLeftInnerCase(),
+                new RightWallToTripleWallCornerExceptRightInnerCase(),
+                new TopLeftWallAllCornerCase(),
+                new TopRightWallToTripleCornerExceptRightInner()
             };
 
             var changes =

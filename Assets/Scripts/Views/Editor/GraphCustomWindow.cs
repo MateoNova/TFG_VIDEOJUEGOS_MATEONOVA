@@ -2,12 +2,12 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphBasedGenerator
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the editor window for the graph generator.
     /// </summary>
-    public class GraphWindow : EditorWindow
+    public class GraphCustomWindow : EditorWindow
     {
         /// <summary>
         /// Shows the Graph Window.
@@ -15,10 +15,10 @@ namespace GraphBasedGenerator
         //[MenuItem("Window/Graph Window")]
         public static void ShowWindow()
         {
-            var window = GetWindow<GraphWindow>("Graph Window");
+            var window = GetWindow<GraphCustomWindow>("Graph Window");
             window.minSize = new Vector2(400, 300);
 
-            var graphView = new GraphGeneratorView();
+            var graphView = new global::Views.Editor.GraphGeneratorView();
             graphView.name = "GraphGeneratorView";
             graphView.StretchToParentSize();
             window.rootVisualElement.Add(graphView);
@@ -28,10 +28,10 @@ namespace GraphBasedGenerator
         /// Gets the GraphGeneratorView from the window.
         /// </summary>
         /// <returns>The GraphGeneratorView instance.</returns>
-        public static GraphGeneratorView GetGraphGeneratorView()
+        public static global::Views.Editor.GraphGeneratorView GetGraphGeneratorView()
         {
-            var window = GetWindow<GraphWindow>("Graph Window"); 
-            return window.rootVisualElement.Q<GraphGeneratorView>("GraphGeneratorView");
+            var window = GetWindow<GraphCustomWindow>("Graph Window"); 
+            return window.rootVisualElement.Q<global::Views.Editor.GraphGeneratorView>("GraphGeneratorView");
         }
     }
 }

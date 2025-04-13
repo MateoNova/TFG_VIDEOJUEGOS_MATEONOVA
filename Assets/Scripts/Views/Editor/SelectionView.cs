@@ -1,7 +1,8 @@
-﻿using Editor.Controllers;
+﻿using Editor;
 using UnityEngine.UIElements;
+using SelectionController = Controllers.Editor.SelectionController;
 
-namespace Editor.Views
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the view for generator selection in the editor.

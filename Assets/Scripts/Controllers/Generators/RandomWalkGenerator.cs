@@ -4,6 +4,7 @@ using Generators.Controllers;
 using UnityEngine;
 using Views.Attributes;
 using RandomWalkTooltips = Views.Tooltips.RandomWalkTooltips;
+using WallGenerator = Models.WallGenerator;
 
 namespace Controllers.Generators
 {

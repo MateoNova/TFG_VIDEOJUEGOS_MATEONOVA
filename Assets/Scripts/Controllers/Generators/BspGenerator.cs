@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Generators.Controllers;
 using UnityEngine;
+using WallGenerator = Models.WallGenerator;
 
 namespace Controllers.Generators
 {

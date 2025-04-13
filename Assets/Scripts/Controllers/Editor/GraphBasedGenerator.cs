@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Generators.Controllers;
-using GraphBasedGenerator;
+using Controllers.Generators;
 using Models;
 using UnityEngine;
 using Views.Attributes;
-using TilemapData = Models.TilemapData;
+using Views.Editor;
+using WallGenerator = Models.WallGenerator;
 
-namespace Controllers.Generators
+namespace Controllers.Editor
 {
     [OpenGraphEditor]
     public class GraphBasedGenerator : BaseGenerator
@@ -65,7 +65,7 @@ namespace Controllers.Generators
             _allWallPositions.Clear();
             _allDoorsPositions.Clear();
 
-            _graphView = GraphWindow.GetGraphGeneratorView();
+            _graphView = GraphCustomWindow.GetGraphGeneratorView();
 
             if (_graphView == null)
             {
@@ -133,7 +133,7 @@ namespace Controllers.Generators
                     clearBeforeLoading: false,
                     offset: new Vector3Int(gridPos.x, gridPos.y, 0)
                 );
-                
+
                 // Get door and floor positions
                 var doors = GetDoorPositions(graphNode.JsonFilePath, gridPos);
                 foreach (var door in doors)
@@ -260,7 +260,7 @@ namespace Controllers.Generators
         /// </summary>
         public override void OpenGraphWindow()
         {
-            GraphWindow.ShowWindow();
+            GraphCustomWindow.ShowWindow();
         }
 
         #endregion

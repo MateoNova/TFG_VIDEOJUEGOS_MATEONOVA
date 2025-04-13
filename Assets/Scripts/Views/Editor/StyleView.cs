@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Editor.Controllers;
-using Editor.Models;
+using Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 using Views.Attributes;
+using GeneratorService = Models.Editor.GeneratorService;
+using StyleController = Controllers.Editor.StyleController;
 
-namespace Editor.Views
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the view for managing style settings in the editor.

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Views.Attributes;
 
-namespace Editor.Controllers
+namespace Controllers.Editor
 {
     public class SettingsController
     {

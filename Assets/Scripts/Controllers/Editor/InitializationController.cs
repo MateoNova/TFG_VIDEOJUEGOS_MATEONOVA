@@ -1,7 +1,7 @@
-﻿using Editor.Models;
-using UnityEditor;
+﻿using UnityEditor;
+using EventBus = Models.Editor.EventBus;
 
-namespace Editor.Controllers
+namespace Controllers.Editor
 {
     /// <summary>
     /// Controller responsible for handling initialization, reloading, and clearing cached data in the editor.

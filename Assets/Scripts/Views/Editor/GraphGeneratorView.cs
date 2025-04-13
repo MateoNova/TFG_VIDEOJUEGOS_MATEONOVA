@@ -1,11 +1,11 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace GraphBasedGenerator
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the view for the graph generator, extending the GraphView class.

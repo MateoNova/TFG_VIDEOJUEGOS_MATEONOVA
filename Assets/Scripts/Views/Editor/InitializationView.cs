@@ -1,9 +1,10 @@
 ﻿using System;
-using Editor.Controllers;
-using Editor.Models;
+using Editor;
 using UnityEngine.UIElements;
+using EventBus = Models.Editor.EventBus;
+using InitializationController = Controllers.Editor.InitializationController;
 
-namespace Editor.Views
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the view for initialization actions in the editor.

@@ -1,8 +1,9 @@
-﻿using Editor.Models;
+﻿using Editor;
 using UnityEditor;
 using UnityEngine;
+using EventBus = Models.Editor.EventBus;
 
-namespace Editor.Views
+namespace Views.Editor
 {
     /// <summary>
     /// Represents the main editor window for the Generation Manager.
@@ -13,7 +14,7 @@ namespace Editor.Views
         /// <summary>
         /// View responsible for initialization actions.
         /// </summary>
-        private InitializationView _initializationView;
+        private global::Views.Editor.InitializationView _initializationView;
 
         /// <summary>
         /// View responsible for generator selection.
@@ -33,7 +34,7 @@ namespace Editor.Views
         /// <summary>
         /// View responsible for generation-related actions.
         /// </summary>
-        private ActionsView _actionsView;
+        private global::Views.Editor.ActionsView _actionsView;
 
         /// <summary>
         /// Displays the Generation Manager window in the Unity Editor.
@@ -76,11 +77,11 @@ namespace Editor.Views
         /// </summary>
         private void InitializeDependencies()
         {
-            _initializationView = new InitializationView();
+            _initializationView = new global::Views.Editor.InitializationView();
             _selectionView = new SelectionView();
             _settingsView = new SettingsView();
             _styleView = new StyleView();
-            _actionsView = new ActionsView();
+            _actionsView = new global::Views.Editor.ActionsView();
         }
 
         /// <summary>
