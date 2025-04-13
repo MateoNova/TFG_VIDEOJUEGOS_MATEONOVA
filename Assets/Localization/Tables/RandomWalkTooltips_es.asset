@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: RandomWalkTooltips_es
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: es
+  m_SharedData: {fileID: 11400000, guid: 346056fa303416e48a44cfe6ad2e0ee0, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 48466137088
+    m_Localized: "El n\xFAmero de iteraciones que realizar\xE1 el algoritmo de caminata
+      aleatoria. - M\xE1s iteraciones dar\xE1n lugar a una mazmorra m\xE1s grande
+      y compleja."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
