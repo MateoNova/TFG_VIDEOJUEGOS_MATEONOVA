@@ -3,6 +3,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using Utils;
 using EventBus = Models.Editor.EventBus;
 using GeneratorService = Models.Editor.GeneratorService;
 using SettingsController = Controllers.Editor.SettingsController;
@@ -60,7 +61,9 @@ namespace Views.Editor
         {
             _container ??= StyleUtils.SimpleContainer();
             _container.Clear();
-            _foldout = new Foldout { text = "Generator Settings", value = true };
+            
+            _foldout = StyleUtils.ModernFoldout("");
+            _foldout.SetLocalizedText("GeneratorSettings", "SettingsTable");
 
             if (GeneratorService.Instance.CurrentGenerator == null)
             {

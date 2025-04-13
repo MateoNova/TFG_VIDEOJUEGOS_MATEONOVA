@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Catalan (ca)
   m_GUID: 6bf135e60dbbf174983d1df4aaf2a9a2
   m_SerializeEntries:
+  - m_GUID: 3a0cdb3925a99154494cb4dd2dfdd827
+    m_Address: SettingsTable_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 781f9d1d5635e6c458f7e7fc60500153
     m_Address: SelectionTable_ca
     m_ReadOnly: 1

@@ -28,7 +28,7 @@ namespace Views.Editor
         public VisualElement CreateUI()
         {
             var container = StyleUtils.SimpleContainer();
-            var actionsFoldout = new Foldout { value = _showGenerationActions };
+            var actionsFoldout = StyleUtils.ModernFoldout("");
             actionsFoldout.SetLocalizedText("GenerationActions", "ActionsTable");
             actionsFoldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
             container.Add(actionsFoldout);

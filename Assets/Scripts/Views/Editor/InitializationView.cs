@@ -27,7 +27,7 @@ namespace Views.Editor
         {
             var container = StyleUtils.SimpleContainer();
             // Usamos la clave para la localización en el foldout
-            var foldout = new Foldout { value = true };
+            var foldout = StyleUtils.ModernFoldout("");
             foldout.SetLocalizedText("Initialization", "InitializationTable");
 
             foldout.Add(CreateButtonContainer());

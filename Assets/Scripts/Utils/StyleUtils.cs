@@ -160,5 +160,65 @@ namespace Utils
                 value = value
             };
         }
+
+        public static Foldout ModernFoldout(string text, bool expanded = true)
+        {
+            var foldout = new Foldout
+            {
+                value = expanded,
+                text = text,
+                style =
+                {
+                    marginTop = 10,
+                    paddingLeft = 5,
+                    paddingRight = 5,
+                    borderTopWidth = 1,
+                    borderLeftWidth = 1,
+                    borderRightWidth = 1
+                }
+            };
+        
+            // Apply the font size and style only after the Foldout is fully initialized
+            foldout.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                var label = foldout.Q<Label>();
+                
+                if (label == null) return;
+                
+                label.style.unityFontStyleAndWeight = FontStyle.Bold;
+                label.style.fontSize = 16;
+            });
+        
+            return foldout;
+        }
+        
+        public static Foldout ModernSubFoldout(string text, bool expanded = true)
+        {
+            var foldout = new Foldout
+            {
+                value = expanded,
+                text = text,
+                style =
+                {
+                    marginTop = 10,
+                    paddingRight = 5,
+                    borderTopWidth = 1,
+                    borderRightWidth = 1
+                }
+            };
+        
+            // Apply the font size and style only after the Foldout is fully initialized
+            foldout.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                var label = foldout.Q<Label>();
+                
+                if (label == null) return;
+                
+                label.style.unityFontStyleAndWeight = FontStyle.Bold;
+                label.style.fontSize = 14;
+            });
+        
+            return foldout;
+        }
     }
 }

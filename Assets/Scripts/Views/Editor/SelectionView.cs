@@ -30,8 +30,7 @@ namespace Views.Editor
             _container = StyleUtils.SimpleContainer();
 
             // Creamos el foldout y asignamos el texto localizado
-            var foldout = new Foldout { value = true };
-            // Se utiliza la clave "GeneratorSelection" de la tabla "SelectionTable"
+            var foldout = StyleUtils.ModernFoldout("");
             foldout.SetLocalizedText("GeneratorSelection", "SelectionTable");
 
             var cachedNames = _controller.CachedGeneratorNames();

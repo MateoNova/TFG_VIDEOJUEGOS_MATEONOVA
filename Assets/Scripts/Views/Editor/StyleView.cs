@@ -45,8 +45,9 @@ namespace Views.Editor
 
         private VisualElement CreateStyleSection()
         {
-            var styleSection = new Foldout { value = true };
+            var styleSection = StyleUtils.ModernFoldout("");
             styleSection.SetLocalizedText("Style", "StyleTable");
+            
             styleSection.Add(CreateFloorTileSettings());
             styleSection.Add(CreateWallTileSettings());
             return styleSection;
@@ -54,7 +55,7 @@ namespace Views.Editor
 
         private VisualElement CreateFloorTileSettings()
         {
-            var floorTileSettings = new Foldout { value = true };
+            var floorTileSettings = StyleUtils.ModernSubFoldout("");
             floorTileSettings.SetLocalizedText("FloorTileSettings", "StyleTable");
             floorTileSettings.Add(CreateRandomFloorPlacementToggle());
 
@@ -255,7 +256,7 @@ namespace Views.Editor
 
         private Foldout CreateFoldoutForGroup(IGrouping<string, FieldInfo> group)
         {
-            var foldout = new Foldout { value = true };
+            var foldout = StyleUtils.ModernSubFoldout("");
             foldout.SetLocalizedText(group.Key, "StyleTable");
             var horizontalContainer = StyleUtils.HorizontalContainerWrapped();
 
