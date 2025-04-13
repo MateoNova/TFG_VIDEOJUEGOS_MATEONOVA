@@ -61,7 +61,7 @@ namespace Views.Editor
         {
             _container ??= StyleUtils.SimpleContainer();
             _container.Clear();
-            
+
             _foldout = StyleUtils.ModernFoldout("");
             _foldout.SetLocalizedText("GeneratorSettings", "SettingsTable");
 
@@ -86,24 +86,7 @@ namespace Views.Editor
 
                     if (property.name == "m_Script") continue;
 
-                    var fieldInfo = serializedObject.targetObject.GetType()
-                        .GetField(property.name, BindingFlags.Instance | BindingFlags.NonPublic);
-
-                    if (fieldInfo == null)
-                    {
-                        _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
-                        continue;
-                    }
-
-                    if (_settingsController.CheckForConditionAttribute(fieldInfo, property, serializedObject,
-                            settingsContainer, conditionFields, conditionalFields))
-                        continue;
-
-                    if (!_settingsController.CheckForConditionalAttribute(fieldInfo, property, serializedObject,
-                            settingsContainer, conditionalFields))
-                    {
-                        _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
-                    }
+                    _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
                 }
 
                 foreach (var group in conditionalFields.Keys)
