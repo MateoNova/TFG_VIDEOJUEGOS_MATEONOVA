@@ -15,6 +15,26 @@ MonoBehaviour:
   m_TableCollectionName: RandomWalkTooltips
   m_TableCollectionNameGuidString: 346056fa303416e48a44cfe6ad2e0ee0
   m_Entries:
+  - m_Id: 35311661780992
+    m_Key: CorridorCountTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35276333158400
+    m_Key: CorridorLengthTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35370461728768
+    m_Key: CorridorWidthTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35179767697408
+    m_Key: GenerateCorridorsTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35344415100928
+    m_Key: RoomPercentageTooltip
+    m_Metadata:
+      m_Items: []
   - m_Id: 48466137088
     m_Key: WalkIterationsTooltip
     m_Metadata:

@@ -15,36 +15,36 @@ namespace Controllers.Generators
         #region Serialized Fields
 
         [SerializeField,
-         Tooltip(RandomWalkTooltips.WalkIterationsTooltip)]
+         LocalizedTooltip("WalkIterationsTooltip")]
         private int walkIterations = 10;
 
         [SerializeField,
-         Tooltip(RandomWalkTooltips.StepsPerIterationTooltip)]
+         LocalizedTooltip("StepsPerIterationTooltip")]
         private int stepsPerIteration = 10;
 
         [SerializeField,
          Condition("generateCorridors"),
-         Tooltip(RandomWalkTooltips.GenerateCorridorsTooltip)]
+         LocalizedTooltip("GenerateCorridorsTooltip")]
         private bool generateCorridors;
 
         [SerializeField,
          ConditionalField("generateCorridors"),
-         Tooltip(RandomWalkTooltips.CorridorLengthTooltip)]
+         LocalizedTooltip("CorridorLengthTooltip")]
         private int corridorLength = 10;
 
         [SerializeField,
          ConditionalField("generateCorridors"),
-         Tooltip(RandomWalkTooltips.CorridorCountTooltip)]
+         LocalizedTooltip("CorridorCountTooltip")]
         private int corridorCount = 5;
 
         [SerializeField, Range(0f, 1f),
          ConditionalField("generateCorridors"),
-         Tooltip(RandomWalkTooltips.RoomPercentageTooltip)]
+         LocalizedTooltip("RoomPercentageTooltip")]
         private float roomPercentage = 0.8f;
 
         [SerializeField, Range(1f, 4f),
          ConditionalField("generateCorridors"),
-         Tooltip(RandomWalkTooltips.CorridorWidthTooltip)]
+         LocalizedTooltip("CorridorWidthTooltip")]
         private int corridorWidth = 1;
 
         #endregion
