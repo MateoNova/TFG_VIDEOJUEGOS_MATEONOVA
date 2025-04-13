@@ -195,7 +195,9 @@ namespace Views.Editor
                 ? Utils.Utils.AddSpacesToCamelCase(tile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase))
                 : "No selected";
             var label = StyleUtils.LabelForTile(labelText);
-            label.SetLocalizedText("NoSelected", "StyleTable");
+            
+            if (tile == null) label.SetLocalizedText("NoSelected", "StyleTable");
+
             return label;
         }
 

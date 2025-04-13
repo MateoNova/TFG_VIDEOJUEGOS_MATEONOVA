@@ -78,7 +78,6 @@ namespace Controllers.Editor
         {
             if (index < 0 || index >= _generators.Count)
             {
-                Debug.LogWarning("Index out of range.");
                 return;
             }
 

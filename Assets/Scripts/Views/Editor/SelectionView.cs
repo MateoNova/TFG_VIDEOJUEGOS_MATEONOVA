@@ -49,9 +49,17 @@ namespace Views.Editor
                 var dropdown = new DropdownField();
                 dropdown.SetLocalizedTitle("SelectGenerator", "SelectionTable");
 
-                // Se asignan las opciones y el valor inicial
                 dropdown.choices = cachedNames;
-                dropdown.value = cachedNames[_controller.SelectedGeneratorIndex()];
+
+                // Validate the selected index
+                var selectedIndex = _controller.SelectedGeneratorIndex();
+                if (selectedIndex < 0 || selectedIndex >= cachedNames.Count)
+                {
+                    selectedIndex = 0; // Default to the first item if the index is invalid
+                }
+
+                // Set the initial value
+                dropdown.value = cachedNames[selectedIndex];
                 dropdown.RegisterValueChangedCallback(evt => _controller.ChangeGenerator(evt.newValue));
 
                 foldout.Add(dropdown);
