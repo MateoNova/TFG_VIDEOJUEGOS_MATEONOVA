@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 441464033280
-    m_Localized: Seleccionar Losetas de Piso desde Carpeta
+    m_Localized: Seleccionar Losetas de Piso
     m_Metadata:
       m_Items: []
   - m_Id: 462204866560
@@ -76,6 +76,86 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3506732699648
     m_Localized: Paredes Solitarias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5409784893440
+    m_Localized: Arriba
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5463539093504
+    m_Localized: Abajo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5662760144896
+    m_Localized: Izquierda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5706569650176
+    m_Localized: Derecha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5725922168832
+    m_Localized: Sup. Izq.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5751809413120
+    m_Localized: Sup. Der.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5762387447808
+    m_Localized: Inf. Izq.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5781987430400
+    m_Localized: Inf. Der.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5817995530240
+    m_Localized: Todas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5831786401792
+    m_Localized: Sup. Izq.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5853546450944
+    m_Localized: Sup. Der.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5885158920192
+    m_Localized: Inf. Izq.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5907858493440
+    m_Localized: Inf. Der.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5930528706560
+    m_Localized: Exc. Arriba
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5958768955392
+    m_Localized: Exc. Abajo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5987252473856
+    m_Localized: Exc. Izq.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6004973408256
+    m_Localized: Exc. Der.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6024195903488
+    m_Localized: Exc. Izq.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6041103142912
+    m_Localized: Exc. Der.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6062376652800
+    m_Localized: Simple
     m_Metadata:
       m_Items: []
   references:

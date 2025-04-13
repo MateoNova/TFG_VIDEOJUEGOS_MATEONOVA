@@ -75,6 +75,86 @@ MonoBehaviour:
     m_Key: AloneWalls
     m_Metadata:
       m_Items: []
+  - m_Id: 5409784893440
+    m_Key: upWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5463539093504
+    m_Key: downWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5662760144896
+    m_Key: leftWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5706569650176
+    m_Key: rightWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5725922168832
+    m_Key: topLeftWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5751809413120
+    m_Key: topRightWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5762387447808
+    m_Key: bottomLeftWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5781987430400
+    m_Key: bottomRightWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5817995530240
+    m_Key: allCornersWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5831786401792
+    m_Key: topLeftInnerWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5853546450944
+    m_Key: topRightInnerWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5885158920192
+    m_Key: bottomLeftInnerWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5907858493440
+    m_Key: bottomRightInnerWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5930528706560
+    m_Key: tripleExceptUpWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5958768955392
+    m_Key: tripleExcetDownWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5987252473856
+    m_Key: tripleExceptLeftWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6004973408256
+    m_Key: tripleExceptRightWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6024195903488
+    m_Key: tripleExceptLeftInnerWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6041103142912
+    m_Key: tripleExceptRightInnerWall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6062376652800
+    m_Key: aloneWall
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
