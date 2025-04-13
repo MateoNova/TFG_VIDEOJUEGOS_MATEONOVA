@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Controllers.Generators;
+using Generators;
 using UnityEditor;
 using UnityEngine;
 using Views.Attributes;

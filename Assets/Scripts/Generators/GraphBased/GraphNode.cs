@@ -5,7 +5,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Views
+namespace Generators.GraphBased
 {
     /// <summary>
     /// Represents a node in the graph, extending the Node class.

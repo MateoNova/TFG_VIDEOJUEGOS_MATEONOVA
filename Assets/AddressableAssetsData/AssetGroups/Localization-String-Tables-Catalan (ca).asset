@@ -15,8 +15,28 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Catalan (ca)
   m_GUID: 6bf135e60dbbf174983d1df4aaf2a9a2
   m_SerializeEntries:
+  - m_GUID: 781f9d1d5635e6c458f7e7fc60500153
+    m_Address: SelectionTable_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d0e77a824e02a04aa0518f36ada2859
+    m_Address: InitializationTable_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 846f0e643fc1bf8459eea587b8c57ef4
     m_Address: RandomWalkTooltips_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8d1512428702ac45a9af2a1c14fa655
+    m_Address: StyleTable_ca
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ca

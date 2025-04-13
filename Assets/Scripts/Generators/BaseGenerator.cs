@@ -1,7 +1,7 @@
 using Models;
 using UnityEngine;
 
-namespace Controllers.Generators
+namespace Generators
 {
     /// <summary>
     /// Abstract base class for dungeon generators. Provides common functionality for managing

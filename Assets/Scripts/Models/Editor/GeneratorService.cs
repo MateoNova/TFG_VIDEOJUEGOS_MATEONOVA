@@ -1,4 +1,4 @@
-﻿using Controllers.Generators;
+﻿using Generators;
 
 namespace Models.Editor
 {

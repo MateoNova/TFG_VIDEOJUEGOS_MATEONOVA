@@ -22,6 +22,26 @@ MonoBehaviour:
     - Locale-en
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b7f614a66a22ef468e337d5de62202f
+    m_Address: SelectionTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e873d9231ea7c854b9ce24252b7a9eae
+    m_Address: InitializationTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed95b85415d566b43ac5efbe280c7183
+    m_Address: StyleTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 3d57819863985fd4ba7dd9a2063e6b1e, type: 2}
   m_SchemaSet:

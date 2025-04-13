@@ -2,7 +2,7 @@
 using UnityEngine;
 using WallGenerator = Models.WallGenerator;
 
-namespace Controllers.Generators
+namespace Generators
 {
     /// <summary>
     /// Generates a dungeon using the Binary Space Partitioning (BSP) algorithm.

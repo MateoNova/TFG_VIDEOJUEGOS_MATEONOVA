@@ -65,64 +65,64 @@ namespace Models
         [SerializeField] public Tilemap wallTilemap; // Tilemap for wall tiles.
 
         // Various wall tile types categorized by their positions.
-        [SerializeField, WallTileGroup("Cardinal Directions")]
+        [SerializeField, WallTileGroup("CardinalDirections")]
         private TileBase upWall;
 
-        [SerializeField, WallTileGroup("Cardinal Directions")]
+        [SerializeField, WallTileGroup("CardinalDirections")]
         private TileBase downWall;
 
-        [SerializeField, WallTileGroup("Cardinal Directions")]
+        [SerializeField, WallTileGroup("CardinalDirections")]
         private TileBase leftWall;
 
-        [SerializeField, WallTileGroup("Cardinal Directions")]
+        [SerializeField, WallTileGroup("CardinalDirections")]
         private TileBase rightWall;
 
-        [SerializeField, WallTileGroup("External Corners")]
+        [SerializeField, WallTileGroup("ExternalCorners")]
         private TileBase topLeftWall;
 
-        [SerializeField, WallTileGroup("External Corners")]
+        [SerializeField, WallTileGroup("ExternalCorners")]
         private TileBase topRightWall;
 
-        [SerializeField, WallTileGroup("External Corners")]
+        [SerializeField, WallTileGroup("ExternalCorners")]
         private TileBase bottomLeftWall;
 
-        [SerializeField, WallTileGroup("External Corners")]
+        [SerializeField, WallTileGroup("ExternalCorners")]
         private TileBase bottomRightWall;
 
-        [SerializeField, WallTileGroup("External Corners")]
+        [SerializeField, WallTileGroup("ExternalCorners")]
         private TileBase allCornersWall;
 
-        [SerializeField, WallTileGroup("Inner Corners")]
+        [SerializeField, WallTileGroup("InnerCorners")]
         private TileBase topLeftInnerWall;
 
-        [SerializeField, WallTileGroup("Inner Corners")]
+        [SerializeField, WallTileGroup("InnerCorners")]
         private TileBase topRightInnerWall;
 
-        [SerializeField, WallTileGroup("Inner Corners")]
+        [SerializeField, WallTileGroup("InnerCorners")]
         private TileBase bottomLeftInnerWall;
 
-        [SerializeField, WallTileGroup("Inner Corners")]
+        [SerializeField, WallTileGroup("InnerCorners")]
         private TileBase bottomRightInnerWall;
 
-        [SerializeField, WallTileGroup("Triple Walls")]
+        [SerializeField, WallTileGroup("TripleWalls")]
         private TileBase tripleExceptUpWall;
 
-        [SerializeField, WallTileGroup("Triple Walls")]
+        [SerializeField, WallTileGroup("TripleWalls")]
         private TileBase tripleExcetDownWall;
 
-        [SerializeField, WallTileGroup("Triple Walls")]
+        [SerializeField, WallTileGroup("TripleWalls")]
         private TileBase tripleExceptLeftWall;
 
-        [SerializeField, WallTileGroup("Triple Walls")]
+        [SerializeField, WallTileGroup("TripleWalls")]
         private TileBase tripleExceptRightWall;
 
-        [SerializeField, WallTileGroup("Triple Inner Walls")]
+        [SerializeField, WallTileGroup("TripleInnerWalls")]
         private TileBase tripleExceptLeftInnerWall;
 
-        [SerializeField, WallTileGroup("Triple Inner Walls")]
+        [SerializeField, WallTileGroup("TripleInnerWalls")]
         private TileBase tripleExceptRightInnerWall;
 
-        [SerializeField, WallTileGroup("Alone Walls")]
+        [SerializeField, WallTileGroup("AloneWalls")]
         private TileBase aloneWall;
 
         #endregion

@@ -2,13 +2,9 @@
 using System.Linq;
 using Models;
 using UnityEngine;
-using Views;
 using Views.Attributes;
-using GraphCustomWindow = Views.GraphCustomWindow;
-using GraphGeneratorView = Views.GraphGeneratorView;
-using WallGenerator = Models.WallGenerator;
 
-namespace Controllers.Generators
+namespace Generators.GraphBased
 {
     /// <summary>
     /// GraphBasedGenerator is a generator that creates a dungeon layout based on a graph structure.

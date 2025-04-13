@@ -116,7 +116,7 @@ namespace Utils
             };
         }
 
-        public static VisualElement LabelForToggle(string text)
+        public static Label LabelForToggle(string text)
         {
             return new Label(text)
             {
@@ -128,7 +128,7 @@ namespace Utils
             };
         }
 
-        public static VisualElement LabelForIntField(string text)
+        public static Label LabelForIntField(string text)
         {
             return new Label(text)
             {

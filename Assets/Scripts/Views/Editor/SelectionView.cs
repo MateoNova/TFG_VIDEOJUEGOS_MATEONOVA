@@ -1,6 +1,7 @@
 ﻿using UnityEngine.UIElements;
 using SelectionController = Controllers.Editor.SelectionController;
 using StyleUtils = Utils.StyleUtils;
+using Utils; // Asegúrate de incluir el namespace donde está LocalizationUIHelper
 
 namespace Views.Editor
 {
@@ -27,28 +28,36 @@ namespace Views.Editor
         public VisualElement CreateUI()
         {
             _container = StyleUtils.SimpleContainer();
-            
-            var foldout = new Foldout { text = "Generator Selection", value = true };
+
+            // Creamos el foldout y asignamos el texto localizado
+            var foldout = new Foldout { value = true };
+            // Se utiliza la clave "GeneratorSelection" de la tabla "SelectionTable"
+            foldout.SetLocalizedText("GeneratorSelection", "SelectionTable");
+
             var cachedNames = _controller.CachedGeneratorNames();
 
             if (cachedNames == null || cachedNames.Count == 0)
             {
-                var helpLabel =
-                    StyleUtils.HelpLabel(
-                        "No generators found in the scene. Click the initialize button to search for them.");
+                // Se crea un help label y se le asigna un mensaje localizado
+                var helpLabel = StyleUtils.HelpLabel("");
+                helpLabel.SetLocalizedText("NoGeneratorsFound", "SelectionTable");
                 foldout.Add(helpLabel);
             }
             else
             {
-                var dropdown = new DropdownField("Select Generator", cachedNames,
-                    cachedNames[_controller.SelectedGeneratorIndex()]);
+                // Se crea el dropdown sin texto fijo en el constructor y se actualiza su label mediante LocalizationUIHelper
+                var dropdown = new DropdownField();
+                dropdown.SetLocalizedTitle("SelectGenerator", "SelectionTable");
+
+                // Se asignan las opciones y el valor inicial
+                dropdown.choices = cachedNames;
+                dropdown.value = cachedNames[_controller.SelectedGeneratorIndex()];
                 dropdown.RegisterValueChangedCallback(evt => _controller.ChangeGenerator(evt.newValue));
 
                 foldout.Add(dropdown);
             }
 
             _container.Add(foldout);
-
             return _container;
         }
     }
