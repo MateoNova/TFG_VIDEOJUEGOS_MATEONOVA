@@ -1,6 +1,7 @@
 ﻿using UnityEngine.UIElements;
 using ActionsController = Controllers.Editor.ActionsController;
 using StyleUtils = Utils.StyleUtils;
+using Utils;
 
 namespace Views.Editor
 {
@@ -27,7 +28,8 @@ namespace Views.Editor
         public VisualElement CreateUI()
         {
             var container = StyleUtils.SimpleContainer();
-            var actionsFoldout = new Foldout { text = "Generation Actions", value = _showGenerationActions };
+            var actionsFoldout = new Foldout { value = _showGenerationActions };
+            actionsFoldout.SetLocalizedText("GenerationActions", "ActionsTable");
             actionsFoldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
             container.Add(actionsFoldout);
 
@@ -56,16 +58,20 @@ namespace Views.Editor
                 }
             };
 
-            var generateButton = new Button(_actionsController.Generate) { text = "Generate Dungeon" };
+            var generateButton = new Button(_actionsController.Generate);
+            generateButton.SetLocalizedText("GenerateDungeon", "ActionsTable");
             buttonsContainer.Add(generateButton);
 
-            var clearButton = new Button(ActionsController.ClearDungeon) { text = "Clear Dungeon" };
+            var clearButton = new Button(ActionsController.ClearDungeon);
+            clearButton.SetLocalizedText("ClearDungeon", "ActionsTable");
             buttonsContainer.Add(clearButton);
 
-            var saveButton = new Button(_actionsController.SaveDungeon) { text = "Save Dungeon" };
+            var saveButton = new Button(_actionsController.SaveDungeon);
+            saveButton.SetLocalizedText("SaveDungeon", "ActionsTable");
             buttonsContainer.Add(saveButton);
 
-            var loadButton = new Button(_actionsController.LoadDungeon) { text = "Load Dungeon" };
+            var loadButton = new Button(_actionsController.LoadDungeon);
+            loadButton.SetLocalizedText("LoadDungeon", "ActionsTable");
             buttonsContainer.Add(loadButton);
 
             return buttonsContainer;
@@ -78,11 +84,13 @@ namespace Views.Editor
         private void AddClearToggle(Foldout actionsFoldout)
         {
             var clearToggle = StyleUtils.SimpleToggle(
-                "Clear Dungeon",
+                "",
                 _actionsController.ClearDungeonToggle,
-                "Clear the dungeon before generating."
+                ""
             );
 
+            clearToggle.SetLocalizedText("ClearDungeonToggle", "ActionsTable");
+            clearToggle.SetLocalizedTooltip("ClearDungeonTooltip", "ActionsTable");
             clearToggle.RegisterValueChangedCallback(evt => _actionsController.SetClearDungeon(evt.newValue));
 
             actionsFoldout.Add(clearToggle);

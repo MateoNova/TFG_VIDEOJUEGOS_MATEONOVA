@@ -67,5 +67,39 @@ namespace Utils
             UpdateDropdown();
             LocalizationSettings.SelectedLocaleChanged += locale => UpdateDropdown();
         }
+
+        /// <summary>
+        /// Actualiza el texto de un Toggle en base a la clave y tabla proporcionadas, y se suscribe al cambio de idioma.
+        /// </summary>
+        public static void SetLocalizedText(this Toggle toggle, string key, string tableName = "DefaultTable")
+        {
+            void UpdateToggle()
+            {
+                toggle.text = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
+            }
+
+            // Asigna el texto inicial.
+            UpdateToggle();
+
+            // Nos suscribimos para que, al cambiar el idioma, se actualice el texto.
+            LocalizationSettings.SelectedLocaleChanged += locale => UpdateToggle();
+        }
+        
+        /// <summary>
+        /// Updates the tooltip of a VisualElement based on the provided key and table, and subscribes to locale changes.
+        /// </summary>
+        public static void SetLocalizedTooltip(this VisualElement element, string key, string tableName = "DefaultTable")
+        {
+            void UpdateTooltip()
+            {
+                element.tooltip = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
+            }
+
+            // Assign the initial tooltip.
+            UpdateTooltip();
+
+            // Subscribe to locale changes to update the tooltip dynamically.
+            LocalizationSettings.SelectedLocaleChanged += locale => UpdateTooltip();
+        }
     }
 }
