@@ -1,4 +1,6 @@
-﻿namespace Views.Tooltips
+﻿using UnityEngine
+
+namespace Views.Tooltips
 {
     public static class RandomWalkTooltips
     {
