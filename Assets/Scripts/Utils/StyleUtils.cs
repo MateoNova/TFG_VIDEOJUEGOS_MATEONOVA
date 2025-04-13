@@ -24,8 +24,8 @@ namespace Utils
                 style =
                 {
                     flexDirection = FlexDirection.Row,
-                    flexWrap = Wrap.Wrap,
-                    marginTop = 5
+                    marginTop = 5,
+                    marginBottom = 5
                 }
             };
         }
@@ -38,7 +38,8 @@ namespace Utils
                 style =
                 {
                     height = 30,
-                    marginLeft = first ? 5 : 0
+                    marginLeft = first ? 5 : 0,
+                    flexGrow = 1
                 }
             };
         }

@@ -12,6 +12,18 @@ namespace Views.Attributes
         private static readonly Dictionary<string, string> LocalizedStringCache = new();
         private static bool _isInitialized;
 
+        static LocalizedTooltipPropertyDrawer()
+        {
+            // Subscribe to locale change event
+            LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+        }
+
+        private static void OnLocaleChanged(UnityEngine.Localization.Locale locale)
+        {
+            // Clear the cache when the locale changes
+            LocalizedStringCache.Clear();
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             // Ensure the localization system is initialized only once
@@ -31,15 +43,17 @@ namespace Views.Attributes
             // Retrieve the custom attribute
             var localizedTooltip = (LocalizedTooltipAttribute)attribute;
 
+            // Construct a unique cache key using the table name and key
+            var cacheKey = $"{localizedTooltip.TableName}:{localizedTooltip.Key}";
+
             // Check if the localized string is already cached
-            if (!LocalizedStringCache.TryGetValue(localizedTooltip.Key, out var localizedText))
+            if (!LocalizedStringCache.TryGetValue(cacheKey, out var localizedText))
             {
                 // If not cached, fetch and cache it
                 localizedText =
-                    LocalizationSettings.StringDatabase.GetLocalizedString("RandomWalkTooltips", localizedTooltip.Key);
-                LocalizedStringCache[localizedTooltip.Key] = localizedText;
-
-                Debug.Log($"Localized text for key '{localizedTooltip.Key}': {localizedText}");
+                    LocalizationSettings.StringDatabase.GetLocalizedString(localizedTooltip.TableName,
+                        localizedTooltip.Key);
+                LocalizedStringCache[cacheKey] = localizedText;
             }
 
             // Assign the tooltip to the label

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UIElements;
 using EventBus = Models.Editor.EventBus;
 using InitializationController = Controllers.Editor.InitializationController;
@@ -44,9 +45,41 @@ namespace Views.Editor
             var container = StyleUtils.SimpleContainer();
             var foldout = new Foldout { text = "Initialization", value = true };
             foldout.Add(CreateButtonContainer());
+            foldout.Add(CreateLanguageSelector());
             container.Add(foldout);
 
             return container;
+        }
+
+        /// <summary>
+        /// Creates a dropdown for selecting the language.
+        /// </summary>
+        /// <returns>A <see cref="VisualElement"/> containing the language selector.</returns>
+        private VisualElement CreateLanguageSelector()
+        {
+            var dropdown = new DropdownField("Select Language");
+            var availableLocales = LocalizationSettings.AvailableLocales.Locales;
+
+            // Populate the dropdown with available locales
+            foreach (var locale in availableLocales)
+            {
+                dropdown.choices.Add(locale.LocaleName);
+            }
+
+            // Set the current locale as the selected value
+            dropdown.value = LocalizationSettings.SelectedLocale.LocaleName;
+
+            // Handle language selection
+            dropdown.RegisterValueChangedCallback(evt =>
+            {
+                var selectedLocale = availableLocales.Find(locale => locale.LocaleName == evt.newValue);
+                if (selectedLocale != null)
+                {
+                    LocalizationSettings.SelectedLocale = selectedLocale;
+                }
+            });
+
+            return dropdown;
         }
 
         /// <summary>

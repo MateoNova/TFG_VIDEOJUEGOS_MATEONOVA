@@ -13,40 +13,40 @@ namespace Controllers.Generators
     public class RandomWalkGenerator : BaseGenerator
     {
         #region Serialized Fields
-
+        
         [SerializeField,
-         LocalizedTooltip("WalkIterationsTooltip")]
+         LocalizedTooltip("WalkIterationsTooltip", "RandomWalkTooltips")]
         private int walkIterations = 10;
-
+        
         [SerializeField,
-         LocalizedTooltip("StepsPerIterationTooltip")]
+         LocalizedTooltip("StepsPerIterationTooltip", "RandomWalkTooltips")]
         private int stepsPerIteration = 10;
-
+        
         [SerializeField,
          Condition("generateCorridors"),
-         LocalizedTooltip("GenerateCorridorsTooltip")]
+         LocalizedTooltip("GenerateCorridorsTooltip", "RandomWalkTooltips")]
         private bool generateCorridors;
-
+        
         [SerializeField,
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("CorridorLengthTooltip")]
+         LocalizedTooltip("CorridorLengthTooltip", "RandomWalkTooltips")]
         private int corridorLength = 10;
-
+        
         [SerializeField,
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("CorridorCountTooltip")]
+         LocalizedTooltip("CorridorCountTooltip", "RandomWalkTooltips")]
         private int corridorCount = 5;
-
+        
         [SerializeField, Range(0f, 1f),
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("RoomPercentageTooltip")]
+         LocalizedTooltip("RoomPercentageTooltip", "RandomWalkTooltips")]
         private float roomPercentage = 0.8f;
-
+        
         [SerializeField, Range(1f, 4f),
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("CorridorWidthTooltip")]
+         LocalizedTooltip("CorridorWidthTooltip", "RandomWalkTooltips")]
         private int corridorWidth = 1;
-
+        
         #endregion
 
         #region Generation Methods

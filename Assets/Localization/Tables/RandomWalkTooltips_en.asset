@@ -19,28 +19,44 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 48466137088
-    m_Localized: The number of iterations the random walk algorithm will perform.
-      - More iterations will result in a larger and more complex dungeon.
+    m_Localized: "The number of iterations the random walk algorithm will perform.\r\n\r\n
+      - More iterations will result in a larger and more complex dungeon."
     m_Metadata:
       m_Items: []
   - m_Id: 35311661780992
-    m_Localized: bbbb
+    m_Localized: "Number of corridors to generate.\r\n\r\n - Smaller values create
+      fewer corridors, resulting in fewer connections between rooms.\r\n\r\n - Larger
+      values create more corridors, resulting in more connections between rooms."
     m_Metadata:
       m_Items: []
   - m_Id: 35276333158400
-    m_Localized: bbbb
+    m_Localized: "Length of each corridor.\r\n\r\n - Smaller values create shorter
+      corridors, resulting in a more compact dungeon layout.\r\n\r\n - Larger values
+      create longer corridors, resulting in a more spread-out dungeon layout."
     m_Metadata:
       m_Items: []
   - m_Id: 35370461728768
-    m_Localized: bbbb
+    m_Localized: "Width of the corridors.\r\n\r\n - Smaller values create narrower
+      corridors, resulting in tighter passageways.\r\n\r\n - Larger values create
+      wider corridors, resulting in more spacious passageways."
     m_Metadata:
       m_Items: []
   - m_Id: 35179767697408
-    m_Localized: bbbb
+    m_Localized: "Flag to determine if corridors should be generated and calculate
+      potential room positions.\r\n\r\n - If true, the generator will create corridors
+      and rooms.\r\n\r\n - Otherwise, it will create a single walkable area."
     m_Metadata:
       m_Items: []
   - m_Id: 35344415100928
-    m_Localized: bbbb
+    m_Localized: "Percentage of potential room positions to convert into rooms.\r\n\r\n
+      - Smaller values create fewer rooms, resulting in a more sparse dungeon layout.\r\n\r\n
+      - Larger values create more rooms, resulting in a more dense dungeon layout."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59815934988288
+    m_Localized: "The number of steps taken in each iteration of the random walk
+      algorithm.\r\n\r\n - More steps per iteration will create longer paths in the
+      dungeon."
     m_Metadata:
       m_Items: []
   references:

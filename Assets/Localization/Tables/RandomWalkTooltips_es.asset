@@ -20,28 +20,49 @@ MonoBehaviour:
   m_TableData:
   - m_Id: 48466137088
     m_Localized: "El n\xFAmero de iteraciones que realizar\xE1 el algoritmo de caminata
-      aleatoria. - M\xE1s iteraciones dar\xE1n lugar a una mazmorra m\xE1s grande
-      y compleja."
+      aleatoria.\r\n\r\n - M\xE1s iteraciones resultar\xE1n en una mazmorra m\xE1s
+      grande y compleja."
     m_Metadata:
       m_Items: []
   - m_Id: 35344415100928
-    m_Localized: cccc
+    m_Localized: "Porcentaje de posiciones potenciales de salas a convertir en salas.\r\n\r\n
+      - Valores m\xE1s peque\xF1os crean menos salas, resultando en un dise\xF1o
+      de mazmorra m\xE1s disperso.\r\n\r\n - Valores m\xE1s grandes crean m\xE1s
+      salas, resultando en un dise\xF1o de mazmorra m\xE1s denso."
     m_Metadata:
       m_Items: []
   - m_Id: 35179767697408
-    m_Localized: cccc
+    m_Localized: "Indicador para determinar si se deben generar corredores y calcular
+      posiciones potenciales de salas.\r\n\r\n - Si es verdadero, el generador crear\xE1
+      corredores y salas.\r\n\r\n - De lo contrario, crear\xE1 un \xE1rea transitable
+      \xFAnica."
     m_Metadata:
       m_Items: []
   - m_Id: 35370461728768
-    m_Localized: cccc
+    m_Localized: "Ancho de los corredores.\r\n\r\n - Valores m\xE1s peque\xF1os crean
+      corredores m\xE1s estrechos, resultando en pasillos m\xE1s ajustados.\r\n\r\n
+      - Valores m\xE1s grandes crean corredores m\xE1s anchos, resultando en pasillos
+      m\xE1s espaciosos."
     m_Metadata:
       m_Items: []
   - m_Id: 35276333158400
-    m_Localized: cccc
+    m_Localized: "Longitud de cada corredor.\r\n\r\n - Valores m\xE1s peque\xF1os
+      crean corredores m\xE1s cortos, resultando en un dise\xF1o de mazmorra m\xE1s
+      compacto.\r\n\r\n - Valores m\xE1s grandes crean corredores m\xE1s largos,
+      resultando en un dise\xF1o de mazmorra m\xE1s disperso."
     m_Metadata:
       m_Items: []
   - m_Id: 35311661780992
-    m_Localized: cccc
+    m_Localized: "N\xFAmero de corredores a generar.\r\n\r\n - Valores m\xE1s peque\xF1os
+      crean menos corredores, resultando en menos conexiones entre salas.\r\n\r\n
+      - Valores m\xE1s grandes crean m\xE1s corredores, resultando en m\xE1s conexiones
+      entre salas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59815934988288
+    m_Localized: "El n\xFAmero de pasos realizados en cada iteraci\xF3n del algoritmo
+      de caminata aleatoria.\r\n\r\n - M\xE1s pasos por iteraci\xF3n crear\xE1n caminos
+      m\xE1s largos en la mazmorra."
     m_Metadata:
       m_Items: []
   references:

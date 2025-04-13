@@ -19,27 +19,49 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 48466137088
-    m_Localized: Holaaaaaaa
+    m_Localized: "El nombre d'iteracions que realitzar\xE0 l'algorisme de caminada
+      aleat\xF2ria.\r\n\r\n - M\xE9s iteracions resultaran en un calab\xF3s m\xE9s
+      gran i complex."
     m_Metadata:
       m_Items: []
   - m_Id: 35344415100928
-    m_Localized: aaaa
+    m_Localized: "Percentatge de posicions potencials de sales a convertir en sales.\r\n\r\n
+      - Valors m\xE9s petits creen menys sales, resultant en un disseny de calab\xF3s
+      m\xE9s dispers.\r\n\r\n - Valors m\xE9s grans creen m\xE9s sales, resultant
+      en un disseny de calab\xF3s m\xE9s dens."
     m_Metadata:
       m_Items: []
   - m_Id: 35370461728768
-    m_Localized: aaaa
+    m_Localized: "Amplada dels corredors.\r\n\r\n - Valors m\xE9s petits creen corredors
+      m\xE9s estrets, resultant en passadissos m\xE9s ajustats.\r\n\r\n - Valors
+      m\xE9s grans creen corredors m\xE9s amples, resultant en passadissos m\xE9s
+      espaiosos."
     m_Metadata:
       m_Items: []
   - m_Id: 35179767697408
-    m_Localized: aaaa
+    m_Localized: "Indicador per determinar si s'han de generar corredors i calcular
+      posicions potencials de sales.\r\n\r\n - Si \xE9s cert, el generador crear\xE0
+      corredors i sales.\r\n\r\n - En cas contrari, crear\xE0 una \xFAnica \xE0rea
+      transitable."
     m_Metadata:
       m_Items: []
   - m_Id: 35276333158400
-    m_Localized: aaaa
+    m_Localized: "Longitud de cada corredor.\r\n\r\n - Valors m\xE9s petits creen
+      corredors m\xE9s curts, resultant en un disseny de calab\xF3s m\xE9s compacte.\r\n\r\n
+      - Valors m\xE9s grans creen corredors m\xE9s llargs, resultant en un disseny
+      de calab\xF3s m\xE9s dispers."
     m_Metadata:
       m_Items: []
   - m_Id: 35311661780992
-    m_Localized: aaaa
+    m_Localized: "Nombre de corredors a generar.\r\n\r\n - Valors m\xE9s petits creen
+      menys corredors, resultant en menys connexions entre sales.\r\n\r\n - Valors
+      m\xE9s grans creen m\xE9s corredors, resultant en m\xE9s connexions entre sales."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59815934988288
+    m_Localized: "El nombre de passos realitzats en cada iteraci\xF3 de l'algorisme
+      de caminada aleat\xF2ria.\r\n\r\n - M\xE9s passos per iteraci\xF3 crearan camins
+      m\xE9s llargs al calab\xF3s."
     m_Metadata:
       m_Items: []
   references:
