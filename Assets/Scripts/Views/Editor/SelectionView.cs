@@ -45,7 +45,7 @@ namespace Views.Editor
             else
             {
                 // Se crea el dropdown sin texto fijo en el constructor y se actualiza su label mediante LocalizationUIHelper
-                var dropdown = new DropdownField();
+                var dropdown = StyleUtils.SimpleDropdown();
                 dropdown.SetLocalizedTitle("SelectGenerator", "SelectionTable");
 
                 dropdown.choices = cachedNames;

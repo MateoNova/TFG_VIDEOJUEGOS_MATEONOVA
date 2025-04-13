@@ -39,7 +39,7 @@ namespace Utils
                 {
                     height = 30,
                     marginLeft = first ? 5 : 0,
-                    flexGrow = 1
+                    flexGrow = 1,
                 }
             };
         }
@@ -177,21 +177,21 @@ namespace Utils
                     borderRightWidth = 1
                 }
             };
-        
+
             // Apply the font size and style only after the Foldout is fully initialized
             foldout.RegisterCallback<GeometryChangedEvent>(_ =>
             {
                 var label = foldout.Q<Label>();
-                
+
                 if (label == null) return;
-                
+
                 label.style.unityFontStyleAndWeight = FontStyle.Bold;
                 label.style.fontSize = 16;
             });
-        
+
             return foldout;
         }
-        
+
         public static Foldout ModernSubFoldout(string text, bool expanded = true)
         {
             var foldout = new Foldout
@@ -206,19 +206,43 @@ namespace Utils
                     borderRightWidth = 1
                 }
             };
-        
+
             // Apply the font size and style only after the Foldout is fully initialized
             foldout.RegisterCallback<GeometryChangedEvent>(_ =>
             {
                 var label = foldout.Q<Label>();
-                
+
                 if (label == null) return;
-                
+
                 label.style.unityFontStyleAndWeight = FontStyle.Bold;
                 label.style.fontSize = 14;
             });
-        
+
             return foldout;
+        }
+
+        public static DropdownField SimpleDropdown()
+        {
+            var dropdown = new DropdownField
+            {
+                style =
+                {
+                    marginTop = 5,
+                    marginBottom = 5
+                }
+            };
+
+            // Apply the font size only to the title label
+            dropdown.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                var label = dropdown.Q<Label>();
+                if (label != null)
+                {
+                    label.style.fontSize = 12;
+                }
+            });
+
+            return dropdown;
         }
     }
 }

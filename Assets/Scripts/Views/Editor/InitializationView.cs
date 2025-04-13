@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 using Utils;
 using EventBus = Models.Editor.EventBus;
 using InitializationController = Controllers.Editor.InitializationController;
-using StyleUtils = Utils.StyleUtils;
+
 
 namespace Views.Editor
 {
@@ -36,10 +36,10 @@ namespace Views.Editor
             return container;
         }
 
-        private VisualElement CreateLanguageSelector()
+        private DropdownField CreateLanguageSelector()
         {
             // Se puede aplicar la localización tanto en el texto del dropdown como en su título si lo deseas.
-            var dropdown = new DropdownField();
+            var dropdown = StyleUtils.SimpleDropdown();
             dropdown.SetLocalizedTitle("SelectLanguage", "InitializationTable");
 
             if (LocalizationSettings.InitializationOperation.IsDone)
