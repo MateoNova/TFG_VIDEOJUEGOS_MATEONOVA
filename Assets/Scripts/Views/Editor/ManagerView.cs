@@ -14,7 +14,7 @@ namespace Views.Editor
         /// <summary>
         /// View responsible for initialization actions.
         /// </summary>
-        private global::Views.Editor.InitializationView _initializationView;
+        private InitializationView _initializationView;
 
         /// <summary>
         /// View responsible for generator selection.
@@ -34,7 +34,7 @@ namespace Views.Editor
         /// <summary>
         /// View responsible for generation-related actions.
         /// </summary>
-        private global::Views.Editor.ActionsView _actionsView;
+        private ActionsView _actionsView;
 
         /// <summary>
         /// Displays the Generation Manager window in the Unity Editor.
@@ -77,11 +77,11 @@ namespace Views.Editor
         /// </summary>
         private void InitializeDependencies()
         {
-            _initializationView = new global::Views.Editor.InitializationView();
+            _initializationView = new InitializationView();
             _selectionView = new SelectionView();
             _settingsView = new SettingsView();
             _styleView = new StyleView();
-            _actionsView = new global::Views.Editor.ActionsView();
+            _actionsView = new ActionsView();
         }
 
         /// <summary>
