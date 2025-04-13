@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UIElements;
 using EventBus = Models.Editor.EventBus;
@@ -58,26 +59,43 @@ namespace Views.Editor
         private VisualElement CreateLanguageSelector()
         {
             var dropdown = new DropdownField("Select Language");
-            var availableLocales = LocalizationSettings.AvailableLocales.Locales;
 
-            // Populate the dropdown with available locales
-            foreach (var locale in availableLocales)
+            // Ensure the localization system is initialized
+            if (LocalizationSettings.InitializationOperation.IsDone)
             {
-                dropdown.choices.Add(locale.LocaleName);
-            }
+                var availableLocales = LocalizationSettings.AvailableLocales?.Locales;
 
-            // Set the current locale as the selected value
-            dropdown.value = LocalizationSettings.SelectedLocale.LocaleName;
-
-            // Handle language selection
-            dropdown.RegisterValueChangedCallback(evt =>
-            {
-                var selectedLocale = availableLocales.Find(locale => locale.LocaleName == evt.newValue);
-                if (selectedLocale != null)
+                if (availableLocales != null)
                 {
-                    LocalizationSettings.SelectedLocale = selectedLocale;
+                    // Populate the dropdown with available locales
+                    foreach (var locale in availableLocales)
+                    {
+                        dropdown.choices.Add(locale.LocaleName);
+                    }
+
+                    // Set the current locale as the selected value
+                    dropdown.value = LocalizationSettings.SelectedLocale?.LocaleName ?? dropdown.choices[0];
+
+                    // Handle language selection
+                    dropdown.RegisterValueChangedCallback(evt =>
+                    {
+                        var selectedLocale = availableLocales.Find(locale => locale.LocaleName == evt.newValue);
+                        if (selectedLocale != null)
+                        {
+                            LocalizationSettings.SelectedLocale = selectedLocale;
+                        }
+                    });
                 }
-            });
+                else
+                {
+                    Debug.LogError("AvailableLocales is null. Ensure localization is configured correctly.");
+                }
+            }
+            else
+            {
+                Debug.LogError(
+                    "Localization system is not initialized. Ensure it is initialized before accessing locales.");
+            }
 
             return dropdown;
         }

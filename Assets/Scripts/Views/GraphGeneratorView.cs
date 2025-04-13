@@ -5,7 +5,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Views.Editor
+namespace Views
 {
     /// <summary>
     /// Represents the view for the graph generator, extending the GraphView class.
