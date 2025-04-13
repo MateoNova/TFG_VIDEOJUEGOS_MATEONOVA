@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Generators.Controllers;
 using UnityEngine;
 
 namespace Models

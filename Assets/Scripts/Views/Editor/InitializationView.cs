@@ -1,8 +1,8 @@
 ﻿using System;
-using Editor;
 using UnityEngine.UIElements;
 using EventBus = Models.Editor.EventBus;
 using InitializationController = Controllers.Editor.InitializationController;
+using StyleUtils = Utils.StyleUtils;
 
 namespace Views.Editor
 {

@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Editor
+namespace Utils
 {
-    public class StyleUtils
+    public static class StyleUtils
     {
         public static ScrollView SimpleScrollView()
         {

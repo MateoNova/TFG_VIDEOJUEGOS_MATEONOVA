@@ -9,6 +9,10 @@ using WallGenerator = Models.WallGenerator;
 
 namespace Controllers.Editor
 {
+    /// <summary>
+    /// GraphBasedGenerator is a generator that creates a dungeon layout based on a graph structure.
+    /// It uses a tilemap to paint rooms and corridors, and it handles door placements.
+    /// </summary>
     [OpenGraphEditor]
     public class GraphBasedGenerator : BaseGenerator
     {

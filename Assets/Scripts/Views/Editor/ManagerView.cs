@@ -1,7 +1,7 @@
-﻿using Editor;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using EventBus = Models.Editor.EventBus;
+using StyleUtils = Utils.StyleUtils;
 
 namespace Views.Editor
 {

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using EventBus = Models.Editor.EventBus;
 using GeneratorService = Models.Editor.GeneratorService;
 using SettingsController = Controllers.Editor.SettingsController;
+using StyleUtils = Utils.StyleUtils;
 
 namespace Views.Editor
 {

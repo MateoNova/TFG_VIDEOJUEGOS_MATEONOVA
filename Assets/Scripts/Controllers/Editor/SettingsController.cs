@@ -8,8 +8,18 @@ using Views.Attributes;
 
 namespace Controllers.Editor
 {
+    /// <summary>
+    /// Controller responsible for managing the dynamic display of fields in the Unity Editor
+    /// based on custom attributes and conditions.
+    /// </summary>
     public class SettingsController
     {
+        /// <summary>
+        /// Adds a field to the UI container without checking for custom attributes.
+        /// </summary>
+        /// <param name="property">The serialized property to add.</param>
+        /// <param name="serializedObject">The serialized object containing the property.</param>
+        /// <param name="container">The UI container to which the field will be added.</param>
         public void AddNoCustomAttributesField(SerializedProperty property, SerializedObject serializedObject,
             VisualElement container)
         {
@@ -18,6 +28,15 @@ namespace Controllers.Editor
             container.Add(normalField);
         }
 
+        /// <summary>
+        /// Checks if a field has a ConditionalFieldAttribute and adds it to the UI container if present.
+        /// </summary>
+        /// <param name="fieldInfo">The field's metadata.</param>
+        /// <param name="property">The serialized property to check.</param>
+        /// <param name="serializedObject">The serialized object containing the property.</param>
+        /// <param name="container">The UI container to which the field will be added.</param>
+        /// <param name="conditionalFields">A dictionary to track fields grouped by their condition.</param>
+        /// <returns>True if the attribute is found and processed; otherwise, false.</returns>
         public bool CheckForConditionalAttribute(FieldInfo fieldInfo, SerializedProperty property,
             SerializedObject serializedObject, VisualElement container,
             Dictionary<string, List<PropertyField>> conditionalFields)
@@ -40,6 +59,17 @@ namespace Controllers.Editor
             return true;
         }
 
+        /// <summary>
+        /// Checks if a field has a ConditionAttribute and adds it to the UI container if present.
+        /// Registers a callback to update the visibility of dependent fields.
+        /// </summary>
+        /// <param name="fieldInfo">The field's metadata.</param>
+        /// <param name="property">The serialized property to check.</param>
+        /// <param name="serializedObject">The serialized object containing the property.</param>
+        /// <param name="container">The UI container to which the field will be added.</param>
+        /// <param name="conditionFields">A dictionary to track condition fields by group.</param>
+        /// <param name="conditionalFields">A dictionary to track fields grouped by their condition.</param>
+        /// <returns>True if the attribute is found and processed; otherwise, false.</returns>
         public bool CheckForConditionAttribute(FieldInfo fieldInfo, SerializedProperty property,
             SerializedObject serializedObject, VisualElement container,
             Dictionary<string, PropertyField> conditionFields,
@@ -48,14 +78,15 @@ namespace Controllers.Editor
             if (fieldInfo.GetCustomAttribute(typeof(ConditionAttribute)) is not ConditionAttribute conditionAttr)
                 return false;
 
-            // Si no se especifica grupo, se usa el nombre del campo.
+            // If no group is specified, use the field name as the group.
             var group = conditionAttr.Group ?? property.name;
             var conditionPropField = new PropertyField(property);
             conditionPropField.Bind(serializedObject);
             container.Add(conditionPropField);
 
             conditionFields[group] = conditionPropField;
-            // Se añade callback para actualizar la visibilidad de los campos condicionales.
+
+            // Register a callback to update the visibility of dependent fields.
             conditionPropField.RegisterValueChangeCallback(_ =>
             {
                 UpdateConditionalVisibility(group, serializedObject, conditionalFields);
@@ -63,6 +94,12 @@ namespace Controllers.Editor
             return true;
         }
 
+        /// <summary>
+        /// Updates the visibility of fields based on the value of a condition field.
+        /// </summary>
+        /// <param name="group">The group name of the condition field.</param>
+        /// <param name="serializedObject">The serialized object containing the condition field.</param>
+        /// <param name="conditionalFields">A dictionary of fields grouped by their condition.</param>
         public void UpdateConditionalVisibility(string group, SerializedObject serializedObject,
             Dictionary<string, List<PropertyField>> conditionalFields)
         {
@@ -71,13 +108,13 @@ namespace Controllers.Editor
                 .GetField(group, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (conditionField == null)
             {
-                Debug.LogWarning($"No se encontró el campo condición para el grupo: '{group}'.");
+                Debug.LogWarning($"Condition field not found for group: '{group}'.");
                 return;
             }
 
             if (conditionField.FieldType != typeof(bool))
             {
-                Debug.LogWarning($"El campo condición '{group}' no es de tipo booleano.");
+                Debug.LogWarning($"Condition field '{group}' is not of type boolean.");
                 return;
             }
 

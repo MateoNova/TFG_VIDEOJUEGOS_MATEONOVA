@@ -1,6 +1,6 @@
-﻿using Editor;
-using UnityEngine.UIElements;
+﻿using UnityEngine.UIElements;
 using ActionsController = Controllers.Editor.ActionsController;
+using StyleUtils = Utils.StyleUtils;
 
 namespace Views.Editor
 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -10,6 +9,7 @@ using UnityEngine.UIElements;
 using Views.Attributes;
 using GeneratorService = Models.Editor.GeneratorService;
 using StyleController = Controllers.Editor.StyleController;
+using StyleUtils = Utils.StyleUtils;
 
 namespace Views.Editor
 {

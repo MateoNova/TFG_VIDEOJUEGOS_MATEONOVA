@@ -1,26 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Generators.Controllers;
 using UnityEngine;
-
-// Asumiendo que las clases de override están en Models o un namespace similar.
 
 namespace Models
 {
+    /// <summary>
+    /// Responsible for generating walls around walkable positions in a dungeon.
+    /// </summary>
     public class WallGenerator : MonoBehaviour
     {
+        /// <summary>
+        /// Generates walls based on walkable positions and paints them using the provided tilemap painter.
+        /// </summary>
+        /// <param name="walkablePositions">A set of positions that are walkable.</param>
+        /// <param name="painter">The tilemap painter used to paint the walls.</param>
+        /// <param name="nonWallPositions">Optional. A set of positions where walls should not be placed.</param>
         public static void GenerateWalls(HashSet<Vector2Int> walkablePositions, ITilemapPainter painter,
             HashSet<Vector2Int> nonWallPositions = null)
         {
-            // 1. Construir posiciones iniciales de muro
+            // 1. Build initial wall positions
             var wallPositionsByType = BuildInitialWallPositions(walkablePositions);
             Debug.Log("Initial wall count: " + wallPositionsByType.Values.Sum(set => set.Count));
 
-            // 2. Aplicar override rules de manera optimizada
-            int overridesCount = ApplyWallOverrides(wallPositionsByType, walkablePositions);
+            // 2. Apply override rules to optimize wall placement
+            var overridesCount = ApplyWallOverrides(wallPositionsByType, walkablePositions);
             Debug.Log("Overrides applied: " + overridesCount);
 
-            // 3. Pintar cada tipo de muro
+            // 3. Paint each type of wall
             foreach (var kvp in wallPositionsByType)
             {
                 var positions = (nonWallPositions != null)
@@ -30,8 +36,13 @@ namespace Models
             }
         }
 
-        #region Construcción de Posiciones de Muro
+        #region Wall Position Construction
 
+        /// <summary>
+        /// Builds the initial wall positions based on the given floor positions.
+        /// </summary>
+        /// <param name="floorPositions">A set of positions representing the floor.</param>
+        /// <returns>A dictionary mapping wall types to their respective positions.</returns>
         private static Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>> BuildInitialWallPositions(
             HashSet<Vector2Int> floorPositions)
         {
@@ -71,6 +82,12 @@ namespace Models
             };
         }
 
+        /// <summary>
+        /// Gets wall positions in a specific direction relative to the floor positions.
+        /// </summary>
+        /// <param name="floorPositions">A set of positions representing the floor.</param>
+        /// <param name="direction">The direction to check for wall positions.</param>
+        /// <returns>A set of wall positions in the specified direction.</returns>
         private static HashSet<Vector2Int> GetSpecificWallPositions(HashSet<Vector2Int> floorPositions,
             Vector2Int direction)
         {
@@ -85,6 +102,13 @@ namespace Models
             return positions;
         }
 
+        /// <summary>
+        /// Gets corner wall positions based on two directions relative to the floor positions.
+        /// </summary>
+        /// <param name="floorPositions">A set of positions representing the floor.</param>
+        /// <param name="direction1">The first direction to check for wall positions.</param>
+        /// <param name="direction2">The second direction to check for wall positions.</param>
+        /// <returns>A set of corner wall positions.</returns>
         private static HashSet<Vector2Int> GetCornerPositions(HashSet<Vector2Int> floorPositions, Vector2Int direction1,
             Vector2Int direction2)
         {
@@ -104,14 +128,20 @@ namespace Models
 
         #endregion
 
-        #region Aplicación de Overrides
+        #region Wall Overrides Application
 
+        /// <summary>
+        /// Applies override rules to adjust wall positions based on specific conditions.
+        /// </summary>
+        /// <param name="wallPositionsByType">A dictionary mapping wall types to their respective positions.</param>
+        /// <param name="floorPositions">A set of positions representing the floor.</param>
+        /// <returns>The number of overrides applied.</returns>
         private static int ApplyWallOverrides(
             Dictionary<Utils.Utils.WallPosition, HashSet<Vector2Int>> wallPositionsByType,
             HashSet<Vector2Int> floorPositions)
         {
-            // Consolidar todas las posiciones de muro para optimizar las búsquedas
-            HashSet<Vector2Int> allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
+            // Consolidate all wall positions for optimized lookups
+            var allWallPositions = wallPositionsByType.Values.SelectMany(v => v).ToHashSet();
             var overrideRules = new List<IWallOverrideCase>
             {
                 new DownWallToUpCase(),
@@ -148,15 +178,14 @@ namespace Models
             {
                 foreach (var pos in
                          wallPositionsByType[wallType]
-                             .ToList()) // ToList para evitar modificar la colección durante el recorrido
+                             .ToList()) // ToList to avoid modifying the collection during iteration
                 {
                     foreach (var rule in overrideRules)
                     {
-                        if (rule.IsMatch(pos, floorPositions, allWallPositions, wallType))
-                        {
-                            changes.Add((pos, wallType, rule.OverrideWallPosition));
-                            break;
-                        }
+                        if (!rule.IsMatch(pos, floorPositions, allWallPositions, wallType)) continue;
+
+                        changes.Add((pos, wallType, rule.OverrideWallPosition));
+                        break;
                     }
                 }
             }
