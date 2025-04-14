@@ -72,59 +72,30 @@ namespace Controllers.Editor
             }
 
             var painter = generator.TilemapPainter;
-
-            var wallMapping = new Dictionary<string, string>()
-            {
-                { "upWall", "Up" },
-                { "downWall", "Down" },
-                { "leftWall", "Left" },
-                { "rightWall", "Right" },
-                { "topLeftWall", "TopLeft" },
-                { "topRightWall", "TopRight" },
-                { "bottomLeftWall", "BottomLeft" },
-                { "bottomRightWall", "BottomRight" },
-                { "allCornersWall", "AllCorners" },
-                { "topLeftInnerWall", "InnerTopLeft" },
-                { "topRightInnerWall", "InnerTopRight" },
-                { "bottomLeftInnerWall", "InnerBottomLeft" },
-                { "bottomRightInnerWall", "InnerBottomRight" },
-                { "tripleExceptUpWall", "TripleWallExceptUp" },
-                { "tripleExcetDownWall", "TripleWallExceptDown" },
-                { "tripleExceptLeftWall", "TripleWallExceptLeft" },
-                { "tripleExceptRightWall", "TripleWallExceptRight" },
-                { "tripleExceptLeftInnerWall", "TripleInnerWallExceptLeft" },
-                { "tripleExceptRightInnerWall", "TripleInnerWallExceptRight" },
-                { "aloneWall", "AloneWall" }
-            };
-
             var painterType = painter.GetType();
-            foreach (var (fieldName, expectedBaseName) in wallMapping)
+
+            foreach (var tileName in Utils.Utils.PredefinedTileNames)
             {
+                // Convert the tile name to match the field name in TilemapPainter (first letter lowercase)
+                var fieldName = char.ToLower(tileName[0]) + tileName.Substring(1);
                 var field = painterType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
                 if (field == null)
+                {
+                    Debug.LogWarning($"Field '{fieldName}' not found in TilemapPainter.");
                     continue;
-
-                Tile foundTile = null;
-                foreach (var tile in preset.tiles)
-                {
-                    var parts = tile.name.Split('_');
-                    if (parts.Length >= 2)
-                    {
-                        var baseName = parts[1];
-                        if (!baseName.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase)) continue;
-                        foundTile = tile;
-                        break;
-                    }
-
-                    if (!tile.name.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase)) continue;
-                    foundTile = tile;
-                    break;
                 }
 
-                if (foundTile != null)
+                // Find the tile in the preset by its name
+                var foundTile = preset.tiles.FirstOrDefault(tile =>
+                    tile.name.Equals(tileName, StringComparison.OrdinalIgnoreCase));
+                if (foundTile == null)
                 {
-                    field.SetValue(painter, foundTile);
+                    Debug.LogWarning($"Tile '{tileName}' not found in the preset.");
+                    continue;
                 }
+
+                // Assign the tile to the corresponding field
+                field.SetValue(painter, foundTile);
             }
 
             EditorUtility.SetDirty(painter);

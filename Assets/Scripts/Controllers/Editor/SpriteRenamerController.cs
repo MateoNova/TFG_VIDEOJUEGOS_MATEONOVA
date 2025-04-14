@@ -9,15 +9,6 @@ namespace Controllers.Editor
 {
     public class SpriteRenamerController
     {
-        private readonly List<string> _predefinedNames = new()
-        {
-            "TopLeft", "TripleWallExceptUp", "TopRight", "InnerTopLeft", "InnerTopRight",
-            "Right", "Up", "TripleWallExceptLeft", "AllCorners", "TripleWallExceptRight",
-            "TripleInnerWallExceptLeft", "TripleInnerWallExceptRight", "Left", "BottomLeft",
-            "TripleWallExceptDown", "BottomRight", "InnerBottomLeft", "InnerBottomRight",
-            "AloneWall", "Down"
-        };
-
         public bool RenameSprites(string imagePath)
         {
             var importer = AssetImporter.GetAtPath(imagePath) as TextureImporter;
@@ -41,9 +32,9 @@ namespace Controllers.Editor
                 .ToArray();
             for (var i = 0; i < sortedRects.Length; i++)
             {
-                var baseName = i < _predefinedNames.Count
-                    ? _predefinedNames[i]
-                    : $"Floor {i - _predefinedNames.Count + 1}";
+                var baseName = i < Utils.Utils.PredefinedTileNames.Count
+                    ? Utils.Utils.PredefinedTileNames[i]
+                    : $"Floor {i - Utils.Utils.PredefinedTileNames.Count + 1}";
                 sortedRects[i].name = $"{i}_{baseName}";
             }
 
@@ -90,10 +81,10 @@ namespace Controllers.Editor
                 var tileInstance = ScriptableObject.CreateInstance<Tile>();
                 tileInstance.sprite = sprite;
 
-                var baseName = i < _predefinedNames.Count
-                    ? _predefinedNames[i]
-                    : $"Floor {i - _predefinedNames.Count + 1}";
-                tileInstance.name = $"{i}_{baseName}";
+                var baseName = i < Utils.Utils.PredefinedTileNames.Count
+                    ? Utils.Utils.PredefinedTileNames[i]
+                    : $"Floor {i - Utils.Utils.PredefinedTileNames.Count + 1}";
+                tileInstance.name = $"{baseName}";
 
                 var tileAssetPath = $"{tilesFolderPath}/{tileInstance.name}.asset";
                 AssetDatabase.CreateAsset(tileInstance, tileAssetPath);

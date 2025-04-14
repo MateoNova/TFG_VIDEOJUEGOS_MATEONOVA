@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
@@ -33,6 +34,15 @@ namespace Utils
             TripleExceptLeftInner,
             TripleExceptRightInner
         }
+        
+        public static readonly List<string> PredefinedTileNames = new()
+        {
+            "TopLeftWall", "TripleExceptUpWall", "TopRightWall", "TopLeftInnerWall", "TopRightInnerWall",
+            "RightWall", "UpWall", "TripleExceptLeftWall", "AllCornersWall", "TripleExceptRightWall",
+            "TripleExceptLeftInnerWall", "TripleExceptRightInnerWall", "LeftWall", "BottomLeftWall",
+            "TripleExcetDownWall", "BottomRightWall", "BottomLeftInnerWall", "BottomRightInnerWall",
+            "AloneWall", "DownWall"
+        };
 
 
         /// <summary>

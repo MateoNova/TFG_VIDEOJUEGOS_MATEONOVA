@@ -128,7 +128,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 0_TopLeft
+      name: 0_TopLeftWall
       rect:
         serializedVersion: 2
         x: 0
@@ -150,7 +150,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 1_TripleWallExceptUp
+      name: 1_TripleExceptUpWall
       rect:
         serializedVersion: 2
         x: 16
@@ -172,7 +172,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 2_TopRight
+      name: 2_TopRightWall
       rect:
         serializedVersion: 2
         x: 32
@@ -194,7 +194,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 3_InnerTopLeft
+      name: 3_TopLeftInnerWall
       rect:
         serializedVersion: 2
         x: 64
@@ -216,7 +216,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 4_InnerTopRight
+      name: 4_TopRightInnerWall
       rect:
         serializedVersion: 2
         x: 80
@@ -238,7 +238,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 5_Right
+      name: 5_RightWall
       rect:
         serializedVersion: 2
         x: 112
@@ -260,7 +260,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 6_Up
+      name: 6_UpWall
       rect:
         serializedVersion: 2
         x: 144
@@ -282,7 +282,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 7_TripleWallExceptLeft
+      name: 7_TripleExceptLeftWall
       rect:
         serializedVersion: 2
         x: 0
@@ -304,7 +304,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 8_AllCorners
+      name: 8_AllCornersWall
       rect:
         serializedVersion: 2
         x: 16
@@ -326,7 +326,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 9_TripleWallExceptRight
+      name: 9_TripleExceptRightWall
       rect:
         serializedVersion: 2
         x: 32
@@ -348,7 +348,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 10_TripleInnerWallExceptLeft
+      name: 10_TripleExceptLeftInnerWall
       rect:
         serializedVersion: 2
         x: 64
@@ -370,7 +370,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 11_TripleInnerWallExceptRight
+      name: 11_TripleExceptRightInnerWall
       rect:
         serializedVersion: 2
         x: 80
@@ -392,7 +392,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 12_Left
+      name: 12_LeftWall
       rect:
         serializedVersion: 2
         x: 112
@@ -414,7 +414,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 13_BottomLeft
+      name: 13_BottomLeftWall
       rect:
         serializedVersion: 2
         x: 0
@@ -436,7 +436,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 14_TripleWallExceptDown
+      name: 14_TripleExcetDownWall
       rect:
         serializedVersion: 2
         x: 16
@@ -458,7 +458,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 15_BottomRight
+      name: 15_BottomRightWall
       rect:
         serializedVersion: 2
         x: 32
@@ -480,7 +480,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 16_InnerBottomLeft
+      name: 16_BottomLeftInnerWall
       rect:
         serializedVersion: 2
         x: 64
@@ -502,7 +502,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 17_InnerBottomRight
+      name: 17_BottomRightInnerWall
       rect:
         serializedVersion: 2
         x: 80
@@ -546,7 +546,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: 19_Down
+      name: 19_DownWall
       rect:
         serializedVersion: 2
         x: 144
