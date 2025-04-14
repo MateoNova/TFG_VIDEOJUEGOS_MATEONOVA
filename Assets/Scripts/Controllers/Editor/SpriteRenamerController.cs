@@ -3,6 +3,7 @@ using System.Linq;
 using Models;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Controllers.Editor
 {
@@ -38,7 +39,7 @@ namespace Controllers.Editor
                 .OrderByDescending(s => s.rect.y)
                 .ThenBy(s => s.rect.x)
                 .ToArray();
-            for (int i = 0; i < sortedRects.Length; i++)
+            for (var i = 0; i < sortedRects.Length; i++)
             {
                 var baseName = i < _predefinedNames.Count
                     ? _predefinedNames[i]
@@ -56,29 +57,52 @@ namespace Controllers.Editor
             return true;
         }
 
-        /// <summary>
-        /// Crea un preset a partir de los sprite slices ya renombrados en la imagen.
-        /// </summary>
-        /// <param name="imagePath">Ruta de la imagen con los sprites renombrados.</param>
-        /// <returns>True si se creó exitosamente el preset; false en caso contrario.</returns>
         public bool CreatePreset(string imagePath)
         {
-            Object[] subAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(imagePath);
-            Sprite[] sprites = subAssets.OfType<Sprite>().ToArray();
+            var subAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(imagePath);
+            var sprites = subAssets.OfType<Sprite>().ToArray();
             if (sprites.Length == 0)
                 return false;
 
-            var sortedSprites = sprites.OrderByDescending(s => s.rect.y)
+            var sortedSprites = sprites
+                .OrderByDescending(s => s.rect.y)
                 .ThenBy(s => s.rect.x)
                 .ToArray();
 
-            TilesetPreset preset = ScriptableObject.CreateInstance<TilesetPreset>();
-            preset.sprites = sortedSprites;
-
-            string presetPath = EditorUtility.SaveFilePanelInProject("Save Tileset Preset", "NewTilesetPreset", "asset",
+            var presetPath = EditorUtility.SaveFilePanelInProject(
+                "Save Tileset Preset", "NewTilesetPreset", "asset",
                 "Select a location to save the preset");
             if (string.IsNullOrEmpty(presetPath))
                 return false;
+
+            var presetDirectory = System.IO.Path.GetDirectoryName(presetPath);
+            var tilesFolderName = System.IO.Path.GetFileNameWithoutExtension(presetPath).Replace("Preset", "Tiles");
+            var tilesFolderPath = $"{presetDirectory}/{tilesFolderName}";
+            if (!AssetDatabase.IsValidFolder(tilesFolderPath))
+            {
+                AssetDatabase.CreateFolder(presetDirectory, tilesFolderName);
+            }
+
+            var tileAssets = new List<Tile>();
+            for (var i = 0; i < sortedSprites.Length; i++)
+            {
+                var sprite = sortedSprites[i];
+                var tileInstance = ScriptableObject.CreateInstance<Tile>();
+                tileInstance.sprite = sprite;
+
+                var baseName = i < _predefinedNames.Count
+                    ? _predefinedNames[i]
+                    : $"Floor {i - _predefinedNames.Count + 1}";
+                tileInstance.name = $"{i}_{baseName}";
+
+                var tileAssetPath = $"{tilesFolderPath}/{tileInstance.name}.asset";
+                AssetDatabase.CreateAsset(tileInstance, tileAssetPath);
+                AssetDatabase.SaveAssets();
+                tileAssets.Add(tileInstance);
+            }
+
+            var preset = ScriptableObject.CreateInstance<TilesetPreset>();
+            preset.tiles = tileAssets.ToArray();
 
             AssetDatabase.CreateAsset(preset, presetPath);
             AssetDatabase.SaveAssets();

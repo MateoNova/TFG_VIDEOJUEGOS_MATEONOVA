@@ -71,9 +71,9 @@ namespace Controllers.Editor
                 return;
             }
 
-            TilemapPainter painter = generator.TilemapPainter;
+            var painter = generator.TilemapPainter;
 
-            Dictionary<string, string> wallMapping = new Dictionary<string, string>()
+            var wallMapping = new Dictionary<string, string>()
             {
                 { "upWall", "Up" },
                 { "downWall", "Down" },
@@ -98,53 +98,33 @@ namespace Controllers.Editor
             };
 
             var painterType = painter.GetType();
-            foreach (var kvp in wallMapping)
+            foreach (var (fieldName, expectedBaseName) in wallMapping)
             {
-                string fieldName = kvp.Key;
-                string expectedBaseName = kvp.Value;
-                FieldInfo field = painterType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+                var field = painterType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
                 if (field == null)
                     continue;
 
-                Sprite foundSprite = null;
-                foreach (var sprite in preset.sprites)
+                Tile foundTile = null;
+                foreach (var tile in preset.tiles)
                 {
-                    string[] parts = sprite.name.Split('_');
+                    var parts = tile.name.Split('_');
                     if (parts.Length >= 2)
                     {
-                        string baseName = parts[1];
-                        if (baseName.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase))
-                        {
-                            foundSprite = sprite;
-                            break;
-                        }
-                    }
-                    else if (sprite.name.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        foundSprite = sprite;
+                        var baseName = parts[1];
+                        if (!baseName.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase)) continue;
+                        foundTile = tile;
                         break;
                     }
+
+                    if (!tile.name.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase)) continue;
+                    foundTile = tile;
+                    break;
                 }
 
-                if (foundSprite != null)
+                if (foundTile != null)
                 {
-                    Tile tileInstance = ScriptableObject.CreateInstance<Tile>();
-                    tileInstance.sprite = foundSprite;
-                    tileInstance.name = foundSprite.name;
-    
-                    string folderPath = "Assets/GeneratedTiles";
-                    if (!AssetDatabase.IsValidFolder(folderPath))
-                    {
-                        AssetDatabase.CreateFolder("Assets", "GeneratedTiles");
-                    }
-                    string tileAssetPath = $"{folderPath}/{tileInstance.name}.asset";
-    
-                    AssetDatabase.CreateAsset(tileInstance, tileAssetPath);
-                    AssetDatabase.SaveAssets();
-    
-                    field.SetValue(painter, tileInstance);
+                    field.SetValue(painter, foundTile);
                 }
-
             }
 
             EditorUtility.SetDirty(painter);
