@@ -17,7 +17,7 @@ namespace Views.Editor
     public class StyleView
     {
         private VisualElement _root;
-        private readonly StyleController _styleController = new StyleController();
+        private readonly StyleController _styleController = new();
         private List<TileBase> _walkableTileBases;
         private List<int> _walkableTilesPriorities;
         private bool _randomPlacement;
@@ -47,7 +47,7 @@ namespace Views.Editor
         {
             var styleSection = StyleUtils.ModernFoldout("");
             styleSection.SetLocalizedText("Style", "StyleTable");
-            
+
             styleSection.Add(CreateFloorTileSettings());
             styleSection.Add(CreateWallTileSettings());
             return styleSection;
@@ -196,7 +196,7 @@ namespace Views.Editor
                 ? Utils.Utils.AddSpacesToCamelCase(tile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase))
                 : "No selected";
             var label = StyleUtils.LabelForTile(labelText);
-            
+
             if (tile == null) label.SetLocalizedText("NoSelected", "StyleTable");
 
             return label;

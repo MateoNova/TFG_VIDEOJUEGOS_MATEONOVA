@@ -25,6 +25,11 @@ namespace Views.Editor
         /// View responsible for settings management.
         /// </summary>
         private SettingsView _settingsView;
+        
+        /// <summary>
+        /// View responsible for sprite renaming actions.
+        /// </summary>
+        private SpriteRenamerView _spriteRenamerView;
 
         /// <summary>
         /// View responsible for style customization.
@@ -80,6 +85,7 @@ namespace Views.Editor
             _initializationView = new InitializationView();
             _selectionView = new SelectionView();
             _settingsView = new SettingsView();
+            _spriteRenamerView = new SpriteRenamerView();
             _styleView = new StyleView();
             _actionsView = new ActionsView();
         }
@@ -96,6 +102,7 @@ namespace Views.Editor
             scrollView.Add(_initializationView.CreateUI());
             scrollView.Add(_selectionView.CreateUI());
             scrollView.Add(_settingsView.CreateUI());
+            scrollView.Add(_spriteRenamerView.CreateUI());
             scrollView.Add(_styleView.CreateUI());
             scrollView.Add(_actionsView.CreateUI());
 
