@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Models;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 using GeneratorService = Models.Editor.GeneratorService;
 
@@ -48,6 +50,93 @@ namespace Controllers.Editor
                 .Where(f => f.FieldType == typeof(TileBase) &&
                             f.IsDefined(typeof(TAttribute), false)) // Filter by type and attribute.
                 .GroupBy(f => groupSelector(f.GetCustomAttribute<TAttribute>())); // Group by the provided selector.
+        }
+
+        /// <summary>
+        /// Loads a TilesetPreset and assigns its sprites to the TilemapPainter wall fields.
+        /// </summary>
+        /// <param name="preset">The preset asset with the renamed sprites.</param>
+        public void LoadPreset(TilesetPreset preset)
+        {
+            if (preset == null)
+            {
+                Debug.LogError("Preset is null.");
+                return;
+            }
+
+            var generator = GeneratorService.Instance.CurrentGenerator;
+            if (generator == null || generator.TilemapPainter == null)
+            {
+                Debug.LogError("Generator or its TilemapPainter is not available.");
+                return;
+            }
+
+            TilemapPainter painter = generator.TilemapPainter;
+
+            Dictionary<string, string> wallMapping = new Dictionary<string, string>()
+            {
+                { "upWall", "Up" },
+                { "downWall", "Down" },
+                { "leftWall", "Left" },
+                { "rightWall", "Right" },
+                { "topLeftWall", "TopLeft" },
+                { "topRightWall", "TopRight" },
+                { "bottomLeftWall", "BottomLeft" },
+                { "bottomRightWall", "BottomRight" },
+                { "allCornersWall", "AllCorners" },
+                { "topLeftInnerWall", "InnerTopLeft" },
+                { "topRightInnerWall", "InnerTopRight" },
+                { "bottomLeftInnerWall", "InnerBottomLeft" },
+                { "bottomRightInnerWall", "InnerBottomRight" },
+                { "tripleExceptUpWall", "TripleWallExceptUp" },
+                { "tripleExcetDownWall", "TripleWallExceptDown" },
+                { "tripleExceptLeftWall", "TripleWallExceptLeft" },
+                { "tripleExceptRightWall", "TripleWallExceptRight" },
+                { "tripleExceptLeftInnerWall", "TripleInnerWallExceptLeft" },
+                { "tripleExceptRightInnerWall", "TripleInnerWallExceptRight" },
+                { "aloneWall", "AloneWall" }
+            };
+
+            var painterType = painter.GetType();
+            foreach (var kvp in wallMapping)
+            {
+                string fieldName = kvp.Key;
+                string expectedBaseName = kvp.Value;
+                FieldInfo field = painterType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+                if (field == null)
+                    continue;
+
+                Sprite foundSprite = null;
+                foreach (var sprite in preset.sprites)
+                {
+                    string[] parts = sprite.name.Split('_');
+                    if (parts.Length >= 2)
+                    {
+                        string baseName = parts[1];
+                        if (baseName.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            foundSprite = sprite;
+                            break;
+                        }
+                    }
+                    else if (sprite.name.Equals(expectedBaseName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundSprite = sprite;
+                        break;
+                    }
+                }
+
+                if (foundSprite != null)
+                {
+                    Tile tileInstance = ScriptableObject.CreateInstance<Tile>();
+                    tileInstance.sprite = foundSprite;
+                    tileInstance.name = foundSprite.name;
+                    field.SetValue(painter, tileInstance);
+                }
+            }
+
+            EditorUtility.SetDirty(painter);
+            AssetDatabase.SaveAssets();
         }
     }
 }

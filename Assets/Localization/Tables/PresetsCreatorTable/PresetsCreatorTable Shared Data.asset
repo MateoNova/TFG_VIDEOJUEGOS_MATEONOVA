@@ -23,6 +23,50 @@ MonoBehaviour:
     m_Key: selectImage
     m_Metadata:
       m_Items: []
+  - m_Id: 1685402324992
+    m_Key: renameSprites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4772774973440
+    m_Key: errorTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4832321507328
+    m_Key: selectImageError
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4934419255296
+    m_Key: successTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5125553688576
+    m_Key: renameSuccess
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5231963181056
+    m_Key: renameError
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5338020352000
+    m_Key: okButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5420639752192
+    m_Key: noImageSelected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5551262961664
+    m_Key: 'selectImage
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5647518044160
+    m_Key: 'renameSprites
+
+'
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

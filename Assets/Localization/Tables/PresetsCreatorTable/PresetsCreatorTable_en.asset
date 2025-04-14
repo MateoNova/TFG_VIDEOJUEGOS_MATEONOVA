@@ -26,6 +26,46 @@ MonoBehaviour:
     m_Localized: Select PNG for preset
     m_Metadata:
       m_Items: []
+  - m_Id: 1685402324992
+    m_Localized: Rename Sprites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4772774973440
+    m_Localized: Error
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4832321507328
+    m_Localized: Please select an image first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4934419255296
+    m_Localized: Success
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5125553688576
+    m_Localized: Sprites renamed successfully.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5231963181056
+    m_Localized: Failed to rename sprites.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5338020352000
+    m_Localized: OK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5420639752192
+    m_Localized: No image selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5551262961664
+    m_Localized: Select Image
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5647518044160
+    m_Localized: Rename Sprites
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

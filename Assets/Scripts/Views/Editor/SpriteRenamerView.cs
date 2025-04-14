@@ -69,8 +69,28 @@ namespace Views.Editor
                     );
                 }
             });
+            
             renameButton.SetLocalizedText("renameSprites", "PresetsCreatorTable");
             foldout.Add(renameButton);
+            
+            var presetButton = new Button(() =>
+            {
+                if (string.IsNullOrEmpty(_imagePath))
+                {
+                    EditorUtility.DisplayDialog("Error", "Please select an image first.", "OK");
+                    return;
+                }
+                if (_controller.CreatePreset(_imagePath))
+                {
+                    EditorUtility.DisplayDialog("Success", "Preset created successfully.", "OK");
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Error", "Failed to create preset.", "OK");
+                }
+            });
+            presetButton.SetLocalizedText("createPreset", "PresetsCreatorTable");
+            foldout.Add(presetButton);
 
             container.Add(foldout);
 

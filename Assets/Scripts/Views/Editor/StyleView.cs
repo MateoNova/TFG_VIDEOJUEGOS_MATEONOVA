@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Models;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -39,6 +40,31 @@ namespace Views.Editor
             _root ??= StyleUtils.SimpleContainer();
             _root.Clear();
             _root.Add(CreateStyleSection());
+
+            var loadPresetButton = new Button(() =>
+            {
+                string presetPath = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
+                if (!string.IsNullOrEmpty(presetPath) && presetPath.StartsWith(Application.dataPath))
+                {
+                    presetPath = "Assets" + presetPath.Substring(Application.dataPath.Length);
+                    var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(presetPath);
+                    if (preset != null)
+                    {
+                        _styleController.LoadPreset(preset);
+                        EditorUtility.DisplayDialog("Success", "Preset loaded successfully.", "OK");
+                        RefreshUI();
+                    }
+                    else
+                    {
+                        EditorUtility.DisplayDialog("Error", "Failed to load preset.", "OK");
+                    }
+                }
+            })
+            {
+                text = "Load Preset"
+            };
+            loadPresetButton.SetLocalizedText("loadPreset", "StyleTable");
+            _root.Add(loadPresetButton);
 
             return _root;
         }

@@ -26,6 +26,46 @@ MonoBehaviour:
     m_Localized: Seleccione PNG para el ajuste preestablecido
     m_Metadata:
       m_Items: []
+  - m_Id: 1685402324992
+    m_Localized: Cambiar el nombre de los sprites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4772774973440
+    m_Localized: Error
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4832321507328
+    m_Localized: Por favor, selecciona una imagen primero.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4934419255296
+    m_Localized: "\xC9xito"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5125553688576
+    m_Localized: Los sprites se han renombrado correctamente.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5231963181056
+    m_Localized: No se pudo renombrar los sprites.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5338020352000
+    m_Localized: Aceptar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5420639752192
+    m_Localized: Ninguna imagen seleccionada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5551262961664
+    m_Localized: Seleccionar imagen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5647518044160
+    m_Localized: Renombrar sprites
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

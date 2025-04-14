@@ -26,6 +26,46 @@ MonoBehaviour:
     m_Localized: Seleccioneu PNG per al preset
     m_Metadata:
       m_Items: []
+  - m_Id: 1685402324992
+    m_Localized: Canvia el nom dels Sprites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4772774973440
+    m_Localized: Error
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4832321507328
+    m_Localized: Si us plau, selecciona una imatge primer.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4934419255296
+    m_Localized: "\xC8xit"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5125553688576
+    m_Localized: Els sprites s'han renombrat correctament.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5231963181056
+    m_Localized: No s'ha pogut renombrar els sprites.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5338020352000
+    m_Localized: D'acord
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5420639752192
+    m_Localized: Cap imatge seleccionada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5551262961664
+    m_Localized: Selecciona una imatge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5647518044160
+    m_Localized: Renombra els sprites
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
