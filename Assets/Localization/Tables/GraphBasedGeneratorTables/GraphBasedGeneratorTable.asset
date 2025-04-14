@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5be51871efa6c3e4eae1703925c8f5ac, type: 3}
+  m_Name: GraphBasedGeneratorTable
+  m_EditorClassIdentifier: 
+  m_SharedTableData: {fileID: 11400000, guid: 403664c7bd2b09741ab769d0df101971, type: 2}
+  m_Tables:
+  - {fileID: 11400000, guid: 7cdab19edf9734c4a9eb5412233e7ae4, type: 2}
+  - {fileID: 11400000, guid: e50ad191d8f2034498eb60dee4fa401c, type: 2}
+  - {fileID: 11400000, guid: fcf3077546bbdd849abfc2a2cecab991, type: 2}
+  m_Extensions: []
+  m_Group: String Table
+  references:
+    version: 2
+    RefIds: []

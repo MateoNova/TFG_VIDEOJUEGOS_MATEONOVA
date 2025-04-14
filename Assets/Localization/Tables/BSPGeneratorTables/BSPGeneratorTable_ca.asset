@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: BSPGeneratorTable_ca
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: ca
+  m_SharedData: {fileID: 11400000, guid: 3dac2265541db084392ed2e91fe35c81, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 6216912896
+    m_Localized: "Mida m\xEDnima de les habitacions."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42547974144
+    m_Localized: "Mida m\xE0xima de les habitacions."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72314949632
+    m_Localized: "Nombre m\xE0xim d'iteracions per dividir l'espai."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92061732864
+    m_Localized: "Llindar de proporci\xF3 d'aspecte per decidir la direcci\xF3 de
+      la divisi\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113020669952
+    m_Localized: Amplada dels corredors.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

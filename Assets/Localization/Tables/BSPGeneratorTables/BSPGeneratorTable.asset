@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5be51871efa6c3e4eae1703925c8f5ac, type: 3}
+  m_Name: BSPGeneratorTable
+  m_EditorClassIdentifier: 
+  m_SharedTableData: {fileID: 11400000, guid: 3dac2265541db084392ed2e91fe35c81, type: 2}
+  m_Tables:
+  - {fileID: 11400000, guid: f293f5864cc85be44b0a2c435d3ad601, type: 2}
+  - {fileID: 11400000, guid: d1a5226976e3448438ecc7e75ee3d442, type: 2}
+  - {fileID: 11400000, guid: ed7c459953ff50149a9d131d45829ac6, type: 2}
+  m_Extensions: []
+  m_Group: String Table
+  references:
+    version: 2
+    RefIds: []
