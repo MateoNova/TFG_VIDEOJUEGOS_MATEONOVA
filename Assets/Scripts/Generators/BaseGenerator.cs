@@ -1,5 +1,6 @@
 using Models;
 using UnityEngine;
+using Views.Attributes;
 
 namespace Generators
 {
@@ -14,13 +15,13 @@ namespace Generators
         /// <summary>
         /// The TilemapPainter used to render the dungeon. This is assigned in the Unity Inspector.
         /// </summary>
-        [SerializeField, Tooltip("TilemapPainter used to render the dungeon")]
+        [SerializeField, LocalizedTooltip("tilemapPainter", "BaseGeneratorTable")]
         protected TilemapPainter tilemapPainter;
 
         /// <summary>
-        /// The origin point for dungeon generation. This is assigned in the Unity Inspector.
+        /// The origin point for dungeon generation.
         /// </summary>
-        [SerializeField, Tooltip("Origin for dungeon generation")]
+        [SerializeField, LocalizedTooltip("origin", "BaseGeneratorTable")]
         protected Vector2Int origin = Vector2Int.zero;
 
         #endregion

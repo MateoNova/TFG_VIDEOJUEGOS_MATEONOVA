@@ -95,63 +95,93 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5725922168832
-    m_Localized: Sup. Esq.
+    m_Localized: 'Superior
+
+      Esquerra'
     m_Metadata:
       m_Items: []
   - m_Id: 5751809413120
-    m_Localized: Sup. Dreta
+    m_Localized: 'Superior
+
+      Dreta'
     m_Metadata:
       m_Items: []
   - m_Id: 5762387447808
-    m_Localized: Inf. Esq.
+    m_Localized: 'Inferior
+
+      Esquerra'
     m_Metadata:
       m_Items: []
   - m_Id: 5781987430400
-    m_Localized: Inf. Dreta
+    m_Localized: 'Inferior
+
+      Dreta'
     m_Metadata:
       m_Items: []
   - m_Id: 5817995530240
-    m_Localized: Totes
+    m_Localized: 'Totes les
+
+      Cantonades'
     m_Metadata:
       m_Items: []
   - m_Id: 5831786401792
-    m_Localized: Sup. Esq.
+    m_Localized: 'Superior
+
+      Esquerra'
     m_Metadata:
       m_Items: []
   - m_Id: 5853546450944
-    m_Localized: Sup. Dreta
+    m_Localized: 'Superior
+
+      Dreta'
     m_Metadata:
       m_Items: []
   - m_Id: 5885158920192
-    m_Localized: Inf. Esq.
+    m_Localized: 'Inferior
+
+      Esquerra'
     m_Metadata:
       m_Items: []
   - m_Id: 5907858493440
-    m_Localized: Inf. Dreta
+    m_Localized: 'Inferior
+
+      Dreta'
     m_Metadata:
       m_Items: []
   - m_Id: 5930528706560
-    m_Localized: Exc. Adalt
+    m_Localized: 'Excepte
+
+      Adalt'
     m_Metadata:
       m_Items: []
   - m_Id: 5958768955392
-    m_Localized: Exc. Abaix
+    m_Localized: 'Excepte
+
+      Abaix'
     m_Metadata:
       m_Items: []
   - m_Id: 5987252473856
-    m_Localized: Exc. Esq.
+    m_Localized: 'Excepte
+
+      Esquerre'
     m_Metadata:
       m_Items: []
   - m_Id: 6004973408256
-    m_Localized: Exc. Dreta
+    m_Localized: 'Excepte
+
+      Dreta'
     m_Metadata:
       m_Items: []
   - m_Id: 6024195903488
-    m_Localized: Exc. Esq.
+    m_Localized: 'Excepte
+
+      Esquerre'
     m_Metadata:
       m_Items: []
   - m_Id: 6041103142912
-    m_Localized: Exc. Dreta
+    m_Localized: 'Excepte
+
+      Dreta'
     m_Metadata:
       m_Items: []
   - m_Id: 6062376652800

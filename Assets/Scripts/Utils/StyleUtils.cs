@@ -111,7 +111,8 @@ namespace Utils
                 style =
                 {
                     flexDirection = FlexDirection.Row,
-                    alignItems = Align.Center
+                    alignItems = Align.Center,
+                    marginTop = 5
                 }
             };
         }
@@ -169,9 +170,7 @@ namespace Utils
                 text = text,
                 style =
                 {
-                    marginTop = 10,
-                    paddingLeft = 5,
-                    paddingRight = 5,
+                    marginTop = 5,
                     borderTopWidth = 1,
                     borderLeftWidth = 1,
                     borderRightWidth = 1
@@ -200,9 +199,9 @@ namespace Utils
                 text = text,
                 style =
                 {
-                    marginTop = 10,
-                    paddingRight = 5,
+                    marginTop = 3,
                     borderTopWidth = 1,
+                    borderLeftWidth = 1,
                     borderRightWidth = 1
                 }
             };

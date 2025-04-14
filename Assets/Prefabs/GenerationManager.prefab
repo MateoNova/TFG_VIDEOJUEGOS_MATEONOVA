@@ -295,9 +295,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemapPainter: {fileID: 4841484267194583844}
   origin: {x: 0, y: 0}
-  walkIterations: 10
-  stepsPerIteration: 10
-  generateCorridors: 0
+  walkIterations: 100
+  stepsPerIteration: 100
+  generateCorridors: 1
   corridorLength: 20
   corridorCount: 30
   roomPercentage: 0.8

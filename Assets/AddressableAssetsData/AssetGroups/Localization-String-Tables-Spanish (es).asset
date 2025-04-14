@@ -40,6 +40,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-es
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 68e6b159ee0e5484fadd80c0ece89b9e
+    m_Address: BaseGeneratorTable_es
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-es
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9c762371921cc0c4eaf31a2e88f39c86
     m_Address: RandomWalkTooltips_es
     m_ReadOnly: 1

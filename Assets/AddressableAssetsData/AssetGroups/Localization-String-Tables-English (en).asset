@@ -40,6 +40,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 71ac3fdcb9b353c498e5cd82fd544af4
+    m_Address: BaseGeneratorTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e873d9231ea7c854b9ce24252b7a9eae
     m_Address: InitializationTable_en
     m_ReadOnly: 1

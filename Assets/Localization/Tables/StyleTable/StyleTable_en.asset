@@ -95,63 +95,93 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5725922168832
-    m_Localized: T. Left
+    m_Localized: 'Top
+
+      Left'
     m_Metadata:
       m_Items: []
   - m_Id: 5751809413120
-    m_Localized: T. Right
+    m_Localized: 'Top
+
+      Right'
     m_Metadata:
       m_Items: []
   - m_Id: 5762387447808
-    m_Localized: B. Left
+    m_Localized: 'Bottom
+
+      Left'
     m_Metadata:
       m_Items: []
   - m_Id: 5781987430400
-    m_Localized: B. Right
+    m_Localized: 'Bottom
+
+      Right'
     m_Metadata:
       m_Items: []
   - m_Id: 5817995530240
-    m_Localized: All
+    m_Localized: 'All
+
+      Corners'
     m_Metadata:
       m_Items: []
   - m_Id: 5831786401792
-    m_Localized: T. Left
+    m_Localized: 'Top
+
+      Left'
     m_Metadata:
       m_Items: []
   - m_Id: 5853546450944
-    m_Localized: T. Right
+    m_Localized: 'Top
+
+      Right'
     m_Metadata:
       m_Items: []
   - m_Id: 5885158920192
-    m_Localized: B. Left
+    m_Localized: 'Bottom
+
+      Left'
     m_Metadata:
       m_Items: []
   - m_Id: 5907858493440
-    m_Localized: B. Right
+    m_Localized: 'Bottom
+
+      Right'
     m_Metadata:
       m_Items: []
   - m_Id: 5930528706560
-    m_Localized: Exc. Up
+    m_Localized: 'Except
+
+      Above'
     m_Metadata:
       m_Items: []
   - m_Id: 5958768955392
-    m_Localized: Exc. Down
+    m_Localized: 'Except
+
+      Down'
     m_Metadata:
       m_Items: []
   - m_Id: 5987252473856
-    m_Localized: Exc. Left
+    m_Localized: 'Except
+
+      Left'
     m_Metadata:
       m_Items: []
   - m_Id: 6004973408256
-    m_Localized: Exc. Right
+    m_Localized: 'Except
+
+      Right'
     m_Metadata:
       m_Items: []
   - m_Id: 6024195903488
-    m_Localized: Exc. Left
+    m_Localized: 'Except
+
+      Left'
     m_Metadata:
       m_Items: []
   - m_Id: 6041103142912
-    m_Localized: Exc. Up
+    m_Localized: 'Except
+
+      Above'
     m_Metadata:
       m_Items: []
   - m_Id: 6062376652800
