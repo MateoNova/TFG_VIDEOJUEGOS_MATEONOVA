@@ -101,5 +101,10 @@ namespace Utils
             // Subscribe to locale changes to update the tooltip dynamically.
             LocalizationSettings.SelectedLocaleChanged += locale => UpdateTooltip();
         }
+        
+        public static string SetLocalizedText(string key, string tableName = "DefaultTable")
+        {
+            return LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
+        }
     }
 }

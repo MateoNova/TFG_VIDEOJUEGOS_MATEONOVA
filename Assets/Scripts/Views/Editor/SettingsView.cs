@@ -113,9 +113,9 @@ namespace Views.Editor
 
             _openGraphButton = new Button(() => GeneratorService.Instance.CurrentGenerator.OpenGraphWindow())
             {
-                text = "Open Graph Window",
                 style = { display = _showOpenGraphButton ? DisplayStyle.Flex : DisplayStyle.None }
             };
+            _openGraphButton.SetLocalizedText("OpenGraphWindow", "SettingsTable");
 
             _foldout.Add(_openGraphButton);
 

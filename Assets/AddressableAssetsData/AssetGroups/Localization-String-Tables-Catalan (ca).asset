@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ca
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7cdab19edf9734c4a9eb5412233e7ae4
+    m_Address: GraphBasedGeneratorTable_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7d0e77a824e02a04aa0518f36ada2859
     m_Address: InitializationTable_ca
     m_ReadOnly: 1
@@ -56,6 +62,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f08b006cc3cdd9b4bb1cb9a7f50e1b94
     m_Address: BaseGeneratorTable_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f293f5864cc85be44b0a2c435d3ad601
+    m_Address: BSPGeneratorTable_ca
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ca

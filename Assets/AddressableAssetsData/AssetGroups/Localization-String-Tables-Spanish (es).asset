@@ -53,6 +53,18 @@ MonoBehaviour:
     - Locale-es
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed7c459953ff50149a9d131d45829ac6
+    m_Address: BSPGeneratorTable_es
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-es
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fcf3077546bbdd849abfc2a2cecab991
+    m_Address: GraphBasedGeneratorTable_es
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-es
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fd019f0b8039ca24e8dfe885ef5a6b93
     m_Address: StyleTable_es
     m_ReadOnly: 1

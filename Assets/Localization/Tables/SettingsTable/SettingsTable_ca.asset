@@ -22,6 +22,10 @@ MonoBehaviour:
     m_Localized: "Configuraci\xF3 del generador"
     m_Metadata:
       m_Items: []
+  - m_Id: 78504835059712
+    m_Localized: "Obrir finestra del gr\xE0fic"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -30,6 +30,18 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3dac2265541db084392ed2e91fe35c81
+    m_Address: Assets/Localization/Tables/BSPGeneratorTables/BSPGeneratorTable Shared
+      Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 403664c7bd2b09741ab769d0df101971
+    m_Address: Assets/Localization/Tables/GraphBasedGeneratorTables/GraphBasedGeneratorTable
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 59eb7dd480523604e9a17d8c95795e85
     m_Address: Assets/Localization/Tables/BaseGeneratorTables/BaseGeneratorTable
       Shared Data.asset

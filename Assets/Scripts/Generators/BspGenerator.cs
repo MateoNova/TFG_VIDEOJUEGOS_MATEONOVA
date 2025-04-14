@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Views.Attributes;
 using WallGenerator = Models.WallGenerator;
 
 namespace Generators
@@ -10,22 +11,22 @@ namespace Generators
     public class BspGenerator : BaseGenerator
     {
         #region Serialized Fields
-
-        [SerializeField, Tooltip("Minimum size of the rooms.")]
+        
+        [SerializeField, LocalizedTooltip("MinRoomSizeKey", "BSPGeneratorTable")]
         private int minRoomSize = 5;
-
-        [SerializeField, Tooltip("Maximum size of the rooms.")]
+        
+        [SerializeField, LocalizedTooltip("MaxRoomSizeKey", "BSPGeneratorTable")]
         private int maxRoomSize = 20;
-
-        [SerializeField, Tooltip("Maximum number of iterations for splitting the space.")]
+        
+        [SerializeField, LocalizedTooltip("MaxIterationsKey", "BSPGeneratorTable")]
         private int maxIterations = 5;
-
-        [SerializeField, Tooltip("Aspect ratio threshold for deciding split direction.")]
+        
+        [SerializeField, LocalizedTooltip("AspectProportionKey", "BSPGeneratorTable")]
         private float aspectProportion = 1.5f;
-
-        [SerializeField, Range(0f, 4f), Tooltip("Width of the corridors.")]
+        
+        [SerializeField, Range(0f, 4f), LocalizedTooltip("CorridorWidthKey", "BSPGeneratorTable")]
         private int corridorWidth = 1;
-
+        
         #endregion
 
         #region Generation Process

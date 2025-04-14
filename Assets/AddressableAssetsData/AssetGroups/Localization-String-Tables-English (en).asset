@@ -46,6 +46,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1a5226976e3448438ecc7e75ee3d442
+    m_Address: BSPGeneratorTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e50ad191d8f2034498eb60dee4fa401c
+    m_Address: GraphBasedGeneratorTable_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e873d9231ea7c854b9ce24252b7a9eae
     m_Address: InitializationTable_en
     m_ReadOnly: 1
