@@ -131,8 +131,20 @@ namespace Controllers.Editor
                     Tile tileInstance = ScriptableObject.CreateInstance<Tile>();
                     tileInstance.sprite = foundSprite;
                     tileInstance.name = foundSprite.name;
+    
+                    string folderPath = "Assets/GeneratedTiles";
+                    if (!AssetDatabase.IsValidFolder(folderPath))
+                    {
+                        AssetDatabase.CreateFolder("Assets", "GeneratedTiles");
+                    }
+                    string tileAssetPath = $"{folderPath}/{tileInstance.name}.asset";
+    
+                    AssetDatabase.CreateAsset(tileInstance, tileAssetPath);
+                    AssetDatabase.SaveAssets();
+    
                     field.SetValue(painter, tileInstance);
                 }
+
             }
 
             EditorUtility.SetDirty(painter);
