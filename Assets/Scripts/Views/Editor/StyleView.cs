@@ -41,31 +41,6 @@ namespace Views.Editor
             _root.Clear();
             _root.Add(CreateStyleSection());
 
-            var loadPresetButton = new Button(() =>
-            {
-                string presetPath = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
-                if (!string.IsNullOrEmpty(presetPath) && presetPath.StartsWith(Application.dataPath))
-                {
-                    presetPath = "Assets" + presetPath.Substring(Application.dataPath.Length);
-                    var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(presetPath);
-                    if (preset != null)
-                    {
-                        _styleController.LoadPreset(preset);
-                        EditorUtility.DisplayDialog("Success", "Preset loaded successfully.", "OK");
-                        RefreshUI();
-                    }
-                    else
-                    {
-                        EditorUtility.DisplayDialog("Error", "Failed to load preset.", "OK");
-                    }
-                }
-            })
-            {
-                text = "Load Preset"
-            };
-            loadPresetButton.SetLocalizedText("loadPreset", "StyleTable");
-            _root.Add(loadPresetButton);
-
             return _root;
         }
 
@@ -73,10 +48,38 @@ namespace Views.Editor
         {
             var styleSection = StyleUtils.ModernFoldout("");
             styleSection.SetLocalizedText("Style", "StyleTable");
-
+            styleSection.Add(CreatePresetSettings());
             styleSection.Add(CreateFloorTileSettings());
             styleSection.Add(CreateWallTileSettings());
             return styleSection;
+        }
+
+        private VisualElement CreatePresetSettings()
+        {
+            var loadPresetButton = new Button(() =>
+            {
+                var presetPath = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
+                if (string.IsNullOrEmpty(presetPath) || !presetPath.StartsWith(Application.dataPath)) return;
+                
+                presetPath = "Assets" + presetPath.Substring(Application.dataPath.Length);
+                var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(presetPath);
+                
+                if (preset != null)
+                {
+                    _styleController.LoadPreset(preset);
+                    EditorUtility.DisplayDialog("Success", "Preset loaded successfully.", "OK");
+                    RefreshUI();
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Error", "Failed to load preset.", "OK");
+                }
+            })
+            {
+                text = "Load Preset"
+            };
+            loadPresetButton.SetLocalizedText("loadPreset", "StyleTable");
+            return loadPresetButton;
         }
 
         private VisualElement CreateFloorTileSettings()
@@ -219,7 +222,7 @@ namespace Views.Editor
         private static Label GetLabelForWalkableTile(TileBase tile)
         {
             var labelText = tile != null
-                ? Utils.Utils.AddSpacesToCamelCase(tile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase))
+                ? Utils.Utils.AddSpacesToCamelCase(tile.name)
                 : "No selected";
             var label = StyleUtils.LabelForTile(labelText);
 

@@ -74,28 +74,29 @@ namespace Controllers.Editor
             var painter = generator.TilemapPainter;
             var painterType = painter.GetType();
 
-            foreach (var tileName in Utils.Utils.PredefinedTileNames)
+            painter.walkableTileBases.Clear();
+            painter.walkableTilesPriorities.Clear();
+
+            foreach (var tile in preset.tiles)
             {
-                // Convert the tile name to match the field name in TilemapPainter (first letter lowercase)
-                var fieldName = char.ToLower(tileName[0]) + tileName.Substring(1);
-                var field = painterType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-                if (field == null)
+                var tileName = tile.name;
+                if (Utils.Utils.PredefinedTileNames.Contains(tileName))
                 {
-                    Debug.LogWarning($"Field '{fieldName}' not found in TilemapPainter.");
-                    continue;
-                }
+                    var fieldName = char.ToLower(tileName[0]) + tileName.Substring(1);
+                    var field = painterType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+                    if (field == null)
+                    {
+                        Debug.LogWarning($"Field '{fieldName}' not found in TilemapPainter.");
+                        continue;
+                    }
 
-                // Find the tile in the preset by its name
-                var foundTile = preset.tiles.FirstOrDefault(tile =>
-                    tile.name.Equals(tileName, StringComparison.OrdinalIgnoreCase));
-                if (foundTile == null)
+                    field.SetValue(painter, tile);
+                }
+                else if (tileName.StartsWith("Floor", StringComparison.OrdinalIgnoreCase))
                 {
-                    Debug.LogWarning($"Tile '{tileName}' not found in the preset.");
-                    continue;
+                    painter.walkableTileBases.Add(tile);
+                    painter.walkableTilesPriorities.Add(1);
                 }
-
-                // Assign the tile to the corresponding field
-                field.SetValue(painter, foundTile);
             }
 
             EditorUtility.SetDirty(painter);
