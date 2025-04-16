@@ -3,6 +3,8 @@ using ActionsController = Controllers.Editor.ActionsController;
 using StyleUtils = Utils.StyleUtils;
 using Utils;
 
+#if UNITY_EDITOR
+
 namespace Views.Editor
 {
     /// <summary>
@@ -97,3 +99,5 @@ namespace Views.Editor
         }
     }
 }
+
+#endif

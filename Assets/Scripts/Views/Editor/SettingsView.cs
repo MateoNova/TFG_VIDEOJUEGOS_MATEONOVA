@@ -9,6 +9,8 @@ using GeneratorService = Models.Editor.GeneratorService;
 using SettingsController = Controllers.Editor.SettingsController;
 using StyleUtils = Utils.StyleUtils;
 
+#if UNITY_EDITOR
+
 namespace Views.Editor
 {
     /// <summary>
@@ -147,3 +149,5 @@ namespace Views.Editor
         }
     }
 }
+
+#endif

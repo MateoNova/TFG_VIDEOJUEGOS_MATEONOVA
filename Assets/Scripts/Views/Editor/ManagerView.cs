@@ -3,6 +3,8 @@ using UnityEngine;
 using EventBus = Models.Editor.EventBus;
 using StyleUtils = Utils.StyleUtils;
 
+#if UNITY_EDITOR
+
 namespace Views.Editor
 {
     /// <summary>
@@ -25,7 +27,7 @@ namespace Views.Editor
         /// View responsible for settings management.
         /// </summary>
         private SettingsView _settingsView;
-        
+
         /// <summary>
         /// View responsible for sprite renaming actions.
         /// </summary>
@@ -40,6 +42,11 @@ namespace Views.Editor
         /// View responsible for generation-related actions.
         /// </summary>
         private ActionsView _actionsView;
+        
+        /// <summary>
+        /// View responsible for spawning actions.
+        /// </summary>
+        private SpawningView _spawningView;
 
         /// <summary>
         /// Displays the Generation Manager window in the Unity Editor.
@@ -88,6 +95,7 @@ namespace Views.Editor
             _spriteRenamerView = new SpriteRenamerView();
             _styleView = new StyleView();
             _actionsView = new ActionsView();
+            _spawningView = new SpawningView();
         }
 
         /// <summary>
@@ -105,8 +113,11 @@ namespace Views.Editor
             scrollView.Add(_spriteRenamerView.CreateUI());
             scrollView.Add(_styleView.CreateUI());
             scrollView.Add(_actionsView.CreateUI());
+            scrollView.Add(_spawningView.CreateUI());
 
             root.Add(scrollView);
         }
     }
 }
+
+# endif

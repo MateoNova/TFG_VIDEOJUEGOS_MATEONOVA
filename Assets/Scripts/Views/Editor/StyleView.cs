@@ -13,6 +13,8 @@ using StyleController = Controllers.Editor.StyleController;
 using StyleUtils = Utils.StyleUtils;
 using Utils;
 
+#if UNITY_EDITOR
+
 namespace Views.Editor
 {
     public class StyleView
@@ -60,10 +62,10 @@ namespace Views.Editor
             {
                 var presetPath = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
                 if (string.IsNullOrEmpty(presetPath) || !presetPath.StartsWith(Application.dataPath)) return;
-                
+
                 presetPath = "Assets" + presetPath.Substring(Application.dataPath.Length);
                 var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(presetPath);
-                
+
                 if (preset != null)
                 {
                     _styleController.LoadPreset(preset);
@@ -413,3 +415,5 @@ namespace Views.Editor
         }
     }
 }
+
+#endif

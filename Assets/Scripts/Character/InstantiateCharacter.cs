@@ -1,5 +1,7 @@
 using UnityEngine;
-    
+
+namespace Character
+{
     public class InstantiateCharacter : MonoBehaviour
     {
         [SerializeField] private GameObject characterPrefab;
@@ -9,3 +11,4 @@ using UnityEngine;
             Instantiate(characterPrefab, transform.position, Quaternion.identity);
         }
     }
+}

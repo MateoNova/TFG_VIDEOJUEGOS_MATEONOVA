@@ -6,6 +6,7 @@ using Utils;
 using EventBus = Models.Editor.EventBus;
 using InitializationController = Controllers.Editor.InitializationController;
 
+#if UNITY_EDITOR
 
 namespace Views.Editor
 {
@@ -38,41 +39,48 @@ namespace Views.Editor
 
         private DropdownField CreateLanguageSelector()
         {
-            // Se puede aplicar la localización tanto en el texto del dropdown como en su título si lo deseas.
             var dropdown = StyleUtils.SimpleDropdown();
             dropdown.SetLocalizedTitle("SelectLanguage", "InitializationTable");
-
+        
             if (LocalizationSettings.InitializationOperation.IsDone)
             {
-                var availableLocales = LocalizationSettings.AvailableLocales?.Locales;
-                if (availableLocales != null)
-                {
-                    foreach (var locale in availableLocales)
-                        dropdown.choices.Add(locale.LocaleName);
-
-                    dropdown.value = LocalizationSettings.SelectedLocale?.LocaleName ?? dropdown.choices[0];
-
-                    dropdown.RegisterValueChangedCallback(evt =>
-                    {
-                        var selectedLocale = availableLocales.Find(locale => locale.LocaleName == evt.newValue);
-                        if (selectedLocale != null)
-                        {
-                            LocalizationSettings.SelectedLocale = selectedLocale;
-                        }
-                    });
-                }
-                else
-                {
-                    Debug.LogError("AvailableLocales is null. Ensure localization is configured correctly.");
-                }
+                PopulateDropdown(dropdown);
             }
             else
             {
-                Debug.LogError(
-                    "Localization system is not initialized. Ensure it is initialized before accessing locales.");
+                // Espera a que la inicialización termine
+                LocalizationSettings.InitializationOperation.Completed += _ =>
+                {
+                    PopulateDropdown(dropdown);
+                };
             }
-
+        
             return dropdown;
+        }
+        
+        private void PopulateDropdown(DropdownField dropdown)
+        {
+            var availableLocales = LocalizationSettings.AvailableLocales?.Locales;
+            if (availableLocales != null)
+            {
+                foreach (var locale in availableLocales)
+                    dropdown.choices.Add(locale.LocaleName);
+        
+                dropdown.value = LocalizationSettings.SelectedLocale?.LocaleName ?? dropdown.choices[0];
+        
+                dropdown.RegisterValueChangedCallback(evt =>
+                {
+                    var selectedLocale = availableLocales.Find(locale => locale.LocaleName == evt.newValue);
+                    if (selectedLocale != null)
+                    {
+                        LocalizationSettings.SelectedLocale = selectedLocale;
+                    }
+                });
+            }
+            else
+            {
+                Debug.LogError("AvailableLocales is null. Ensure localization is configured correctly.");
+            }
         }
 
         private VisualElement CreateButtonContainer()
@@ -96,3 +104,5 @@ namespace Views.Editor
         }
     }
 }
+
+#endif

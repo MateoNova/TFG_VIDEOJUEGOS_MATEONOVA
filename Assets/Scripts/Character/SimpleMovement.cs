@@ -1,5 +1,7 @@
 using UnityEngine;
-    
+
+namespace Character
+{
     public class SimpleMovement : MonoBehaviour
     {
         public float moveSpeed = 5f;
@@ -18,3 +20,4 @@ using UnityEngine;
             transform.Translate(_movement * (moveSpeed * Time.fixedDeltaTime));
         }
     }
+}

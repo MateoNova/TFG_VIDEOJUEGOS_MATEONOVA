@@ -1,7 +1,9 @@
 ﻿using UnityEngine.UIElements;
 using SelectionController = Controllers.Editor.SelectionController;
 using StyleUtils = Utils.StyleUtils;
-using Utils; // Asegúrate de incluir el namespace donde está LocalizationUIHelper
+using Utils;
+
+#if UNITY_EDITOR
 
 namespace Views.Editor
 {
@@ -69,3 +71,5 @@ namespace Views.Editor
         }
     }
 }
+
+# endif

@@ -5,6 +5,8 @@ using Controllers.Editor;
 using Utils;
 using StyleUtils = Utils.StyleUtils;
 
+#if UNITY_EDITOR
+
 namespace Views.Editor
 {
     public class SpriteRenamerView
@@ -98,3 +100,5 @@ namespace Views.Editor
         }
     }
 }
+
+#endif
