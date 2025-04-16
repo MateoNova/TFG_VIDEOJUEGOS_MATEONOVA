@@ -25,9 +25,6 @@ namespace Generators.GraphBased
         /// </summary>
         [SerializeField, LocalizedTooltip("scalingFactor", "GraphBasedGeneratorTable")] private float scalingFactor = 0.05f;
 
-        [LocalizedTooltip("OpenGraphWindow", "GraphBasedGeneratorTable")]
-        private string GraphTitle = "";
-
         /// <summary>
         /// Set of occupied door positions.
         /// </summary>

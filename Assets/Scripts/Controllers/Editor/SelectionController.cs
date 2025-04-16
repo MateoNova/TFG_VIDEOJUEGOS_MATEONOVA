@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Generators;
+using Models;
 using UnityEditor;
 using UnityEngine;
 using Views.Attributes;
@@ -126,8 +127,14 @@ namespace Controllers.Editor
         /// </summary>
         private void RetrieveOrInitializeCachedGenerationManager()
         {
-            _generationManager = RetrieveCachedGenerationManager() ?? InstantiateGenerationManager();
+            _generationManager = RetrieveCachedGenerationManager();
+            if (_generationManager == null)
+            {
+                _generationManager = InstantiateGenerationManager();
+            }
+            EventBus.OnReload();
         }
+
 
         /// <summary>
         /// Retrieves the cached generation manager from editor preferences.
@@ -135,9 +142,10 @@ namespace Controllers.Editor
         /// <returns>The cached generation manager GameObject, or null if not found.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
-            var cachedId = EditorPrefs.GetInt(CachedGenerationManagerIdKey, -1);
-            return cachedId != -1 ? EditorUtility.InstanceIDToObject(cachedId) as GameObject : null;
+            GenerationManager existingManager = Object.FindFirstObjectByType<GenerationManager>();
+            return existingManager != null ? existingManager.gameObject : null;
         }
+
 
         /// <summary>
         /// Instantiates the generation manager prefab and caches its instance ID.

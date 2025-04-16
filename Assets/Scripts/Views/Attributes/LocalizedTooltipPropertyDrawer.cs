@@ -53,9 +53,9 @@ namespace Views.Attributes
             {
                 LocalizationSettings.InitializationOperation.WaitForCompletion();
 
-                if (LocalizationSettings.SelectedLocale == null)
+                if (!LocalizationSettings.SelectedLocale)
                 {
-                    Debug.LogWarning("SelectedLocale is null. Setting to the first available locale.");
+                    //Debug.LogWarning("SelectedLocale is null. Setting to the first available locale.");
                     LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[0];
                 }
 

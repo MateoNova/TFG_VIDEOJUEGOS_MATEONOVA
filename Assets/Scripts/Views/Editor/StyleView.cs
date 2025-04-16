@@ -28,7 +28,7 @@ namespace Views.Editor
             if (GeneratorService.Instance.CurrentGenerator == null ||
                 GeneratorService.Instance.CurrentGenerator.TilemapPainter == null)
             {
-                Debug.LogError("The generator or its TilemapPainter is not properly initialized.");
+                //Debug.LogError("The generator or its TilemapPainter is not properly initialized.");
                 return new VisualElement();
             }
 
