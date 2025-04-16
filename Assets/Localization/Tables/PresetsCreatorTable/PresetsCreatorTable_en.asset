@@ -66,6 +66,10 @@ MonoBehaviour:
     m_Localized: Rename Sprites
     m_Metadata:
       m_Items: []
+  - m_Id: 80173895421952
+    m_Localized: Create Preset
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

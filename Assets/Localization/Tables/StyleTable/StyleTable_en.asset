@@ -188,6 +188,10 @@ MonoBehaviour:
     m_Localized: Simple
     m_Metadata:
       m_Items: []
+  - m_Id: 459733090603008
+    m_Localized: Load Preset
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

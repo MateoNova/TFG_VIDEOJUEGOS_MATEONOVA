@@ -19,11 +19,11 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 5990420480
-    m_Localized: Creador de ajustes preestablecidos de estilo
+    m_Localized: Creador de presets de estilo
     m_Metadata:
       m_Items: []
   - m_Id: 1337644191744
-    m_Localized: Seleccione PNG para el ajuste preestablecido
+    m_Localized: Seleccione PNG para el preset de estilo
     m_Metadata:
       m_Items: []
   - m_Id: 1685402324992
@@ -64,6 +64,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 5647518044160
     m_Localized: Renombrar sprites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80173895421952
+    m_Localized: Crear ajuste preset
     m_Metadata:
       m_Items: []
   references:

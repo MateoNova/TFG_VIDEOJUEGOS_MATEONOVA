@@ -245,11 +245,6 @@ namespace Generators
         }
 
         #endregion
-
-        public void RUUUUN()
-        {
-            RunGeneration();
-        }
     }
 
     /// <summary>
