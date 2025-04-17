@@ -79,20 +79,24 @@ namespace Controllers.Editor
 
             foreach (var tile in preset.tiles)
             {
-                var tileName = tile.name;
-                if (Utils.Utils.PredefinedTileNames.Contains(tileName))
-                {
-                    var fieldName = char.ToLower(tileName[0]) + tileName.Substring(1);
-                    var field = painterType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-                    if (field == null)
-                    {
-                        Debug.LogWarning($"Field '{fieldName}' not found in TilemapPainter.");
-                        continue;
-                    }
+                var rawName = tile.name;
+                var key = rawName.Contains("_")
+                    ? rawName.Substring(rawName.IndexOf('_') + 1)
+                    : rawName;
 
-                    field.SetValue(painter, tile);
+                if (Utils.Utils.PredefinedTileNames.Contains(key))
+                {
+                    var fieldName = char.ToLower(key[0]) + key[1..];
+                    var field = painterType.GetField(
+                        fieldName,
+                        BindingFlags.Instance | BindingFlags.NonPublic
+                    );
+                    if (field == null)
+                        Debug.LogWarning($"Field '{fieldName}' no encontrado en TilemapPainter.");
+                    else
+                        field.SetValue(painter, tile);
                 }
-                else if (tileName.StartsWith("Floor", StringComparison.OrdinalIgnoreCase))
+                else if (key.StartsWith("Floor", StringComparison.OrdinalIgnoreCase))
                 {
                     painter.walkableTileBases.Add(tile);
                     painter.walkableTilesPriorities.Add(1);
