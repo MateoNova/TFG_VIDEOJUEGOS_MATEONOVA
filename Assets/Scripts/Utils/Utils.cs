@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 namespace Utils
@@ -91,8 +90,6 @@ namespace Utils
         {
             return string.IsNullOrEmpty(input) ? input : Regex.Replace(input, "(?<!^)([A-Z0-9])", " $1");
         }
-
-        public static StyleLength GemImGuiHeight() => 60;
 
         public static string GetDefaultIconContent() => "d_UnityEditor.ConsoleWindow";
 

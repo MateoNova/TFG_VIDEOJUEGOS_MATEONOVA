@@ -66,6 +66,12 @@ MonoBehaviour:
     - Locale-ca
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dfcbc280a9a17d243b281d0a22f23601
+    m_Address: SpawningTable_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f08b006cc3cdd9b4bb1cb9a7f50e1b94
     m_Address: BaseGeneratorTable_ca
     m_ReadOnly: 1

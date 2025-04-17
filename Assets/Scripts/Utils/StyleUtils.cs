@@ -202,7 +202,7 @@ namespace Utils
                     marginTop = 3,
                     borderTopWidth = 1,
                     borderLeftWidth = 1,
-                    borderRightWidth = 1
+                    borderRightWidth = 1,
                 }
             };
 
@@ -231,7 +231,6 @@ namespace Utils
                 }
             };
 
-            // Apply the font size only to the title label
             dropdown.RegisterCallback<GeometryChangedEvent>(_ =>
             {
                 var label = dropdown.Q<Label>();

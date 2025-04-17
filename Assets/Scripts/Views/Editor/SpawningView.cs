@@ -26,15 +26,14 @@ namespace Views.Editor
         {
             _root = new VisualElement();
 
-            var actionsFoldout = StyleUtils.ModernFoldout("Spawning Options");
+            var actionsFoldout = StyleUtils.ModernFoldout("");
+            actionsFoldout.SetLocalizedText("SpawningOptions", "SpawningTable");
             _root.Add(actionsFoldout);
 
             actionsFoldout.Add(CreateCharacterSelector());
 
-            var spawnButton = new Button(EnableSpawnPointSelection)
-            {
-                text = "Set Spawnpoint in Scene"
-            };
+            var spawnButton = new Button(EnableSpawnPointSelection);
+            spawnButton.SetLocalizedText("SetSpawnpointInScene", "SpawningTable");
             actionsFoldout.Add(spawnButton);
 
             InitializeSpawnPointReference();
@@ -90,7 +89,8 @@ namespace Views.Editor
             };
 
             // Add the "Character" label above the preview.
-            var label = StyleUtils.LabelForTile("Character");
+            var label = StyleUtils.LabelForTile("");
+            label.SetLocalizedText("CharacterLabel", "SpawningTable");
             container.Add(label);
 
             // Create the preview container using IMGUI.
@@ -119,7 +119,7 @@ namespace Views.Editor
                 // Update the prefab when a new object is selected in the object picker.
                 if (Event.current.commandName != "ObjectSelectorUpdated") return;
                 var picked = EditorGUIUtility.GetObjectPickerObject() as GameObject;
-                
+
                 if (picked == null || _spawnPointInstance == null || _prefabField == null) return;
                 _prefabField.SetValue(_spawnPointInstance, picked);
                 EditorUtility.SetDirty(_spawnPointInstance);
@@ -141,8 +141,11 @@ namespace Views.Editor
         private void EnableSpawnPointSelection()
         {
             SpawningController.IsSettingSpawnPoint = true;
-            EditorUtility.DisplayDialog("Spawnpoint Selection", "Click in the Scene view to set spawnpoint position",
-                "OK");
+            EditorUtility.DisplayDialog(
+                LocalizationUIHelper.SetLocalizedText("SpawnpointSelectionTitle", "SpawningTable"),
+                LocalizationUIHelper.SetLocalizedText("SpawnpointSelectionMessage", "SpawningTable"),
+                LocalizationUIHelper.SetLocalizedText("OkButton", "SpawningTable")
+            );
         }
     }
 }

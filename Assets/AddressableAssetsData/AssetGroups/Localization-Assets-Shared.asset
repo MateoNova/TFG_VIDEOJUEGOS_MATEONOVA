@@ -53,6 +53,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8486b9f30c8b93844a3755d6bb8ec29b
+    m_Address: Assets/Localization/Tables/SpawningTable/SpawningTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 86fa1b7d07a6a564a8499a0483445b30
     m_Address: Assets/Localization/Tables/SettingsTable/SettingsTable Shared Data.asset
     m_ReadOnly: 1
