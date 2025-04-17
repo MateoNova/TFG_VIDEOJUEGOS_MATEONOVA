@@ -33,7 +33,7 @@ namespace Controllers.Editor
         /// <summary>
         /// Clears the current dungeon using the selected generator.
         /// </summary>
-        public static void ClearDungeon()
+        public void ClearDungeon()
         {
             // Clears the dungeon if a generator is available.
             GeneratorService.Instance.CurrentGenerator?.ClearDungeon();

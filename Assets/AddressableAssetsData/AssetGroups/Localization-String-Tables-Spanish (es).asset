@@ -64,6 +64,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-es
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ed7c459953ff50149a9d131d45829ac6
     m_Address: BSPGeneratorTable_es

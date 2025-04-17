@@ -71,6 +71,10 @@ MonoBehaviour:
     m_Key: createPreset
     m_Metadata:
       m_Items: []
+  - m_Id: 1010993787211776
+    m_Key: imageSelected
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

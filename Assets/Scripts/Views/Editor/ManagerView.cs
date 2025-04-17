@@ -42,7 +42,7 @@ namespace Views.Editor
         /// View responsible for generation-related actions.
         /// </summary>
         private ActionsView _actionsView;
-        
+
         /// <summary>
         /// View responsible for spawning actions.
         /// </summary>
@@ -51,11 +51,10 @@ namespace Views.Editor
         /// <summary>
         /// Displays the Generation Manager window in the Unity Editor.
         /// </summary>
-        [MenuItem("Window/Generation Manager 2")]
+        [MenuItem("Window/Generation Manager V.2")]
         public static void ShowWindow()
         {
-            // Create and display the window with a minimum size.
-            var window = GetWindow<ManagerView>("Generation Manager 2");
+            var window = GetWindow<ManagerView>("Generation Manager V.2");
             window.minSize = new Vector2(400, 600);
         }
 

@@ -31,7 +31,6 @@ namespace Views.Editor
         {
             _container = StyleUtils.SimpleContainer();
 
-            // Creamos el foldout y asignamos el texto localizado
             var foldout = StyleUtils.ModernFoldout("");
             foldout.SetLocalizedText("GeneratorSelection", "SelectionTable");
 
@@ -39,27 +38,23 @@ namespace Views.Editor
 
             if (cachedNames == null || cachedNames.Count == 0)
             {
-                // Se crea un help label y se le asigna un mensaje localizado
                 var helpLabel = StyleUtils.HelpLabel("");
                 helpLabel.SetLocalizedText("NoGeneratorsFound", "SelectionTable");
                 foldout.Add(helpLabel);
             }
             else
             {
-                // Se crea el dropdown sin texto fijo en el constructor y se actualiza su label mediante LocalizationUIHelper
                 var dropdown = StyleUtils.SimpleDropdown();
                 dropdown.SetLocalizedTitle("SelectGenerator", "SelectionTable");
 
                 dropdown.choices = cachedNames;
 
-                // Validate the selected index
                 var selectedIndex = _controller.SelectedGeneratorIndex();
                 if (selectedIndex < 0 || selectedIndex >= cachedNames.Count)
                 {
-                    selectedIndex = 0; // Default to the first item if the index is invalid
+                    selectedIndex = 0;
                 }
 
-                // Set the initial value
                 dropdown.value = cachedNames[selectedIndex];
                 dropdown.RegisterValueChangedCallback(evt => _controller.ChangeGenerator(evt.newValue));
 

@@ -50,7 +50,6 @@ namespace Views.Editor
         /// </summary>
         public SettingsView()
         {
-            // Subscribe to events for toggling the Open Graph button and repainting the UI.
             EventBus.ToggleOpenGraphButton += ShowOpenGraphWindowButton;
             EventBus.GeneratorChanged += Repaint;
         }

@@ -58,6 +58,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ca
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d8d1512428702ac45a9af2a1c14fa655
     m_Address: StyleTable_ca

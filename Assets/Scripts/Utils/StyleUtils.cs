@@ -29,6 +29,19 @@ namespace Utils
                 }
             };
         }
+        
+        public static VisualElement ColumnButtonContainer()
+        {
+            return new VisualElement
+            {
+                style =
+                {
+                    flexDirection = FlexDirection.Column,
+                    marginTop = 5,
+                    marginBottom = 5
+                }
+            };
+        }
 
         public static Button ButtonInRowContainer(string text, Action action, bool first = false)
         {

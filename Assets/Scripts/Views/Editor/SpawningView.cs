@@ -14,8 +14,19 @@ namespace Views.Editor
     /// </summary>
     public class SpawningView
     {
+        /// <summary>
+        /// The controller responsible for handling spawning logic.
+        /// </summary>
         private VisualElement _root;
+        
+        /// <summary>
+        /// The controller responsible for handling spawning logic.
+        /// </summary>
         private InstantiateCharacter _spawnPointInstance;
+        
+        /// <summary>
+        /// The field info for the character prefab.
+        /// </summary>
         private FieldInfo _prefabField;
 
         /// <summary>
@@ -78,7 +89,6 @@ namespace Views.Editor
         /// <returns>A VisualElement containing the prefab selector.</returns>
         private VisualElement CreateCharacterSelector()
         {
-            // Create a container for the label and preview.
             var container = new VisualElement
             {
                 style =
@@ -88,12 +98,10 @@ namespace Views.Editor
                 }
             };
 
-            // Add the "Character" label above the preview.
             var label = StyleUtils.LabelForTile("");
             label.SetLocalizedText("CharacterLabel", "SpawningTable");
             container.Add(label);
 
-            // Create the preview container using IMGUI.
             var previewContainer = new IMGUIContainer(() =>
             {
                 GameObject currentPrefab = null;
@@ -102,7 +110,6 @@ namespace Views.Editor
                     currentPrefab = _prefabField.GetValue(_spawnPointInstance) as GameObject;
                 }
 
-                // Get the preview texture for the prefab.
                 var previewTexture = currentPrefab != null
                     ? AssetPreview.GetAssetPreview(currentPrefab) ??
                       EditorGUIUtility.ObjectContent(currentPrefab, typeof(GameObject)).image
@@ -110,13 +117,11 @@ namespace Views.Editor
 
                 var previewSize = Utils.Utils.GetPreviewTileSize();
 
-                // Draw the preview button.
                 if (GUILayout.Button(previewTexture, GUILayout.Width(previewSize), GUILayout.Height(previewSize)))
                 {
                     EditorGUIUtility.ShowObjectPicker<GameObject>(currentPrefab, false, "t:GameObject", 12345);
                 }
 
-                // Update the prefab when a new object is selected in the object picker.
                 if (Event.current.commandName != "ObjectSelectorUpdated") return;
                 var picked = EditorGUIUtility.GetObjectPickerObject() as GameObject;
 
@@ -125,7 +130,6 @@ namespace Views.Editor
                 EditorUtility.SetDirty(_spawnPointInstance);
             });
 
-            // Set the height of the preview container.
             previewContainer.style.height = Utils.Utils.GetPreviewTileSize();
             container.Add(previewContainer);
 

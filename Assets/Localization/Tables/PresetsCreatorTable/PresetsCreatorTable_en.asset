@@ -70,6 +70,10 @@ MonoBehaviour:
     m_Localized: Create Preset
     m_Metadata:
       m_Items: []
+  - m_Id: 1010993787211776
+    m_Localized: 'Selected image:'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

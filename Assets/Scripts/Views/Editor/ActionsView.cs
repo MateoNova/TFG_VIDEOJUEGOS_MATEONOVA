@@ -30,53 +30,53 @@ namespace Views.Editor
         public VisualElement CreateUI()
         {
             var container = StyleUtils.SimpleContainer();
-            var actionsFoldout = StyleUtils.ModernFoldout("");
-            actionsFoldout.SetLocalizedText("GenerationActions", "ActionsTable");
-            actionsFoldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
+            var actionsFoldout = CreateActionsFoldout();
             container.Add(actionsFoldout);
 
             if (!_showGenerationActions) return container;
 
             AddClearToggle(actionsFoldout);
-            var buttonsContainer = AddActionsButtons();
-            actionsFoldout.Add(buttonsContainer);
+            AddActionsButtons(actionsFoldout);
 
             return container;
         }
 
         /// <summary>
-        /// Adds buttons for generation actions (e.g., Generate, Clear, Save, Load) to the UI.
+        /// Creates the foldout for generation actions.
         /// </summary>
-        /// <returns>A <see cref="VisualElement"/> containing the action buttons.</returns>
-        private VisualElement AddActionsButtons()
+        /// <returns>A <see cref="Foldout"/> element for grouping generation actions.</returns>
+        private Foldout CreateActionsFoldout()
         {
-            // Create a container for the buttons.
-            var buttonsContainer = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Column,
-                    marginTop = 5
-                }
-            };
+            var actionsFoldout = StyleUtils.ModernFoldout("");
+            actionsFoldout.SetLocalizedText("GenerationActions", "ActionsTable");
+            actionsFoldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
+            return actionsFoldout;
+        }
 
-            var generateButton = new Button(_actionsController.Generate);
-            generateButton.SetLocalizedText("GenerateDungeon", "ActionsTable");
-            buttonsContainer.Add(generateButton);
+        /// <summary>
+        /// Adds buttons for generation actions (e.g., Generate, Clear, Save, Load) to the foldout.
+        /// </summary>
+        /// <param name="actionsFoldout">The foldout to which the buttons will be added.</param>
+        private void AddActionsButtons(Foldout actionsFoldout)
+        {
+            var buttonsContainer = StyleUtils.ColumnButtonContainer();
 
-            var clearButton = new Button(ActionsController.ClearDungeon);
-            clearButton.SetLocalizedText("ClearDungeon", "ActionsTable");
-            buttonsContainer.Add(clearButton);
+            CreateButton("GenerateDungeon", buttonsContainer, _actionsController.Generate);
+            CreateButton("ClearDungeon", buttonsContainer, _actionsController.ClearDungeon);
+            CreateButton("SaveDungeon", buttonsContainer, _actionsController.SaveDungeon);
+            CreateButton("LoadDungeon", buttonsContainer, _actionsController.LoadDungeon);
 
-            var saveButton = new Button(_actionsController.SaveDungeon);
-            saveButton.SetLocalizedText("SaveDungeon", "ActionsTable");
-            buttonsContainer.Add(saveButton);
-
-            var loadButton = new Button(_actionsController.LoadDungeon);
-            loadButton.SetLocalizedText("LoadDungeon", "ActionsTable");
-            buttonsContainer.Add(loadButton);
-
-            return buttonsContainer;
+            actionsFoldout.Add(buttonsContainer);
+        }
+        
+        /// <summary>
+        /// Creates a button with the specified text and action, and adds it to the given container.
+        /// </summary>
+        private void CreateButton(string text, VisualElement container, System.Action action)
+        {
+            var button = new Button(action);
+            button.SetLocalizedText(text, "ActionsTable");
+            container.Add(button);
         }
 
         /// <summary>
