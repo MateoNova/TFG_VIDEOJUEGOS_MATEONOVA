@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 5881368576
-    m_Localized: Spawning Option
+    m_Localized: Character spawning options
     m_Metadata:
       m_Items: []
   - m_Id: 239944503296

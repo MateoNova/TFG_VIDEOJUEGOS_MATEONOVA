@@ -1,34 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.U2D.Sprites;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Models;
-using UnityEditor.U2D.Sprites;
 
 #if UNITY_EDITOR
 namespace Controllers.Editor
 {
-    /// <summary>
-    /// Controller that configures the importer, applies grid slicing while ignoring empty cells,
-    /// and automatically renames sprites using PredefinedTileNames.
-    /// </summary>
     public class SpriteRenamerController
     {
-        private const int CellSize = 16; // Size of each cell in pixels for slicing.
-        private const float PivotValue = 0.5f; // Default pivot value for sprites.
+        private const int CellSize = 16;
+        private const float PivotValue = 0.5f;
 
-        /// <summary>
-        /// Configures the importer, performs slicing (ignoring empty tiles), and renames sprites in metadata.
-        /// </summary>
-        /// <param name="imagePath">Path to the image to process.</param>
-        /// <returns>True if the operation was successful, false otherwise.</returns>
         public bool RenameSprites(string imagePath)
         {
             var importer = AssetImporter.GetAtPath(imagePath) as TextureImporter;
             if (importer == null) return false;
 
-            // 1) Initial configuration of the TextureImporter.
+            // Configure importer for slicing
             importer.isReadable = true;
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
@@ -38,127 +31,149 @@ namespace Controllers.Editor
             EditorUtility.SetDirty(importer);
             importer.SaveAndReimport();
 
-            // 2) Prepare the Sprite Editor Data Provider.
-            var factory = new SpriteDataProviderFactories();
-            factory.Init();
+            // Prepare Data Provider
+            var factory = new SpriteDataProviderFactories(); factory.Init();
             var dataProvider = factory.GetSpriteEditorDataProviderFromObject(importer);
             dataProvider.InitSpriteEditorDataProvider();
 
-            // 3) Generate SpriteRects with unique GUIDs.
+            // Slice and name sprites
             var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
             int texW = texture.width, texH = texture.height;
-            var spriteRects = new List<SpriteRect>();
+            var rects = new List<SpriteRect>();
             int idx = 0;
-
-            // Iterate through the texture grid and create SpriteRects for non-empty cells.
             for (int y = texH - CellSize; y >= 0; y -= CellSize)
             for (int x = 0; x < texW; x += CellSize)
             {
-                if (IsCellBlank(texture, x, y)) continue; // Skip empty cells.
-                var name = idx < Utils.Utils.PredefinedTileNames.Count
+                if (IsCellBlank(texture, x, y)) continue;
+                string baseName = idx < Utils.Utils.PredefinedTileNames.Count
                     ? Utils.Utils.PredefinedTileNames[idx]
                     : $"Floor {idx - Utils.Utils.PredefinedTileNames.Count + 1}";
-                spriteRects.Add(new SpriteRect
-                {
-                    name = $"{idx}_{name}",
-                    spriteID = GUID.Generate(), // Generate a unique GUID for the sprite.
-                    rect = new Rect(x, y, CellSize, CellSize),
-                    alignment = (int)SpriteAlignment.Center,
-                    pivot = new Vector2(PivotValue, PivotValue),
+                rects.Add(new SpriteRect {
+                    name     = $"{idx}_{baseName}",
+                    spriteID = GUID.Generate(),
+                    rect     = new Rect(x, y, CellSize, CellSize),
+                    alignment= (int)SpriteAlignment.Center,
+                    pivot    = new Vector2(PivotValue, PivotValue)
                 });
                 idx++;
             }
 
-            // 4) Register name↔ID pairs (Unity 2021.2+).
-            var nameFileIdProv = dataProvider.GetDataProvider<ISpriteNameFileIdDataProvider>();
-            var pairs = nameFileIdProv.GetNameFileIdPairs().ToList();
-            pairs.AddRange(spriteRects.Select(r => new SpriteNameFileIdPair(r.name, r.spriteID)));
-            nameFileIdProv.SetNameFileIdPairs(pairs);
+            // Register name↔ID pairs
+            var nameProv = dataProvider.GetDataProvider<ISpriteNameFileIdDataProvider>();
+            var pairs = nameProv.GetNameFileIdPairs().ToList();
+            pairs.AddRange(rects.Select(r => new SpriteNameFileIdPair(r.name, r.spriteID)));
+            nameProv.SetNameFileIdPairs(pairs);
 
-            // 5) Assign the SpriteRects and apply changes.
-            dataProvider.SetSpriteRects(spriteRects.ToArray());
+            // Apply slicing
+            dataProvider.SetSpriteRects(rects.ToArray());
             dataProvider.Apply();
-
-            // 6) Reimport the asset to apply changes.
-            var ai = dataProvider.targetObject as AssetImporter;
-            ai.SaveAndReimport();
+            (dataProvider.targetObject as AssetImporter).SaveAndReimport();
             AssetDatabase.Refresh();
 
             return true;
         }
 
-        /// <summary>
-        /// Checks if all pixels in the specified region are transparent using GetPixels.
-        /// </summary>
-        /// <param name="tex">The texture to check.</param>
-        /// <param name="x">The x-coordinate of the region.</param>
-        /// <param name="y">The y-coordinate of the region.</param>
-        /// <returns>True if the region is blank, false otherwise.</returns>
         private bool IsCellBlank(Texture2D tex, int x, int y)
         {
             try
             {
-                var pixels = tex.GetPixels(x, y, CellSize, CellSize);
-                return pixels.All(c => c.a == 0f); // Check if all pixels are fully transparent.
+                var px = tex.GetPixels(x, y, CellSize, CellSize);
+                return px.All(c => c.a == 0f);
             }
-            catch
-            {
-                // If reading fails, assume the cell is not blank.
-                return false;
-            }
+            catch { return false; }
         }
 
-        /// <summary>
-        /// Creates a tileset preset after slicing and renaming.
-        /// </summary>
-        /// <param name="imagePath">Path to the image to process.</param>
-        /// <returns>True if the preset was created successfully, false otherwise.</returns>
         public bool CreatePreset(string imagePath)
         {
-            var subAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(imagePath);
-            var sprites = subAssets.OfType<Sprite>().ToArray();
+            var subs = AssetDatabase.LoadAllAssetRepresentationsAtPath(imagePath).OfType<Sprite>();
+            var sprites = subs.ToArray();
             if (sprites.Length == 0) return false;
 
-            // Sort sprites by their position in the texture.
+            // Sort by sheet position
             var sorted = sprites
                 .OrderByDescending(s => s.rect.y)
                 .ThenBy(s => s.rect.x)
                 .ToArray();
 
-            // Prompt the user to select a save location for the preset.
+            // Prompt for preset asset
             var presetPath = EditorUtility.SaveFilePanelInProject(
-                "Save Tileset Preset", "NewTilesetPreset", "asset",
-                "Select a location to save the preset"
+                "Save Tileset Preset", "NewTilesetPreset", "asset", "Location"
             );
             if (string.IsNullOrEmpty(presetPath)) return false;
 
-            // Create a folder for the tiles if it doesn't exist.
-            var dir = System.IO.Path.GetDirectoryName(presetPath);
-            var tilesFolder = System.IO.Path.GetFileNameWithoutExtension(presetPath).Replace("Preset", "Tiles");
-            var folderPath = $"{dir}/{tilesFolder}";
+            var dir = Path.GetDirectoryName(presetPath);
+            var presetName = Path.GetFileNameWithoutExtension(presetPath);
+            var tilesFolder = presetName.Replace("Preset", "Tiles");
+            var folderPath = Path.Combine(dir, tilesFolder);
             if (!AssetDatabase.IsValidFolder(folderPath))
                 AssetDatabase.CreateFolder(dir, tilesFolder);
 
-            // Create Tile assets for each sprite.
+            // Create Tile assets in original order
             var tiles = new List<Tile>();
-            for (int i = 0; i < sorted.Length; i++)
+            foreach (var spr in sorted)
             {
-                var tile = ScriptableObject.CreateInstance<Tile>();
-                tile.sprite = sorted[i];
-                tile.name = sorted[i].name;
-                var assetPath = $"{folderPath}/{sorted[i].name}.asset";
-                AssetDatabase.CreateAsset(tile, assetPath);
-                tiles.Add(tile);
+                var t = ScriptableObject.CreateInstance<Tile>();
+                t.sprite = spr;
+                var p = Path.Combine(folderPath, spr.name + ".asset");
+                AssetDatabase.CreateAsset(t, p);
+                tiles.Add(t);
             }
 
-            // Create and save the tileset preset.
+            // Save TilesetPreset
             var preset = ScriptableObject.CreateInstance<TilesetPreset>();
             preset.tiles = tiles.ToArray();
             AssetDatabase.CreateAsset(preset, presetPath);
-
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            // Create palette preserving sheet layout
+            CreateTilePalette(imagePath, folderPath, presetName);
             return true;
+        }
+
+        private void CreateTilePalette(string imagePath, string tilesFolderPath, string presetName)
+        {
+            // palette name
+            var paletteName = presetName.Replace("Preset", "TilePalette");
+            // create palette prefab
+            GridPaletteUtility.CreateNewPalette(
+                tilesFolderPath, paletteName,
+                GridLayout.CellLayout.Rectangle,
+                GridPalette.CellSizing.Automatic,
+                Vector3.one, GridLayout.CellSwizzle.XYZ
+            );
+            var palettePath = Path.Combine(tilesFolderPath, paletteName + ".prefab");
+
+            // load sprite sheet to compute grid
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
+            int texW = texture.width, texH = texture.height;
+
+            // open prefab for editing
+            var root = PrefabUtility.LoadPrefabContents(palettePath);
+            var tilemap = root.GetComponentInChildren<Tilemap>();
+
+            // load tiles (order matters by sprite rect)
+            var tiles = AssetDatabase
+                .FindAssets("t:Tile", new[] { tilesFolderPath })
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(p => AssetDatabase.LoadAssetAtPath<Tile>(p))
+                .Where(t => t != null)
+                .ToArray();
+
+            // place each tile at its original sheet grid coordinate
+            foreach (var tile in tiles)
+            {
+                var rect = tile.sprite.rect;
+                int xIdx = (int)(rect.x / CellSize);
+                int yIdx = (int)((texH - CellSize - rect.y) / CellSize);
+                tilemap.SetTile(new Vector3Int(xIdx, -yIdx, 0), tile);
+            }
+
+            // save and unload
+            PrefabUtility.SaveAsPrefabAsset(root, palettePath);
+            PrefabUtility.UnloadPrefabContents(root);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 }

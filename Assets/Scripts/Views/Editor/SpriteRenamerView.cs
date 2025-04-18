@@ -63,6 +63,7 @@ namespace Views.Editor
             AddSelectImageButton(foldout);
             AddRenameButton(foldout);
             AddPresetButton(foldout);
+            
 
             container.Add(foldout);
             return container;
