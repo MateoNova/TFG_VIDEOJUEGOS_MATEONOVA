@@ -18,10 +18,9 @@ namespace Controllers.Editor
 
         public bool RenameSprites(string imagePath)
         {
+            // 1) Configure importer for slicing
             var importer = AssetImporter.GetAtPath(imagePath) as TextureImporter;
             if (importer == null) return false;
-
-            // Configure importer for slicing
             importer.isReadable = true;
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
@@ -31,12 +30,13 @@ namespace Controllers.Editor
             EditorUtility.SetDirty(importer);
             importer.SaveAndReimport();
 
-            // Prepare Data Provider
-            var factory = new SpriteDataProviderFactories(); factory.Init();
+            // 2) Prepare Data Provider
+            var factory = new SpriteDataProviderFactories();
+            factory.Init();
             var dataProvider = factory.GetSpriteEditorDataProviderFromObject(importer);
             dataProvider.InitSpriteEditorDataProvider();
 
-            // Slice and name sprites
+            // 3) Slice and name sprites
             var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
             int texW = texture.width, texH = texture.height;
             var rects = new List<SpriteRect>();
@@ -48,23 +48,24 @@ namespace Controllers.Editor
                 string baseName = idx < Utils.Utils.PredefinedTileNames.Count
                     ? Utils.Utils.PredefinedTileNames[idx]
                     : $"Floor {idx - Utils.Utils.PredefinedTileNames.Count + 1}";
-                rects.Add(new SpriteRect {
-                    name     = $"{idx}_{baseName}",
+                rects.Add(new SpriteRect
+                {
+                    name = $"{idx}_{baseName}",
                     spriteID = GUID.Generate(),
-                    rect     = new Rect(x, y, CellSize, CellSize),
-                    alignment= (int)SpriteAlignment.Center,
-                    pivot    = new Vector2(PivotValue, PivotValue)
+                    rect = new Rect(x, y, CellSize, CellSize),
+                    alignment = (int)SpriteAlignment.Center,
+                    pivot = new Vector2(PivotValue, PivotValue)
                 });
                 idx++;
             }
 
-            // Register name↔ID pairs
+            // 4) Register name↔ID pairs
             var nameProv = dataProvider.GetDataProvider<ISpriteNameFileIdDataProvider>();
             var pairs = nameProv.GetNameFileIdPairs().ToList();
             pairs.AddRange(rects.Select(r => new SpriteNameFileIdPair(r.name, r.spriteID)));
             nameProv.SetNameFileIdPairs(pairs);
 
-            // Apply slicing
+            // 5) Apply slicing
             dataProvider.SetSpriteRects(rects.ToArray());
             dataProvider.Apply();
             (dataProvider.targetObject as AssetImporter).SaveAndReimport();
@@ -80,7 +81,10 @@ namespace Controllers.Editor
                 var px = tex.GetPixels(x, y, CellSize, CellSize);
                 return px.All(c => c.a == 0f);
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool CreatePreset(string imagePath)
@@ -89,16 +93,13 @@ namespace Controllers.Editor
             var sprites = subs.ToArray();
             if (sprites.Length == 0) return false;
 
-            // Sort by sheet position
             var sorted = sprites
                 .OrderByDescending(s => s.rect.y)
                 .ThenBy(s => s.rect.x)
                 .ToArray();
 
-            // Prompt for preset asset
             var presetPath = EditorUtility.SaveFilePanelInProject(
-                "Save Tileset Preset", "NewTilesetPreset", "asset", "Location"
-            );
+                "Save Tileset Preset", "NewTilesetPreset", "asset", "Select a location to save the preset");
             if (string.IsNullOrEmpty(presetPath)) return false;
 
             var dir = Path.GetDirectoryName(presetPath);
@@ -108,7 +109,6 @@ namespace Controllers.Editor
             if (!AssetDatabase.IsValidFolder(folderPath))
                 AssetDatabase.CreateFolder(dir, tilesFolder);
 
-            // Create Tile assets in original order
             var tiles = new List<Tile>();
             foreach (var spr in sorted)
             {
@@ -119,23 +119,19 @@ namespace Controllers.Editor
                 tiles.Add(t);
             }
 
-            // Save TilesetPreset
             var preset = ScriptableObject.CreateInstance<TilesetPreset>();
             preset.tiles = tiles.ToArray();
             AssetDatabase.CreateAsset(preset, presetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            // Create palette preserving sheet layout
             CreateTilePalette(imagePath, folderPath, presetName);
             return true;
         }
 
         private void CreateTilePalette(string imagePath, string tilesFolderPath, string presetName)
         {
-            // palette name
             var paletteName = presetName.Replace("Preset", "TilePalette");
-            // create palette prefab
             GridPaletteUtility.CreateNewPalette(
                 tilesFolderPath, paletteName,
                 GridLayout.CellLayout.Rectangle,
@@ -144,15 +140,11 @@ namespace Controllers.Editor
             );
             var palettePath = Path.Combine(tilesFolderPath, paletteName + ".prefab");
 
-            // load sprite sheet to compute grid
             var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
             int texW = texture.width, texH = texture.height;
-
-            // open prefab for editing
             var root = PrefabUtility.LoadPrefabContents(palettePath);
             var tilemap = root.GetComponentInChildren<Tilemap>();
 
-            // load tiles (order matters by sprite rect)
             var tiles = AssetDatabase
                 .FindAssets("t:Tile", new[] { tilesFolderPath })
                 .Select(AssetDatabase.GUIDToAssetPath)
@@ -160,21 +152,108 @@ namespace Controllers.Editor
                 .Where(t => t != null)
                 .ToArray();
 
-            // place each tile at its original sheet grid coordinate
             foreach (var tile in tiles)
             {
                 var rect = tile.sprite.rect;
-                int xIdx = (int)(rect.x / CellSize);
-                int yIdx = (int)((texH - CellSize - rect.y) / CellSize);
+                var xIdx = (int)(rect.x / CellSize);
+                var yIdx = (int)((texH - CellSize - rect.y) / CellSize);
                 tilemap.SetTile(new Vector3Int(xIdx, -yIdx, 0), tile);
             }
 
-            // save and unload
             PrefabUtility.SaveAsPrefabAsset(root, palettePath);
             PrefabUtility.UnloadPrefabContents(root);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
     }
+
+    /// <summary>
+    /// AssetPostprocessor para forzar colliders distintos según el nombre de la tile.
+    /// </summary>
+    internal class CustomPhysicsShapePostprocessor : AssetPostprocessor
+    {
+        // Grupos de nombres tal como están en Utils.Utils.PredefinedTileNames
+        static readonly HashSet<string> LeftEdgeAt60 = new()
+        {
+            "TopLeftWall", "TripleExceptLeftWall", "BottomLeftWall",
+            "TopLeftInnerWall", "TripleExceptLeftInnerWall", "BottomLeftInnerWall",
+            "RightWall"
+        };
+
+        static readonly HashSet<string> RightEdgeAt60 = new()
+        {
+            "TopRightWall", "TripleExceptRightWall", "BottomRightWall",
+            "TopRightInnerWall", "TripleExceptRightInnerWall", "BottomRightInnerWall",
+            "LeftWall"
+        };
+
+        // Subconjunto dentro de LeftEdgeAt60 que en realidad deben empezar al 40%
+        static readonly HashSet<string> SpecialLeft40 = new()
+        {
+            "TripleExceptLeftInnerWall",
+            "RightWall",
+            "TopLeftInnerWall",
+            "TripleExceptLeftWall"
+        };
+
+        private const string AloneWallName = "AloneWall";
+
+        private void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
+        {
+            if (sprites == null || sprites.Length == 0) return;
+
+            foreach (var sprite in sprites)
+            {
+                // Extraer el nombre real (sin índice “0_”)
+                var baseName = sprite.name.Split('_').Last();
+
+                // Saltar si no es tile de muro
+                if (!LeftEdgeAt60.Contains(baseName)
+                    && !RightEdgeAt60.Contains(baseName)
+                    && baseName != AloneWallName)
+                    continue;
+
+                var w = sprite.rect.width;
+                var h = sprite.rect.height;
+
+                // Calcular porcentajes de inicio/fin en X
+                float leftPct, rightPct;
+                if (baseName == AloneWallName)
+                {
+                    // 60% centrado
+                    var span = 0.4f;
+                    leftPct = (1f - span) * 0.5f; 
+                    rightPct = leftPct + span; 
+                }
+                else if (RightEdgeAt60.Contains(baseName))
+                {
+                    leftPct = 0f;
+                    rightPct = 0.7f;
+                }
+                else // es del grupo LeftEdgeAt60
+                {
+                    leftPct = 0.3f;
+                    rightPct = 1.0f;
+                }
+
+                // Convertir a coordenadas de píxel dentro de sprite.rect
+                float x0 = w * leftPct;
+                float x1 = w * rightPct;
+
+                // Crear rectángulo de colisión (un polígono en cuatro vértices)
+                var shape = new Vector2[]
+                {
+                    new(x0, 0f),
+                    new(x1, 0f),
+                    new(x1, h),
+                    new(x0, h),
+                };
+
+                // Sobrescribir la forma original
+                sprite.OverridePhysicsShape(new List<Vector2[]> { shape });
+            }
+        }
+    }
 }
 #endif
+

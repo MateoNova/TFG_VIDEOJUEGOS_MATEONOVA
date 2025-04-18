@@ -506,7 +506,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1001 &593189683
+--- !u!1001 &1206094110
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -557,22 +557,6 @@ PrefabInstance:
     - target: {fileID: 3793708829863388663, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
       propertyPath: m_Name
       value: GenerationManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
-      propertyPath: randomWalkableTilesPlacement
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7975002498847090783, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5.702956
-      objectReference: {fileID: 0}
-    - target: {fileID: 7975002498847090783, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 8.817376
-      objectReference: {fileID: 0}
-    - target: {fileID: 7975002498847090783, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.0161996
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -665,4 +649,4 @@ SceneRoots:
   - {fileID: 180042138}
   - {fileID: 1743934326}
   - {fileID: 430197338}
-  - {fileID: 593189683}
+  - {fileID: 1206094110}
