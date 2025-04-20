@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using Views.Attributes;
 
@@ -130,7 +131,8 @@ namespace Models
         #region Door Tiles
 
         [SerializeField] public Tilemap doorTilemap;
-        [SerializeField] private TileBase doorTileBase;
+        [SerializeField] private TileBase doorClosed;
+        [SerializeField] private TileBase doorOpen;
 
         #endregion
 
@@ -298,7 +300,7 @@ namespace Models
             var cellPositions = GetCellPositions(tilePositions, doorTilemap);
             foreach (var (_, cellPos) in cellPositions)
             {
-                doorTilemap.SetTile(cellPos, doorTileBase);
+                doorTilemap.SetTile(cellPos, doorClosed);
             }
         }
 

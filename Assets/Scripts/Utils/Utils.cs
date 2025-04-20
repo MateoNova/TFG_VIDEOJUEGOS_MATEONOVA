@@ -40,7 +40,7 @@ namespace Utils
             "RightWall", "UpWall", "TripleExceptLeftWall", "AllCornersWall", "TripleExceptRightWall",
             "TripleExceptLeftInnerWall", "TripleExceptRightInnerWall", "LeftWall", "BottomLeftWall",
             "TripleExcetDownWall", "BottomRightWall", "BottomLeftInnerWall", "BottomRightInnerWall",
-            "AloneWall", "DownWall"
+            "AloneWall", "DownWall", "DoorClosed", "DoorOpen"
         };
 
 

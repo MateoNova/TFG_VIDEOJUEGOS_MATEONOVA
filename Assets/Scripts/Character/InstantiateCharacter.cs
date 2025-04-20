@@ -5,8 +5,8 @@ namespace Character
     public class InstantiateCharacter : MonoBehaviour
     {
         [SerializeField] private GameObject characterPrefab;
-    
-        void Start()
+
+        private void Start()
         {
             Instantiate(characterPrefab, transform.position, Quaternion.identity);
         }

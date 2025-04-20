@@ -16,10 +16,10 @@ namespace Character
 
         private IEnumerator FindPlayer()
         {
-            while (target == null)
+            while (!target)
             {
                 var player = FindFirstObjectByType<SimpleMovement>();
-                if (player != null)
+                if (player)
                 {
                     target = player.transform;
                 }
@@ -28,17 +28,16 @@ namespace Character
             }
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
-            if (target != null)
-            {
-                Vector3 desiredPosition = target.position + offset;
-                Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-                transform.position = smoothedPosition;
+            if (!target) return;
+            
+            var desiredPosition = target.position + offset;
+            var smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+            transform.position = smoothedPosition;
 
-                // Rotate the camera to face the direction of the target's movement
-                transform.rotation = target.rotation;
-            }
+            // Rotate the camera to face the direction of the target's movement
+            transform.rotation = target.rotation;
         }
     }
 }

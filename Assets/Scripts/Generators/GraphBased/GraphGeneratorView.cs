@@ -81,10 +81,10 @@ namespace Generators.GraphBased
         /// </summary>
         private void AddStyles()
         {
-            var backgroundStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Assets/Editor/GraphBackground.uss");
+            var backgroundStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Art/Editor/GraphBackground.uss");
             styleSheets.Add(backgroundStyle);
 
-            var nodeStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Assets/Editor/GraphNodeStyle.uss");
+            var nodeStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Art/Editor/GraphNodeStyle.uss");
             styleSheets.Add(nodeStyle);
         }
 
