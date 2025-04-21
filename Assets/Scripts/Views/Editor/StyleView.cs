@@ -152,13 +152,30 @@ namespace Views.Editor
         private VisualElement CreatePresetSubsection(TilesetPreset preset)
         {
             var presetSection = StyleUtils.ModernSubFoldout($"{preset.name}");
-            //presetSection.SetLocalizedText(preset.name, "StyleTable");
-            // Add floor and wall tile settings for the preset
+            // Permitir menú contextual
+            presetSection.AddManipulator(new ContextualMenuManipulator(evt =>
+            {
+                evt.menu.AppendAction("Eliminar preset", _ => RemovePreset(preset));
+            }));
+            // Contenido habitual...
             presetSection.Add(CreateFloorTileSettings());
             presetSection.Add(CreateWallTileSettings());
-        
             return presetSection;
         }
+        
+        private void RemovePreset(TilesetPreset preset)
+        {
+            // 1) Quitar de la lista interna
+            _loadedPresets.Remove(preset);
+            // 2) Quitar del TilemapPainter
+            var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
+            painter.RemovePreset(preset);
+            // 3) Actualizar EditorPrefs
+            SavePresetsToEditorPrefs();
+            // 4) Volver a dibujar
+            RefreshUI();
+        }
+
 
         /// <summary>
         /// Creates the floor tile settings UI element.

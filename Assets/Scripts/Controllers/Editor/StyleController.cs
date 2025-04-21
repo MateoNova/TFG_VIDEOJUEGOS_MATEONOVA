@@ -62,14 +62,14 @@ namespace Controllers.Editor
             var gen = GeneratorService.Instance.CurrentGenerator;
             if (gen?.TilemapPainter == null) { Debug.LogError("TilemapPainter not available."); return; }
 
-            var painter = gen.TilemapPainter as TilemapPainter;
+            var painter = gen.TilemapPainter;
 
             // 1) Registra y selecciona el preset
             painter.AddAndSelectPreset(preset); 
 
             // 2) Limpia las colecciones de walkables (ahora protegido)
-            painter.ClearWalkableTileBases();
-            painter.ClearWalkableTilesPriorities();
+            //painter.ClearWalkableTileBases();
+            //painter.ClearWalkableTilesPriorities();
 
             // 3) Asigna cada tile desde preset.tiles
             foreach (var tile in preset.tiles)
@@ -80,8 +80,15 @@ namespace Controllers.Editor
 
                 if (Utils.Utils.PredefinedTileNames.Contains(key))
                 {
-                    // Asignación de wall fields mediante reflection...
-                    // (idéntico a tu código existente)
+                    var fieldName = char.ToLower(key[0]) + key[1..];
+                    var field = painter.GetType().GetField(
+                        fieldName,
+                        BindingFlags.Instance | BindingFlags.NonPublic
+                    );
+                    if (field == null)
+                        Debug.LogWarning($"Field '{fieldName}' no encontrado en TilemapPainter.");
+                    else
+                        field.SetValue(painter, tile);
                 }
                 else if (key.StartsWith("Floor", StringComparison.OrdinalIgnoreCase))
                 {

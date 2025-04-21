@@ -451,5 +451,13 @@ namespace Models
             preset.walkableTileBases.Add(tile);
             preset.walkableTilesPriorities.Add(1);
         }
+        
+        public void RemovePreset(TilesetPreset preset)
+        {
+            if (_tilesetPresets.Remove(preset) && _tilesetPresetIndex == _tilesetPresets.Count)
+            {
+                _tilesetPresetIndex = _tilesetPresets.Count - 1;
+            }
+        }
     }
 }
