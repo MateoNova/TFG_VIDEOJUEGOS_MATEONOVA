@@ -7,45 +7,25 @@ using Views.Attributes;
 
 namespace Models
 {
-    /// <summary>
-    /// Interface defining the contract for a TilemapPainter.
-    /// </summary>
+
     public interface ITilemapPainter
     {
-        /// <summary>
-        /// Paints walkable tiles on the tilemap.
-        /// </summary>
-        /// <param name="tilePositions">The positions of the tiles to paint.</param>
+
         void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions);
 
-        /// <summary>
-        /// Paints wall tiles on the tilemap.
-        /// </summary>
-        /// <param name="tilePositions">The positions of the tiles to paint.</param>
-        /// <param name="wallPosition">The type of wall to paint.</param>
+
         void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition);
 
-        /// <summary>
-        /// Paints door tiles on the tilemap.
-        /// </summary>
-        /// <param name="tilePositions">The positions of the tiles to paint.</param>
+
         void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions);
 
-        /// <summary>
-        /// Resets all tiles on the tilemap.
-        /// </summary>
+
         void ResetAllTiles();
     }
 
-    /// <summary>
-    /// A class responsible for managing and painting tiles on a tilemap.
-    /// </summary>
     public class TilemapPainter : MonoBehaviour, ITilemapPainter
     {
-        /// <summary>
-        /// Constructor for TilemapPainter.
-        /// </summary>
-        /// <param name="randomPlacement">Determines if walkable tiles should be placed randomly.</param>
+   
         public TilemapPainter(bool randomPlacement)
         {
             //randomWalkableTilesPlacement = randomPlacement;
@@ -82,10 +62,7 @@ namespace Models
 
         #region Initialization Helpers
 
-        /// <summary>
-        /// Initializes the probabilities for walkable tiles based on their priorities.
-        /// </summary>
-        /// <param name="preset"></param>
+
         private void InitializeWalkableTilesProbabilities(TilesetPreset preset)
         {
             _walkableTilesProbabilities = new Dictionary<TileBase, float>();
@@ -101,12 +78,7 @@ namespace Models
             }
         }
 
-        /// <summary>
-        /// Converts world positions to cell positions for a given tilemap.
-        /// </summary>
-        /// <param name="positions">World positions to convert.</param>
-        /// <param name="tilemap">The tilemap to use for conversion.</param>
-        /// <returns>A list of tuples containing world and cell positions.</returns>
+      
         private List<(Vector2Int worldPos, Vector3Int cellPos)> GetCellPositions(IEnumerable<Vector2Int> positions,
             Tilemap tilemap)
         {
@@ -124,44 +96,38 @@ namespace Models
 
         #region Painting Tiles
 
-        /// <summary>
-        /// Paints walkable tiles on the tilemap.
-        /// </summary>
-        /// <param name="tilePositions">The positions of the tiles to paint.</param>
+  
         public void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions)
         {
             var preset = GetCurrentTilesetPreset();
+            if (preset == null || preset.walkableTileBases.Count == 0)
+                return;
+
             InitializeWalkableTilesProbabilities(preset);
-            var positions = tilePositions.ToList();
+            var positions    = tilePositions.ToList();
             var cellPositions = GetCellPositions(positions, walkableTilemap);
 
             if (preset.randomWalkableTilesPlacement)
                 PaintTilesRandomly(cellPositions);
             else
                 PaintTilesWithProbabilities(cellPositions);
-
-            Debug.Log($"Number of walkable tiles painted: {positions.Count}");
         }
 
-        /// <summary>
-        /// Paints walkable tiles randomly.
-        /// </summary>
-        /// <param name="cellPositions">The cell positions to paint.</param>
-        private void PaintTilesRandomly(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
+   
+        private void PaintTilesRandomly(List<(Vector2Int, Vector3Int)> cellPositions)
         {
             var preset = GetCurrentTilesetPreset();
+            if (preset == null || preset.walkableTileBases.Count == 0) return;
+
             var rnd = new System.Random();
-            foreach (var (_, cellPos) in cellPositions)
+            foreach (var (_, cell) in cellPositions)
             {
                 var tile = preset.walkableTileBases[rnd.Next(preset.walkableTileBases.Count)];
-                walkableTilemap.SetTile(cellPos, tile);
+                walkableTilemap.SetTile(cell, tile);
             }
         }
 
-        /// <summary>
-        /// Paints walkable tiles based on their probabilities.
-        /// </summary>
-        /// <param name="cellPositions">The cell positions to paint.</param>
+
         private void PaintTilesWithProbabilities(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
             var preset = GetCurrentTilesetPreset();
@@ -194,11 +160,7 @@ namespace Models
             }
         }
 
-        /// <summary>
-        /// Paints wall tiles on the tilemap.
-        /// </summary>
-        /// <param name="tilePositions">The positions of the tiles to paint.</param>
-        /// <param name="wallPosition">The type of wall to paint.</param>
+
         public void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition)
         {
             var preset = GetCurrentTilesetPreset();
@@ -240,10 +202,7 @@ namespace Models
             }
         }
 
-        /// <summary>
-        /// Paints door tiles on the tilemap.
-        /// </summary>
-        /// <param name="tilePositions">The positions of the tiles to paint.</param>
+
         public void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions)
         {
             var cellPositions = GetCellPositions(tilePositions, doorTilemap);
@@ -257,9 +216,7 @@ namespace Models
 
         #region Reset Tiles
 
-        /// <summary>
-        /// Clears all tiles from the tilemaps.
-        /// </summary>
+
         public void ResetAllTiles()
         {
             walkableTilemap?.ClearAllTiles();
@@ -271,13 +228,7 @@ namespace Models
 
         #region Optional: Tile Selection from Folder
 
-        /// <summary>
-        /// Selects tiles from a folder and populates the provided collections.
-        /// </summary>
-        /// <param name="tileBases">The list to store tile bases.</param>
-        /// <param name="priorities">The list to store tile priorities.</param>
-        /// <param name="probabilities">The dictionary to store tile probabilities.</param>
-        /// <param name="path">The folder path to search for tiles.</param>
+    
         private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
             Dictionary<TileBase, float> probabilities, string path)
         {
@@ -296,10 +247,7 @@ namespace Models
             }
         }
 
-        /// <summary>
-        /// Selects walkable tiles from a folder.
-        /// </summary>
-        /// <param name="path">The folder path to search for tiles.</param>
+
         public void SelectWalkableTilesFromFolder(string path)
         {
             var preset = GetCurrentTilesetPreset();
@@ -311,9 +259,7 @@ namespace Models
 
         #region Tile Collections Clearing
 
-        /// <summary>
-        /// Clears all walkable tile collections and the associated tilemap.
-        /// </summary>
+  
         public void RemoveAllWalkableTiles()
         {
             var preset = GetCurrentTilesetPreset();
@@ -323,9 +269,7 @@ namespace Models
             walkableTilemap?.ClearAllTiles();
         }
 
-        /// <summary>
-        /// Clears all wall tile references and the associated tilemap.
-        /// </summary>
+
         public void RemoveAllWallTiles()
         {
             var preset = GetCurrentTilesetPreset();
@@ -357,51 +301,27 @@ namespace Models
 
         public List<TileBase> GetWalkableTileBases()
         {
-            if (_tilesetPresets == null
-                || _tilesetPresets.Count == 0
-                || _tilesetPresetIndex < 0
-                || _tilesetPresetIndex >= _tilesetPresets.Count)
-            {
-                return new List<TileBase>();
-            }
-
             var preset = GetCurrentTilesetPreset();
-            return preset.walkableTileBases;
+            return preset?.walkableTileBases ?? new List<TileBase>();
         }
 
         public List<int> GetWalkableTilesPriorities()
         {
-            if (_tilesetPresets == null
-                || _tilesetPresets.Count == 0
-                || _tilesetPresetIndex < 0
-                || _tilesetPresetIndex >= _tilesetPresets.Count)
-            {
-                return new List<int>();
-            }
-
             var preset = GetCurrentTilesetPreset();
-            return preset.walkableTilesPriorities;
+            return preset?.walkableTilesPriorities ?? new List<int>();
         }
 
         public bool GetRandomWalkableTilesPlacement()
         {
-            if (_tilesetPresets == null
-                || _tilesetPresets.Count == 0
-                || _tilesetPresetIndex < 0
-                || _tilesetPresetIndex >= _tilesetPresets.Count)
-            {
-                return false;
-            }
-
             var preset = GetCurrentTilesetPreset();
-            return preset.randomWalkableTilesPlacement;
+            return preset?.randomWalkableTilesPlacement ?? false;
         }
 
-        public void SetRandomWalkableTilesPlacement(bool evtNewValue)
+        public void SetRandomWalkableTilesPlacement(bool newValue)
         {
             var preset = GetCurrentTilesetPreset();
-            if (preset.randomWalkableTilesPlacement == evtNewValue) return;
-            preset.randomWalkableTilesPlacement = evtNewValue;
+            if (preset == null) return;
+            preset.randomWalkableTilesPlacement = newValue;
             InitializeWalkableTilesProbabilities(preset);
         }
 
@@ -427,8 +347,8 @@ namespace Models
 
         public TilesetPreset GetCurrentTilesetPreset()
         {
-            if (_tilesetPresets == null || _tilesetPresets.Count == 0) return null;
-            if (_tilesetPresetIndex < 0 || _tilesetPresetIndex >= _tilesetPresets.Count) return null;
+            if (_tilesetPresetIndex < 0 || _tilesetPresetIndex >= _tilesetPresets.Count)
+                return null;
             return _tilesetPresets[_tilesetPresetIndex];
         }
 
@@ -454,9 +374,10 @@ namespace Models
         
         public void RemovePreset(TilesetPreset preset)
         {
-            if (_tilesetPresets.Remove(preset) && _tilesetPresetIndex == _tilesetPresets.Count)
+            if (_tilesetPresets.Remove(preset))
             {
-                _tilesetPresetIndex = _tilesetPresets.Count - 1;
+                if (_tilesetPresetIndex >= _tilesetPresets.Count)
+                    _tilesetPresetIndex = _tilesetPresets.Count - 1;
             }
         }
     }

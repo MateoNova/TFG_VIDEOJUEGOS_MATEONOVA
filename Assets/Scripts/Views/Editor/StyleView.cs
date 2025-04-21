@@ -19,303 +19,214 @@ namespace Views.Editor
 {
     public class StyleView
     {
-        
         private const string LoadedPresetsKey = "StyleView_LoadedPresets";
 
-        
-        public StyleView()
-        {
-            LoadPresetsFromEditorPrefs();
-        }
-        
-        /// <summary>
-        /// The controller responsible for handling style-related logic.
-        /// </summary>
+        public StyleView() => LoadPresetsFromEditorPrefs();
+
         private VisualElement _root;
-
-        /// <summary>
-        /// The controller responsible for handling style-related logic.
-        /// </summary>
         private readonly StyleController _styleController = new();
-
-        /// <summary>
-        /// The container for the UI elements of the style view.
-        /// </summary>
         private List<TileBase> _walkableTileBases;
-
-        /// <summary>
-        /// The priorities for the walkable tiles.
-        /// </summary>
         private List<int> _walkableTilesPriorities;
-
-        /// <summary>
-        /// Indicates whether the walkable tiles should be placed randomly.
-        /// </summary>
         private bool _randomPlacement;
 
-        /// <summary>
-        /// Creates the UI for the style view.
-        /// </summary>
+        private readonly List<TilesetPreset> _loadedPresets = new();
+
         public VisualElement CreateUI()
         {
             var gen = GeneratorService.Instance.CurrentGenerator;
             if (gen == null || gen.TilemapPainter == null)
                 return new VisualElement();
 
-            // 2.1) Aplico todos los presets guardados
-            foreach (var preset in _loadedPresets)
-                _styleController.LoadPreset(preset);
-
-            // 2.2) recupero el estado actual (walkables, random, etc)
-            var painter = gen.TilemapPainter;
-            _walkableTileBases       = painter.GetWalkableTileBases();
-            _walkableTilesPriorities = painter.GetWalkableTilesPriorities();
-            _randomPlacement         = painter.GetRandomWalkableTilesPlacement();
-
             _root ??= StyleUtils.SimpleContainer();
             _root.Clear();
 
-            // 3) construyo la UI con todos los foldouts
+            // 1) Botón principal para cargar presets
             _root.Add(CreateStyleSection());
+
+            // 2) Una subsección por cada preset, seleccionándolo primero
+            var painter = gen.TilemapPainter as TilemapPainter;
             foreach (var preset in _loadedPresets)
+            {
+                painter.AddAndSelectPreset(preset);
                 _root.Add(CreatePresetSubsection(preset));
+            }
 
             return _root;
         }
 
-
-
-
-        /// <summary>
-        /// Creates the style section UI element.
-        /// </summary>
         private VisualElement CreateStyleSection()
         {
             var styleSection = StyleUtils.ModernFoldout("");
             styleSection.SetLocalizedText("Style", "StyleTable");
             styleSection.Add(CreatePresetSettings());
-            //styleSection.Add(CreateFloorTileSettings());
-            //styleSection.Add(CreateWallTileSettings());
             return styleSection;
         }
-        
-        private readonly List<TilesetPreset> _loadedPresets = new();
 
-
-        /// <summary>
-        /// Creates the preset settings UI element.
-        /// </summary>
         private VisualElement CreatePresetSettings()
         {
             var container = new VisualElement();
-
-            var loadPresetButton = new Button(() =>
-            {
-                var presetPath = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
-                if (string.IsNullOrEmpty(presetPath) || !presetPath.StartsWith(Application.dataPath)) return;
-
-                presetPath = "Assets" + presetPath.Substring(Application.dataPath.Length);
-                var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(presetPath);
-
-                if (preset != null)
+            var loadBtn = new Button(() =>
                 {
+                    var path = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
+                    if (string.IsNullOrEmpty(path) || !path.StartsWith(Application.dataPath)) return;
+                    path = "Assets" + path.Substring(Application.dataPath.Length);
+
+                    var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(path);
+                    if (preset == null)
+                    {
+                        EditorUtility.DisplayDialog("Error", "Failed to load preset.", "OK");
+                        return;
+                    }
+
+                    // cargar en painter y en la lista
                     _styleController.LoadPreset(preset);
-                    EditorUtility.DisplayDialog("Success", $"Preset '{preset.name}' loaded successfully.", "OK");
-
-                    // Add the preset to the list of loaded presets
                     _loadedPresets.Add(preset);
-                    SavePresetsToEditorPrefs(); // Save the updated list
-
-                    // Create a new subsection for the loaded preset
-                    var presetSection = CreatePresetSubsection(preset);
-                    container.Add(presetSection);
+                    SavePresetsToEditorPrefs();
 
                     RefreshUI();
-                }
-                else
-                {
-                    EditorUtility.DisplayDialog("Error", "Failed to load preset.", "OK");
-                }
-            })
-            {
-                text = "Load Preset"
-            };
-            loadPresetButton.SetLocalizedText("loadPreset", "StyleTable");
-            container.Add(loadPresetButton);
-
+                    EditorUtility.DisplayDialog("Success", $"Preset '{preset.name}' loaded.", "OK");
+                })
+                { text = "Load Preset" };
+            loadBtn.SetLocalizedText("loadPreset", "StyleTable");
+            container.Add(loadBtn);
             return container;
         }
-        
-        /// <summary>
-        /// Creates a subsection for the loaded preset.
-        /// </summary>
+
         private VisualElement CreatePresetSubsection(TilesetPreset preset)
         {
-            var presetSection = StyleUtils.ModernSubFoldout($"{preset.name}");
-            // Permitir menú contextual
-            presetSection.AddManipulator(new ContextualMenuManipulator(evt =>
+            // Reconstruimos las listas de este preset
+            var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter as TilemapPainter;
+            _walkableTileBases = painter.GetWalkableTileBases();
+            _walkableTilesPriorities = painter.GetWalkableTilesPriorities();
+            _randomPlacement = painter.GetRandomWalkableTilesPlacement();
+
+            var section = StyleUtils.ModernSubFoldout(preset.name);
+            section.AddManipulator(new ContextualMenuManipulator(evt =>
             {
                 evt.menu.AppendAction("Eliminar preset", _ => RemovePreset(preset));
             }));
-            // Contenido habitual...
-            presetSection.Add(CreateFloorTileSettings());
-            presetSection.Add(CreateWallTileSettings());
-            return presetSection;
+
+            section.Add(CreateFloorTileSettings());
+            section.Add(CreateWallTileSettings(preset));
+            return section;
         }
-        
+
         private void RemovePreset(TilesetPreset preset)
         {
-            // 1) Quitar de la lista interna
             _loadedPresets.Remove(preset);
-            // 2) Quitar del TilemapPainter
-            var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
-            painter.RemovePreset(preset);
-            // 3) Actualizar EditorPrefs
             SavePresetsToEditorPrefs();
-            // 4) Volver a dibujar
+            // también quitamos del painter
+            var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter as TilemapPainter;
+            painter.RemovePreset(preset);
             RefreshUI();
         }
 
+        // —————————————————————————————————————————
+        //  Floor settings (idéntico a tu código)
+        // —————————————————————————————————————————
 
-        /// <summary>
-        /// Creates the floor tile settings UI element.
-        /// </summary>
         private VisualElement CreateFloorTileSettings()
         {
-            var floorTileSettings = StyleUtils.ModernSubFoldout("");
-            floorTileSettings.SetLocalizedText("FloorTileSettings", "StyleTable");
-            floorTileSettings.Add(CreateRandomFloorPlacementToggle());
+            var fe = StyleUtils.ModernSubFoldout("");
+            fe.SetLocalizedText("FloorTileSettings", "StyleTable");
+            fe.Add(CreateRandomFloorPlacementToggle());
 
             if (!_styleController.HasValidTilemapPainter())
-                return floorTileSettings;
+                return fe;
 
-            floorTileSettings.Add(CreateWalkableOptionsButtons());
-            floorTileSettings.Add(CreateWalkableTileGroupSettings());
-            return floorTileSettings;
+            fe.Add(CreateWalkableOptionsButtons());
+            fe.Add(CreateWalkableTileGroupSettings());
+            return fe;
         }
 
-        /// <summary>
-        /// Creates a toggle for random floor placement.
-        /// </summary>
         private VisualElement CreateRandomFloorPlacementToggle()
         {
-            var container = StyleUtils.HorizontalContainerCentered();
-            var toggleLabel = StyleUtils.LabelForToggle("");
-            toggleLabel.SetLocalizedText("RandomFloorPlacement", "StyleTable");
-            container.Add(toggleLabel);
+            var c = StyleUtils.HorizontalContainerCentered();
+            var l = StyleUtils.LabelForToggle("");
+            l.SetLocalizedText("RandomFloorPlacement", "StyleTable");
+            c.Add(l);
 
-            var toggle = new Toggle { value = _randomPlacement };
-            toggle.RegisterValueChangedCallback(evt =>
+            var t = new Toggle { value = _randomPlacement };
+            t.RegisterValueChangedCallback(evt =>
             {
-                GeneratorService.Instance.CurrentGenerator.TilemapPainter.SetRandomWalkableTilesPlacement(evt.newValue);
-                EditorUtility.SetDirty(GeneratorService.Instance.CurrentGenerator.TilemapPainter);
+                var p = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
+                p.SetRandomWalkableTilesPlacement(evt.newValue);
+                EditorUtility.SetDirty(p);
                 RefreshUI();
             });
-            container.Add(toggle);
-            return container;
+            c.Add(t);
+            return c;
         }
 
-        /// <summary>
-        /// Creates buttons for walkable tile options.
-        /// </summary>
         private VisualElement CreateWalkableOptionsButtons()
         {
-            var container = StyleUtils.HorizontalContainerCentered();
-            container.Add(CreateUIButtonForAddTile("AddFloorTile", () =>
+            var c = StyleUtils.HorizontalContainerCentered();
+            c.Add(CreateUIButtonForAddTile("AddFloorTile", () =>
             {
                 _walkableTileBases.Add(null);
                 _walkableTilesPriorities.Add(0);
                 RefreshUI();
             }));
-            container.Add(CreateUIButtonForClearTiles("ClearAllFloorTiles", true));
-            container.Add(CreateUIButtonForSelectTilesFromFolder("SelectFloorTilesFromFolder", true));
-            return container;
+            c.Add(CreateUIButtonForClearTiles("ClearAllFloorTiles", true));
+            c.Add(CreateUIButtonForSelectTilesFromFolder("SelectFloorTilesFromFolder", true));
+            return c;
         }
 
-        /// <summary>
-        /// Creates a button for adding a tile.
-        /// </summary>
         private static Button CreateUIButtonForAddTile(string key, Action onClick)
         {
-            var button = new Button(onClick);
-            button.SetLocalizedText(key, "StyleTable");
-            return button;
+            var b = new Button(onClick);
+            b.SetLocalizedText(key, "StyleTable");
+            return b;
         }
 
-        /// <summary>
-        /// Creates a button for clearing tiles.
-        /// </summary>
         private Button CreateUIButtonForClearTiles(string key, bool isWalkable)
         {
-            var button = new Button(() =>
+            var b = new Button(() =>
             {
-                if (isWalkable)
-                    GeneratorService.Instance.CurrentGenerator.TilemapPainter.RemoveAllWalkableTiles();
-                else
-                    GeneratorService.Instance.CurrentGenerator.TilemapPainter.RemoveAllWallTiles();
-
+                var p = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
+                if (isWalkable) p.RemoveAllWalkableTiles();
+                else p.RemoveAllWallTiles();
                 RefreshUI();
             });
-            button.SetLocalizedText(key, "StyleTable");
-            return button;
+            b.SetLocalizedText(key, "StyleTable");
+            return b;
         }
 
-        /// <summary>
-        /// Creates a button for selecting tiles from a folder.
-        /// </summary>
         private Button CreateUIButtonForSelectTilesFromFolder(string key, bool isWalkable)
         {
-            var button = new Button(() =>
+            var b = new Button(() =>
             {
                 var path = EditorUtility.OpenFolderPanel("Select a Folder", "", "");
                 if (isWalkable)
-                {
-                    GeneratorService.Instance.CurrentGenerator.TilemapPainter.SelectWalkableTilesFromFolder(path);
-                }
-
+                    GeneratorService.Instance.CurrentGenerator.TilemapPainter
+                        .SelectWalkableTilesFromFolder(path);
                 AssetDatabase.Refresh();
                 RefreshUI();
             });
-            button.SetLocalizedText(key, "StyleTable");
-            return button;
+            b.SetLocalizedText(key, "StyleTable");
+            return b;
         }
 
-        /// <summary>
-        /// Creates the walkable tile group settings UI element.
-        /// </summary>
         private VisualElement CreateWalkableTileGroupSettings()
         {
             var container = new VisualElement();
-
             if (!_styleController.IsGeneratorSelectionValid())
-            {
-                Debug.LogError("The generator selection or its properties are not properly initialized.");
                 return container;
-            }
 
-            var walkableTiles = GeneratorService.Instance.CurrentGenerator.TilemapPainter.GetWalkableTileBases();
-            var horizontalContainer = StyleUtils.HorizontalContainerWrapped();
-
-            for (var index = 0; index < walkableTiles.Count; index++)
-            {
-                var tileContainer = CreateTileContainerForWalkableTile(walkableTiles, index);
-                horizontalContainer.Add(tileContainer);
-            }
-
-            container.Add(horizontalContainer);
+            var walkables = GeneratorService.Instance.CurrentGenerator.TilemapPainter.GetWalkableTileBases();
+            var hc = StyleUtils.HorizontalContainerWrapped();
+            for (int i = 0; i < walkables.Count; i++)
+                hc.Add(CreateTileContainerForWalkableTile(walkables, i));
+            container.Add(hc);
             return container;
         }
 
-        /// <summary>
-        /// Creates a container for a walkable tile.
-        /// </summary>
         private VisualElement CreateTileContainerForWalkableTile(List<TileBase> walkableTiles, int index)
         {
-            var tile = walkableTiles[index];
-            var tileContainer = StyleUtils.TileContainer();
-            var tileLabel = GetLabelForWalkableTile(tile);
+            var tileCont = StyleUtils.TileContainer();
+            var lbl = GetLabelForWalkableTile(walkableTiles[index]);
 
-            tileLabel.AddManipulator(new ContextualMenuManipulator(evt =>
+            lbl.AddManipulator(new ContextualMenuManipulator(evt =>
             {
                 evt.menu.AppendAction("Delete", _ =>
                 {
@@ -324,304 +235,195 @@ namespace Views.Editor
                     RefreshUI();
                 });
             }));
-            tileContainer.Add(tileLabel);
+            tileCont.Add(lbl);
 
-            var previewContainer = CreateIMGUIContainerForWalkableTile(walkableTiles, index, tileLabel);
-            previewContainer.style.height = Utils.Utils.GetPreviewTileSize();
-            tileContainer.Add(previewContainer);
+            var prev = CreateIMGUIContainerForWalkableTile(walkableTiles, index, lbl);
+            prev.style.height = Utils.Utils.GetPreviewTileSize();
+            tileCont.Add(prev);
 
             if (!GeneratorService.Instance.CurrentGenerator.TilemapPainter.GetRandomWalkableTilesPlacement())
-            {
-                tileContainer.Add(CreatePriorityUIForTile(index));
-            }
+                tileCont.Add(CreatePriorityUIForTile(index));
 
-            return tileContainer;
+            return tileCont;
         }
 
-        /// <summary>
-        /// Creates a label for a walkable tile.
-        /// </summary>
         private static Label GetLabelForWalkableTile(TileBase tile)
         {
-            var labelText = tile != null
+            var text = tile != null
                 ? Utils.Utils.AddSpacesToCamelCase(tile.name)
                 : "No selected";
-            var label = StyleUtils.LabelForTile(labelText);
-
-            if (tile == null) label.SetLocalizedText("NoSelected", "StyleTable");
-
-            return label;
+            var l = StyleUtils.LabelForTile(text);
+            if (tile == null) l.SetLocalizedText("NoSelected", "StyleTable");
+            return l;
         }
 
-        /// <summary>
-        /// Creates an IMGUI container for a walkable tile.
-        /// </summary>
-        private IMGUIContainer CreateIMGUIContainerForWalkableTile(List<TileBase> walkableTiles, int index,
-            Label label)
+        private IMGUIContainer CreateIMGUIContainerForWalkableTile(
+            List<TileBase> walkableTiles, int index, Label label)
         {
             return new IMGUIContainer(() =>
             {
-                var currentTile = walkableTiles[index];
-                var previewTexture = GetPreviewTexture(currentTile);
+                var curr = walkableTiles[index];
+                var previewTex = GetPreviewTexture(curr);
                 var size = Utils.Utils.GetPreviewTileSize();
 
-                if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
-                {
-                    EditorGUIUtility.ShowObjectPicker<TileBase>(currentTile, false, "", index);
-                }
+                if (GUILayout.Button(previewTex, GUILayout.Width(size), GUILayout.Height(size)))
+                    EditorGUIUtility.ShowObjectPicker<TileBase>(curr, false, "", index);
 
                 UpdateWalkableTileOnSelection(index, label);
             });
         }
 
-        /// <summary>
-        /// Creates a UI element for setting the priority of a walkable tile.
-        /// </summary>
         private VisualElement CreatePriorityUIForTile(int index)
         {
-            var container = StyleUtils.HorizontalContainerCentered();
-            var label = StyleUtils.LabelForIntField("");
-            label.SetLocalizedText("Priority", "StyleTable");
-            container.Add(label);
+            var c = StyleUtils.HorizontalContainerCentered();
+            var lbl = StyleUtils.LabelForIntField("");
+            lbl.SetLocalizedText("Priority", "StyleTable");
+            c.Add(lbl);
 
-            var intField = StyleUtils.SimpleIntField(_walkableTilesPriorities[index]);
-            intField.RegisterValueChangedCallback(evt =>
+            var f = StyleUtils.SimpleIntField(_walkableTilesPriorities[index]);
+            f.RegisterValueChangedCallback(evt =>
             {
                 _walkableTilesPriorities[index] = evt.newValue;
                 EditorUtility.SetDirty(GeneratorService.Instance.CurrentGenerator.TilemapPainter);
             });
-            container.Add(intField);
-            return container;
+            c.Add(f);
+            return c;
         }
 
-        /// <summary>
-        /// Creates the wall tile settings UI element.
-        /// </summary>
-        private VisualElement CreateWallTileSettings()
+        // —————————————————————————————————————————
+        //  Wall settings, **usando el preset capturado**  
+        // —————————————————————————————————————————
+
+        private VisualElement CreateWallTileSettings(TilesetPreset preset)
         {
             var container = new VisualElement();
             if (!_styleController.HasValidTilemapPainter())
                 return container;
 
-            var groupedWallFields =
-                _styleController.GetGroupedFields<WallTileGroupAttribute>(attr => attr.GroupName);
-            foreach (var group in groupedWallFields)
-            {
-                var groupFoldout = CreateFoldoutForGroup(group);
-                container.Add(groupFoldout);
-            }
-
+            var groups = _styleController.GetGroupedFields<WallTileGroupAttribute>(a => a.GroupName);
+            foreach (var g in groups)
+                container.Add(CreateFoldoutForGroup(g, preset));
             return container;
         }
 
-        /// <summary>
-        /// Creates a foldout for a group of wall fields.
-        /// </summary>
-        private Foldout CreateFoldoutForGroup(IGrouping<string, FieldInfo> group)
+        private Foldout CreateFoldoutForGroup(IGrouping<string, FieldInfo> group, TilesetPreset preset)
         {
-            var foldout = StyleUtils.ModernSubFoldout("");
-            foldout.SetLocalizedText(group.Key, "StyleTable");
-            var horizontalContainer = StyleUtils.HorizontalContainerWrapped();
-
+            var f = StyleUtils.ModernSubFoldout("");
+            f.SetLocalizedText(group.Key, "StyleTable");
+            var hc = StyleUtils.HorizontalContainerWrapped();
             foreach (var field in group)
-            {
-                var tileContainer = CreateTileContainerForWallField(field);
-                horizontalContainer.Add(tileContainer);
-            }
-
-            foldout.Add(horizontalContainer);
-            return foldout;
+                hc.Add(CreateTileContainerForWallField(field, preset));
+            f.Add(hc);
+            return f;
         }
 
-        /// <summary>
-        /// Creates a container for a wall field tile.
-        /// </summary>
-        private VisualElement CreateTileContainerForWallField(FieldInfo field)
+        private VisualElement CreateTileContainerForWallField(FieldInfo field, TilesetPreset preset)
         {
-            var container = StyleUtils.TileContainer();
-            var label = CreateLabelForWallField(field);
-            container.Add(label);
-            var imguiContainer = CreateIMGUIContainerForWallField(field);
-            imguiContainer.style.height = 60;
-            container.Add(imguiContainer);
-            return container;
+            var c = StyleUtils.TileContainer();
+            var lbl = CreateLabelForWallField(field);
+            c.Add(lbl);
+
+            var imgc = CreateIMGUIContainerForWallField(field, preset);
+            imgc.style.height = Utils.Utils.GetPreviewTileSize();
+            c.Add(imgc);
+            return c;
         }
 
-        /// <summary>
-        /// Creates a label for a wall field tile.
-        /// </summary>
         private static Label CreateLabelForWallField(FieldInfo field)
         {
-            var labelText = CleanWallLabel(field.Name);
-            var label = StyleUtils.LabelForTile(labelText);
-            label.SetLocalizedText(field.Name, "StyleTable");
-            return label;
+            var txt = CleanWallLabel(field.Name);
+            var l = StyleUtils.LabelForTile(txt);
+            l.SetLocalizedText(field.Name, "StyleTable");
+            return l;
         }
 
-        /// <summary>
-        /// Creates an IMGUI container for a wall field tile.
-        /// </summary>
-        private static IMGUIContainer CreateIMGUIContainerForWallField(FieldInfo field)
+        private static IMGUIContainer CreateIMGUIContainerForWallField(FieldInfo field, TilesetPreset preset)
         {
             var controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
             return new IMGUIContainer(() =>
             {
-                // Obtener el TilesetPreset actual desde el TilemapPainter
-                var tilemapPainter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
-                if (tilemapPainter == null)
-                {
-                    Debug.LogError("TilemapPainter no está inicializado.");
-                    return;
-                }
-        
-                var preset = tilemapPainter.GetCurrentTilesetPreset();
-                if (preset == null)
-                {
-                    Debug.LogError("TilesetPreset no está inicializado.");
-                    return;
-                }
-        
-                // Verificar que el campo pertenece a TilesetPreset
-                if (field.DeclaringType != typeof(TilesetPreset))
-                {
-                    Debug.LogError($"El campo '{field.Name}' no pertenece a TilesetPreset.");
-                    return;
-                }
-        
-                // Obtener el valor del campo desde el TilesetPreset
+                // **usamos directamente el preset**, no painter.GetCurrentTilesetPreset()
                 var currentTile = field.GetValue(preset) as TileBase;
-                var previewTexture = GetPreviewTexture(currentTile);
+                var previewTex = GetPreviewTexture(currentTile);
                 var size = Utils.Utils.GetPreviewTileSize();
-        
-                if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
-                {
+
+                if (GUILayout.Button(previewTex, GUILayout.Width(size), GUILayout.Height(size)))
                     EditorGUIUtility.ShowObjectPicker<TileBase>(currentTile, false, "", controlID);
+
+                // actualización al elegir desde el ObjectPicker
+                if (Event.current?.commandName == Utils.Utils.GetObjectSelectorUpdateCommand() &&
+                    EditorGUIUtility.GetObjectPickerControlID() == controlID)
+                {
+                    var nt = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+                    if (nt != null)
+                    {
+                        field.SetValue(preset, nt);
+                        Debug.Log($"Campo '{field.Name}' updated → {nt.name}");
+                    }
                 }
-        
-                UpdateWallTileOnSelection(field, controlID, preset);
             });
         }
-        
-        private static void UpdateWallTileOnSelection(FieldInfo field, int controlID, TilesetPreset preset)
+
+        // —————————————————————————————————————————
+        //  Helpers, Refresh, Save/Load prefs...
+        // —————————————————————————————————————————
+
+        private static void UpdateWalkableTileOnSelection(int index, Label label)
         {
-            if (Event.current == null || Event.current.commandName != Utils.Utils.GetObjectSelectorUpdateCommand())
-                return;
-        
-            if (EditorGUIUtility.GetObjectPickerControlID() != controlID)
-                return;
-        
-            var newTile = EditorGUIUtility.GetObjectPickerObject() as TileBase;
-            if (newTile == null) return;
-        
-            // Actualizar el campo en el TilesetPreset
-            field.SetValue(preset, newTile);
-            Debug.Log($"Campo '{field.Name}' actualizado con el nuevo tile: {newTile.name}");
+            if (Event.current?.commandName != Utils.Utils.GetObjectSelectorUpdateCommand()) return;
+            if (EditorGUIUtility.GetObjectPickerControlID() != index) return;
+            var nt = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+            if (nt == null) return;
+            GeneratorService.Instance.CurrentGenerator.TilemapPainter.SetWalkableTileBases(index, nt);
+            label.text = Utils.Utils.AddSpacesToCamelCase(
+                nt.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase)
+            );
         }
 
-        /// <summary>
-        /// Gets the preview texture for a tile.
-        /// </summary>
         private static Texture GetPreviewTexture(TileBase tile)
         {
             if (tile == null)
-            {
                 return EditorGUIUtility.IconContent(Utils.Utils.GetDefaultIconContent()).image;
-            }
-
-            Texture preview = AssetPreview.GetAssetPreview(tile);
-
-            if (preview == null)
-            {
-                preview = EditorGUIUtility.ObjectContent(tile, typeof(TileBase)).image;
-            }
-
-            return preview;
+            var pr = AssetPreview.GetAssetPreview(tile);
+            return pr ?? (Texture2D)EditorGUIUtility.ObjectContent(tile, typeof(TileBase)).image;
         }
 
-        /// <summary>
-        /// Updates the walkable tile on selection.
-        /// </summary>
-        private static void UpdateWalkableTileOnSelection(int index, Label label)
-        {
-            if (Event.current == null || Event.current.commandName != Utils.Utils.GetObjectSelectorUpdateCommand())
-                return;
-
-            if (EditorGUIUtility.GetObjectPickerControlID() != index)
-                return;
-
-            var newTile = EditorGUIUtility.GetObjectPickerObject() as TileBase;
-
-            if (newTile == null) return;
-
-            GeneratorService.Instance.CurrentGenerator.TilemapPainter.SetWalkableTileBases(index, newTile);
-            label.text =
-                Utils.Utils.AddSpacesToCamelCase(newTile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase));
-        }
-
-
-        /// <summary>
-        /// Cleans the wall label by removing specific keywords and formatting it.
-        /// </summary>
         private static string CleanWallLabel(string original)
         {
-            var label = ObjectNames.NicifyVariableName(original);
-            label = label.Replace("wall", "", StringComparison.OrdinalIgnoreCase)
+            var label = ObjectNames.NicifyVariableName(original)
+                .Replace("wall", "", StringComparison.OrdinalIgnoreCase)
                 .Replace("inner", "", StringComparison.OrdinalIgnoreCase)
                 .Replace("triple", "", StringComparison.OrdinalIgnoreCase);
-
-            var parts = label.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            return string.Join("\n", parts);
+            return string.Join("\n", label.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
-        /// <summary>
-        /// Refreshes the UI by clearing and recreating it.
-        /// </summary>
         private void RefreshUI()
         {
-            if (_root == null)
-                _root = StyleUtils.SimpleContainer();
-            else
-                _root.Clear();
+            if (_root == null) _root = StyleUtils.SimpleContainer();
+            else _root.Clear();
 
             _root.Add(CreateStyleSection());
-
-            // Recreate subsections for all loaded presets
-            foreach (var preset in _loadedPresets)
-            {
-                var presetSection = CreatePresetSubsection(preset);
-                _root.Add(presetSection);
-            }
-
+            foreach (var p in _loadedPresets)
+                _root.Add(CreatePresetSubsection(p));
             _root.MarkDirtyRepaint();
         }
-        
-        /// <summary>
-        /// Saves the loaded presets to EditorPrefs.
-        /// </summary>
+
         private void SavePresetsToEditorPrefs()
         {
-            var presetPaths = _loadedPresets.Select(AssetDatabase.GetAssetPath).ToArray();
-            EditorPrefs.SetString(LoadedPresetsKey, string.Join(";", presetPaths));
+            var paths = _loadedPresets.Select(AssetDatabase.GetAssetPath).ToArray();
+            EditorPrefs.SetString(LoadedPresetsKey, string.Join(";", paths));
         }
-        
-        /// <summary>
-        /// Loads the presets from EditorPrefs.
-        /// </summary>
+
         private void LoadPresetsFromEditorPrefs()
         {
             _loadedPresets.Clear();
             if (!EditorPrefs.HasKey(LoadedPresetsKey)) return;
-
-            var paths = EditorPrefs.GetString(LoadedPresetsKey).Split(';');
-            foreach (var path in paths)
+            foreach (var path in EditorPrefs.GetString(LoadedPresetsKey).Split(';'))
             {
                 var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(path);
-                if (preset != null)
-                    _loadedPresets.Add(preset);
+                if (preset != null) _loadedPresets.Add(preset);
             }
         }
-
     }
 }
 
