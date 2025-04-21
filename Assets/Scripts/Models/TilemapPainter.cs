@@ -7,10 +7,8 @@ using Views.Attributes;
 
 namespace Models
 {
-
     public interface ITilemapPainter
     {
-
         void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions);
 
 
@@ -25,7 +23,6 @@ namespace Models
 
     public class TilemapPainter : MonoBehaviour, ITilemapPainter
     {
-   
         public TilemapPainter(bool randomPlacement)
         {
             //randomWalkableTilesPlacement = randomPlacement;
@@ -40,6 +37,14 @@ namespace Models
             if (!_tilesetPresets.Contains(preset))
                 _tilesetPresets.Add(preset);
             _tilesetPresetIndex = _tilesetPresets.IndexOf(preset);
+
+            RebalanceCoverages();          // <— Asegura same length
+        }
+
+        public void RebalanceCoverages()
+        {
+            int n = _tilesetPresets.Count;
+            _presetCoverages = Enumerable.Repeat(n > 0 ? 100f / n : 0f, n).ToList();
         }
 
         #region Walkable Tiles
@@ -62,7 +67,6 @@ namespace Models
 
         #region Initialization Helpers
 
-
         private void InitializeWalkableTilesProbabilities(TilesetPreset preset)
         {
             _walkableTilesProbabilities = new Dictionary<TileBase, float>();
@@ -78,7 +82,7 @@ namespace Models
             }
         }
 
-      
+
         private List<(Vector2Int worldPos, Vector3Int cellPos)> GetCellPositions(IEnumerable<Vector2Int> positions,
             Tilemap tilemap)
         {
@@ -96,7 +100,6 @@ namespace Models
 
         #region Painting Tiles
 
-  
         public void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions)
         {
             var preset = GetCurrentTilesetPreset();
@@ -104,7 +107,7 @@ namespace Models
                 return;
 
             InitializeWalkableTilesProbabilities(preset);
-            var positions    = tilePositions.ToList();
+            var positions = tilePositions.ToList();
             var cellPositions = GetCellPositions(positions, walkableTilemap);
 
             if (preset.randomWalkableTilesPlacement)
@@ -113,7 +116,7 @@ namespace Models
                 PaintTilesWithProbabilities(cellPositions);
         }
 
-   
+
         private void PaintTilesRandomly(List<(Vector2Int, Vector3Int)> cellPositions)
         {
             var preset = GetCurrentTilesetPreset();
@@ -216,7 +219,6 @@ namespace Models
 
         #region Reset Tiles
 
-
         public void ResetAllTiles()
         {
             walkableTilemap?.ClearAllTiles();
@@ -228,7 +230,6 @@ namespace Models
 
         #region Optional: Tile Selection from Folder
 
-    
         private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
             Dictionary<TileBase, float> probabilities, string path)
         {
@@ -259,7 +260,6 @@ namespace Models
 
         #region Tile Collections Clearing
 
-  
         public void RemoveAllWalkableTiles()
         {
             var preset = GetCurrentTilesetPreset();
@@ -371,14 +371,44 @@ namespace Models
             preset.walkableTileBases.Add(tile);
             preset.walkableTilesPriorities.Add(1);
         }
-        
+
         public void RemovePreset(TilesetPreset preset)
         {
+            int oldIndex = _tilesetPresets.IndexOf(preset);
             if (_tilesetPresets.Remove(preset))
             {
                 if (_tilesetPresetIndex >= _tilesetPresets.Count)
                     _tilesetPresetIndex = _tilesetPresets.Count - 1;
+                RebalanceCoverages();      // <— Vuelve a sincronizar
             }
+        }
+
+        // inside TilemapPainter class:
+        [SerializeField] private List<float> _presetCoverages = new List<float>();
+
+// Expose all loaded presets
+        public List<TilesetPreset> GetAllPresets()
+        {
+            return _tilesetPresets.ToList();
+        }
+
+// Expose coverage percentages for each preset
+        public List<float> GetPresetCoverages()
+        {
+            return _presetCoverages.ToList();
+        }
+
+// Called by StyleView to initialize full list
+        public void SetPresetCoverages(List<float> coverages)
+        {
+            _presetCoverages = new List<float>(coverages);
+        }
+
+// Called when a single coverage changed
+        public void SetPresetCoverage(int index, float coverage)
+        {
+            if (index >= 0 && index < _presetCoverages.Count)
+                _presetCoverages[index] = coverage;
         }
     }
 }

@@ -23,31 +23,57 @@ namespace Views.Editor
         private VisualElement _root;
         private readonly StyleController _styleController = new();
         private readonly List<TilesetPreset> _loadedPresets = new();
+        private readonly List<float> _presetCoverage = new();
 
         public StyleView() => LoadPresetsFromEditorPrefs();
 
         public VisualElement CreateUI()
         {
             var gen = GeneratorService.Instance.CurrentGenerator;
-            if (gen == null || gen.TilemapPainter == null)
-                return new VisualElement();
+            if (gen == null) return new VisualElement();
 
             _root ??= StyleUtils.SimpleContainer();
             _root.Clear();
 
-            // Load‐preset button
+            // 1) Load presets
             _root.Add(CreateStyleSection());
 
-            // One subsection per‐preset
+            // 2) If more than one preset, show biome coverage folder
+            if (_loadedPresets.Count > 1)
+                _root.Add(CreateBiomeCoverageFolder());
+
+            // 3) Show each preset subsection
             var painter = gen.TilemapPainter as TilemapPainter;
-            for (int presetIdx = 0; presetIdx < _loadedPresets.Count; presetIdx++)
+            for (int idx = 0; idx < _loadedPresets.Count; idx++)
             {
-                var preset = _loadedPresets[presetIdx];
+                var preset = _loadedPresets[idx];
                 painter.AddAndSelectPreset(preset);
-                _root.Add(CreatePresetSubsection(preset, presetIdx));
+                _root.Add(CreatePresetSubsection(preset, idx));
             }
 
             return _root;
+        }
+        
+        private VisualElement CreateBiomeCoverageFolder()
+        {
+            var fold = StyleUtils.ModernFoldout("");
+            fold.SetLocalizedText("BiomeCoverage", "StyleTable");
+
+            for (int i = 0; i < _loadedPresets.Count; i++)
+            {
+                var row = StyleUtils.HorizontalContainerCentered();
+                var label = new Label(_loadedPresets[i].name) { style = { width = 100 } };
+                row.Add(label);
+                var field = new FloatField { value = _presetCoverage[i], style = { width = 50 } };
+                field.RegisterValueChangedCallback(evt =>
+                {
+                    _presetCoverage[i] = Mathf.Clamp(evt.newValue, 0f, 100f);
+                    EditorUtility.SetDirty(_loadedPresets[i]);
+                });
+                row.Add(field);
+                fold.Add(row);
+            }
+            return fold;
         }
 
         private VisualElement CreateStyleSection()
@@ -486,12 +512,14 @@ namespace Views.Editor
         {
             _root.Clear();
             _root.Add(CreateStyleSection());
+            if (_loadedPresets.Count > 1)
+                _root.Add(CreateBiomeCoverageFolder());
             var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter as TilemapPainter;
-            for (int i = 0; i < _loadedPresets.Count; i++)
+            for (int idx = 0; idx < _loadedPresets.Count; idx++)
             {
-                var p = _loadedPresets[i];
+                var p = _loadedPresets[idx];
                 painter.AddAndSelectPreset(p);
-                _root.Add(CreatePresetSubsection(p, i));
+                _root.Add(CreatePresetSubsection(p, idx));
             }
             _root.MarkDirtyRepaint();
         }
@@ -499,12 +527,16 @@ namespace Views.Editor
         private void LoadPresetsFromEditorPrefs()
         {
             _loadedPresets.Clear();
+            _presetCoverage.Clear();
             if (!EditorPrefs.HasKey(LoadedPresetsKey)) return;
             foreach (var path in EditorPrefs.GetString(LoadedPresetsKey).Split(';'))
             {
                 var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(path);
                 if (preset != null)
+                {
                     _loadedPresets.Add(preset);
+                    _presetCoverage.Add(100f / _loadedPresets.Count);
+                }
             }
         }
     }

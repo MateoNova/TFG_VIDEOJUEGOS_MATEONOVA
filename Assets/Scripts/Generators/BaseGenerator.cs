@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Models;
 using UnityEngine;
 using Views.Attributes;
@@ -47,7 +48,7 @@ namespace Generators
         /// </summary>
         /// <param name="resetTilemap">Whether to reset the tilemap before generation.</param>
         /// <param name="startPoint">The starting point for generation (optional).</param>
-        public abstract void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default);
+        public abstract HashSet<Vector2Int> RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default);
 
         #endregion
 

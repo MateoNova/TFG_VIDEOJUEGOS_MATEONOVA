@@ -54,7 +54,7 @@ namespace Generators.GraphBased
         /// </summary>
         /// <param name="resetTilemap">If true, resets the tilemap before generation.</param>
         /// <param name="startPoint">The starting point for generation.</param>
-        public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
+        public override HashSet<Vector2Int> RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
             if (resetTilemap)
             {
@@ -71,7 +71,7 @@ namespace Generators.GraphBased
             if (_graphView == null)
             {
                 Debug.LogError("GraphGeneratorView not found.");
-                return;
+                return null;
             }
 
             var roomDoors = PaintRooms();
@@ -98,8 +98,9 @@ namespace Generators.GraphBased
             {
                 _allWallPositions.Add(door);
             }
-
+            //todo arreglar, tengo q extraer lo del tielmappainter paint y wall geenrator para q eso se haga fuera.
             WallGenerator.GenerateWalls(_allFloorPositions, tilemapPainter, _allWallPositions);
+            return null;
         }
 
         #endregion

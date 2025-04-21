@@ -55,7 +55,7 @@ namespace Generators
         /// </summary>
         /// <param name="resetTilemap">If true, resets the tilemap before generation.</param>
         /// <param name="startPoint">The starting point for the generation.</param>
-        public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
+        public override HashSet<Vector2Int> RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
             if (resetTilemap)
                 tilemapPainter.ResetAllTiles();
@@ -71,8 +71,9 @@ namespace Generators
                 walkableTilesPositions = GenerateWalkableArea(startPoint);
             }
 
-            tilemapPainter.PaintWalkableTiles(walkableTilesPositions);
-            WallGenerator.GenerateWalls(walkableTilesPositions, tilemapPainter);
+            return walkableTilesPositions;
+
+            
         }
 
         #endregion

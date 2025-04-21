@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Models;
+using UnityEditor;
 using UnityEngine;
 using GeneratorService = Models.Editor.GeneratorService;
 
@@ -19,16 +22,48 @@ namespace Controllers.Editor
         /// </summary>
         public void Generate()
         {
-            if (GeneratorService.Instance.CurrentGenerator != null)
+            var gen = GeneratorService.Instance.CurrentGenerator;
+            var painter = gen?.TilemapPainter;
+            if (gen == null || painter == null) return;
+
+            // 1) Genera posiciones...
+            var positions = gen.RunGeneration(true, gen.Origin);
+
+            // 2) Limpia el mapa
+            painter.ResetAllTiles();
+
+            // 3) Obtén presets y coverages
+            var presets = painter.GetAllPresets();
+            var coverages = painter.GetPresetCoverages();
+
+            // Si por algún motivo no coinciden, rebalancea
+            if (coverages.Count != presets.Count)
             {
-                GeneratorService.Instance.CurrentGenerator.RunGeneration(ClearDungeonToggle,
-                    GeneratorService.Instance.CurrentGenerator.Origin);
+                Debug.LogWarning("Coverages y presets fuera de sync, rebalanceando...");
+                painter.RebalanceCoverages();
+                coverages = painter.GetPresetCoverages();
             }
-            else
+
+            // 4) Reparte según % de cobertura
+            int total = positions.Count;
+            int painted = 0;
+            var list = positions.ToList();
+
+            for (int i = 0; i < presets.Count; i++)
             {
-                Debug.LogWarning("No generator selected.");
+                int count = Mathf.RoundToInt(total * (coverages[i] / 100f));
+                var sub = list.GetRange(painted, Mathf.Min(count, list.Count - painted));
+
+                painter.AddAndSelectPreset(presets[i]);
+                painter.PaintWalkableTiles(sub);
+
+                painted += sub.Count;
             }
+
+            // 5) Muro final
+            WallGenerator.GenerateWalls(positions, painter);
         }
+
 
         /// <summary>
         /// Clears the current dungeon using the selected generator.

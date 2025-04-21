@@ -16,26 +16,6 @@ namespace Controllers.Editor
     public class StyleController
     {
         /// <summary>
-        /// Checks if the current generator has a valid TilemapPainter.
-        /// </summary>
-        /// <returns>True if a valid TilemapPainter is present; otherwise, false.</returns>
-        internal bool HasValidTilemapPainter()
-        {
-            return GeneratorService.Instance.CurrentGenerator != null &&
-                   GeneratorService.Instance.CurrentGenerator.TilemapPainter != null;
-        }
-
-        /// <summary>
-        /// Validates the current generator selection.
-        /// </summary>
-        /// <returns>True if the generator selection is valid; otherwise, false.</returns>
-        internal bool IsGeneratorSelectionValid()
-        {
-            return GeneratorService.Instance.CurrentGenerator != null &&
-                   GeneratorService.Instance.CurrentGenerator.TilemapPainter != null;
-        }
-
-        /// <summary>
         /// Retrieves and groups fields of the TilemapPainter class based on a specified attribute.
         /// </summary>
         /// <typeparam name="TAttribute">The type of attribute to filter and group fields by.</typeparam>

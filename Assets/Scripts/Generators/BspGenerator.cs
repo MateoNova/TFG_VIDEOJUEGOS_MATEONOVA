@@ -36,7 +36,7 @@ namespace Generators
         /// </summary>
         /// <param name="resetTilemap">If true, resets the tilemap before generation.</param>
         /// <param name="startPoint">The starting point for the generation.</param>
-        public override void RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
+        public override HashSet<Vector2Int> RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
             if (resetTilemap)
             {
@@ -67,9 +67,10 @@ namespace Generators
             // Create corridors connecting rooms.
             CreateCorridors(rootNode, walkableTiles, rooms);
 
-            // Render the dungeon.
+            return walkableTiles;
+            /*// Render the dungeon.
             tilemapPainter.PaintWalkableTiles(walkableTiles);
-            WallGenerator.GenerateWalls(walkableTiles, tilemapPainter);
+            WallGenerator.GenerateWalls(walkableTiles, tilemapPainter);*/
         }
 
         #endregion
