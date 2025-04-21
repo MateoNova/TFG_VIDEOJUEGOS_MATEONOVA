@@ -45,7 +45,7 @@ namespace Controllers.Editor
             Func<TAttribute, string> groupSelector)
             where TAttribute : Attribute
         {
-            return typeof(TilemapPainter)
+            return typeof(TilesetPreset)
                 .GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public) // Retrieve all fields.
                 .Where(f => f.FieldType == typeof(TileBase) &&
                             f.IsDefined(typeof(TAttribute), false)) // Filter by type and attribute.
@@ -74,8 +74,8 @@ namespace Controllers.Editor
             var painter = generator.TilemapPainter;
             var painterType = painter.GetType();
 
-            painter.walkableTileBases.Clear();
-            painter.walkableTilesPriorities.Clear();
+            painter.ClearWalkableTileBases();
+            painter.ClearWalkableTilesPriorities();
 
             foreach (var tile in preset.tiles)
             {
@@ -98,8 +98,7 @@ namespace Controllers.Editor
                 }
                 else if (key.StartsWith("Floor", StringComparison.OrdinalIgnoreCase))
                 {
-                    painter.walkableTileBases.Add(tile);
-                    painter.walkableTilesPriorities.Add(1);
+                    painter.AddTileWalkableTileBases(tile);
                 }
             }
 

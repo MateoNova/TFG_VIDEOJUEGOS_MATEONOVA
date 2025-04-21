@@ -56,9 +56,9 @@ namespace Views.Editor
             }
 
             var tilemapPainter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
-            _walkableTileBases = tilemapPainter.walkableTileBases;
-            _walkableTilesPriorities = tilemapPainter.walkableTilesPriorities;
-            _randomPlacement = tilemapPainter.randomWalkableTilesPlacement;
+            _walkableTileBases = tilemapPainter.GetWalkableTileBases();
+            _walkableTilesPriorities = tilemapPainter.GetWalkableTilesPriorities();
+            _randomPlacement = tilemapPainter.GetRandomWalkableTilesPlacement();
 
             _root ??= StyleUtils.SimpleContainer();
             _root.Clear();
@@ -141,7 +141,7 @@ namespace Views.Editor
             var toggle = new Toggle { value = _randomPlacement };
             toggle.RegisterValueChangedCallback(evt =>
             {
-                GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement = evt.newValue;
+                GeneratorService.Instance.CurrentGenerator.TilemapPainter.SetRandomWalkableTilesPlacement(evt.newValue);
                 EditorUtility.SetDirty(GeneratorService.Instance.CurrentGenerator.TilemapPainter);
                 RefreshUI();
             });
@@ -227,7 +227,7 @@ namespace Views.Editor
                 return container;
             }
 
-            var walkableTiles = GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTileBases;
+            var walkableTiles = GeneratorService.Instance.CurrentGenerator.TilemapPainter.GetWalkableTileBases();
             var horizontalContainer = StyleUtils.HorizontalContainerWrapped();
 
             for (var index = 0; index < walkableTiles.Count; index++)
@@ -264,7 +264,7 @@ namespace Views.Editor
             previewContainer.style.height = Utils.Utils.GetPreviewTileSize();
             tileContainer.Add(previewContainer);
 
-            if (!GeneratorService.Instance.CurrentGenerator.TilemapPainter.randomWalkableTilesPlacement)
+            if (!GeneratorService.Instance.CurrentGenerator.TilemapPainter.GetRandomWalkableTilesPlacement())
             {
                 tileContainer.Add(CreatePriorityUIForTile(index));
             }
@@ -400,22 +400,56 @@ namespace Views.Editor
             var controlID = field.Name.GetHashCode() & 0x7FFFFFFF;
             return new IMGUIContainer(() =>
             {
+                // Obtener el TilesetPreset actual desde el TilemapPainter
                 var tilemapPainter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
-
                 if (tilemapPainter == null)
+                {
+                    Debug.LogError("TilemapPainter no está inicializado.");
                     return;
-
-                var currentTile = field.GetValue(tilemapPainter) as TileBase;
+                }
+        
+                var preset = tilemapPainter.GetCurrentTilesetPreset();
+                if (preset == null)
+                {
+                    Debug.LogError("TilesetPreset no está inicializado.");
+                    return;
+                }
+        
+                // Verificar que el campo pertenece a TilesetPreset
+                if (field.DeclaringType != typeof(TilesetPreset))
+                {
+                    Debug.LogError($"El campo '{field.Name}' no pertenece a TilesetPreset.");
+                    return;
+                }
+        
+                // Obtener el valor del campo desde el TilesetPreset
+                var currentTile = field.GetValue(preset) as TileBase;
                 var previewTexture = GetPreviewTexture(currentTile);
                 var size = Utils.Utils.GetPreviewTileSize();
-
+        
                 if (GUILayout.Button(previewTexture, GUILayout.Width(size), GUILayout.Height(size)))
                 {
                     EditorGUIUtility.ShowObjectPicker<TileBase>(currentTile, false, "", controlID);
                 }
-
-                UpdateWallTileOnSelection(field, controlID);
+        
+                UpdateWallTileOnSelection(field, controlID, preset);
             });
+        }
+        
+        private static void UpdateWallTileOnSelection(FieldInfo field, int controlID, TilesetPreset preset)
+        {
+            if (Event.current == null || Event.current.commandName != Utils.Utils.GetObjectSelectorUpdateCommand())
+                return;
+        
+            if (EditorGUIUtility.GetObjectPickerControlID() != controlID)
+                return;
+        
+            var newTile = EditorGUIUtility.GetObjectPickerObject() as TileBase;
+            if (newTile == null) return;
+        
+            // Actualizar el campo en el TilesetPreset
+            field.SetValue(preset, newTile);
+            Debug.Log($"Campo '{field.Name}' actualizado con el nuevo tile: {newTile.name}");
         }
 
         /// <summary>
@@ -453,28 +487,11 @@ namespace Views.Editor
 
             if (newTile == null) return;
 
-            GeneratorService.Instance.CurrentGenerator.TilemapPainter.walkableTileBases[index] = newTile;
+            GeneratorService.Instance.CurrentGenerator.TilemapPainter.SetWalkableTileBases(index, newTile);
             label.text =
                 Utils.Utils.AddSpacesToCamelCase(newTile.name.Replace("floor", "", StringComparison.OrdinalIgnoreCase));
         }
 
-        /// <summary>
-        /// Updates the wall tile on selection.
-        /// </summary>
-        private static void UpdateWallTileOnSelection(FieldInfo field, int controlID)
-        {
-            if (Event.current == null || Event.current.commandName != Utils.Utils.GetObjectSelectorUpdateCommand())
-                return;
-            if (EditorGUIUtility.GetObjectPickerControlID() != controlID)
-                return;
-
-            var newTile = EditorGUIUtility.GetObjectPickerObject() as TileBase;
-
-            if (newTile == null) return;
-
-            var tilemapPainter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
-            field.SetValue(tilemapPainter, newTile);
-        }
 
         /// <summary>
         /// Cleans the wall label by removing specific keywords and formatting it.

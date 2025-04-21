@@ -530,34 +530,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e11540d13f24937bf4a62d0ee88e7c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tilesetPresets:
+  - {fileID: 11400000, guid: 498495cb930744a4ea62dd0e59ddb9bd, type: 2}
   walkableTilemap: {fileID: 7209869302509103302}
-  walkableTileBases:
-  - {fileID: 11400000, guid: a0c98a20c0cf438408755eb877243238, type: 2}
-  walkableTilesPriorities: 64000000
-  randomWalkableTilesPlacement: 0
   wallTilemap: {fileID: 3826764859063543759}
-  upWall: {fileID: 11400000, guid: f0d28abe17ec8b841ace4cffc4ef302e, type: 2}
-  downWall: {fileID: 11400000, guid: f0d28abe17ec8b841ace4cffc4ef302e, type: 2}
-  leftWall: {fileID: 11400000, guid: 29a4b734ce98dc24c8127ef2a90cda35, type: 2}
-  rightWall: {fileID: 11400000, guid: b8612ce0c8fb7d3448ff388858e1cb37, type: 2}
-  topLeftWall: {fileID: 11400000, guid: 0e2862e0bd9f79e4fabe0409c49e6652, type: 2}
-  topRightWall: {fileID: 11400000, guid: 005b6a39c67f7a641927274f789a90ef, type: 2}
-  bottomLeftWall: {fileID: 11400000, guid: c47bacbd56a19ca47a246c92a7110cd0, type: 2}
-  bottomRightWall: {fileID: 11400000, guid: 3348c4a24d76e754f94c7b9f00d8444b, type: 2}
-  allCornersWall: {fileID: 11400000, guid: 067a9d2028072ed46b7f5efad6c7cca3, type: 2}
-  topLeftInnerWall: {fileID: 11400000, guid: 2540255031b82394bb4130fc50c9e5e9, type: 2}
-  topRightInnerWall: {fileID: 11400000, guid: b4f6aff9251c0c149978c595fb9b95ee, type: 2}
-  bottomLeftInnerWall: {fileID: 11400000, guid: e85f0a9d6ed0f3140b0cd0a380ae8d9e, type: 2}
-  bottomRightInnerWall: {fileID: 11400000, guid: e0aedd6702319bd48a22cfc7be582af1, type: 2}
-  tripleExceptUpWall: {fileID: 11400000, guid: a76f15eb6369178409a3b904b0956d5a, type: 2}
-  tripleExcetDownWall: {fileID: 11400000, guid: 2b1b1ce5a6811b14996535f02f2b0563, type: 2}
-  tripleExceptLeftWall: {fileID: 11400000, guid: 6c383510083061346a5f6a3452bf2072, type: 2}
-  tripleExceptRightWall: {fileID: 11400000, guid: 4bae8e3bb5205e4499bbf90de717ecb0, type: 2}
-  tripleExceptLeftInnerWall: {fileID: 11400000, guid: c7199c41200a21a45abec0702bcd43c0, type: 2}
-  tripleExceptRightInnerWall: {fileID: 11400000, guid: 47f40438b412f2d42ad0c11bffeeacac, type: 2}
-  aloneWall: {fileID: 11400000, guid: 52df0772377ca1b49870c2d423816b76, type: 2}
   doorTilemap: {fileID: 3926002330551509252}
-  doorTileBase: {fileID: 11400000, guid: 430b25243673ebb4c829b8db0e2b7cce, type: 2}
+  doorClosed: {fileID: 11400000, guid: 825e41f1a08fecb44a06e15d34faba52, type: 2}
+  doorOpen: {fileID: 11400000, guid: a2570766bf9d8bc4c89e83dd4af668f5, type: 2}
 --- !u!1 &6359850700630042422
 GameObject:
   m_ObjectHideFlags: 0

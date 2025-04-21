@@ -48,85 +48,21 @@ namespace Models
         /// <param name="randomPlacement">Determines if walkable tiles should be placed randomly.</param>
         public TilemapPainter(bool randomPlacement)
         {
-            randomWalkableTilesPlacement = randomPlacement;
+            //randomWalkableTilesPlacement = randomPlacement;
         }
+
+        [SerializeField] private List<TilesetPreset> _tilesetPresets = new();
+        private int _tilesetPresetIndex = 0;
 
         #region Walkable Tiles
 
         [SerializeField] public Tilemap walkableTilemap;
-        [SerializeField] public List<TileBase> walkableTileBases = new();
-        [SerializeField] public List<int> walkableTilesPriorities = new();
-        [SerializeField] public bool randomWalkableTilesPlacement;
+
         private Dictionary<TileBase, float> _walkableTilesProbabilities = new();
 
         #endregion
 
-        #region Wall Tiles
-
-        [SerializeField] public Tilemap wallTilemap; // Tilemap for wall tiles.
-
-        // Various wall tile types categorized by their positions.
-        [SerializeField, WallTileGroup("CardinalDirections")]
-        private TileBase upWall;
-
-        [SerializeField, WallTileGroup("CardinalDirections")]
-        private TileBase downWall;
-
-        [SerializeField, WallTileGroup("CardinalDirections")]
-        private TileBase leftWall;
-
-        [SerializeField, WallTileGroup("CardinalDirections")]
-        private TileBase rightWall;
-
-        [SerializeField, WallTileGroup("ExternalCorners")]
-        private TileBase topLeftWall;
-
-        [SerializeField, WallTileGroup("ExternalCorners")]
-        private TileBase topRightWall;
-
-        [SerializeField, WallTileGroup("ExternalCorners")]
-        private TileBase bottomLeftWall;
-
-        [SerializeField, WallTileGroup("ExternalCorners")]
-        private TileBase bottomRightWall;
-
-        [SerializeField, WallTileGroup("ExternalCorners")]
-        private TileBase allCornersWall;
-
-        [SerializeField, WallTileGroup("InnerCorners")]
-        private TileBase topLeftInnerWall;
-
-        [SerializeField, WallTileGroup("InnerCorners")]
-        private TileBase topRightInnerWall;
-
-        [SerializeField, WallTileGroup("InnerCorners")]
-        private TileBase bottomLeftInnerWall;
-
-        [SerializeField, WallTileGroup("InnerCorners")]
-        private TileBase bottomRightInnerWall;
-
-        [SerializeField, WallTileGroup("TripleWalls")]
-        private TileBase tripleExceptUpWall;
-
-        [SerializeField, WallTileGroup("TripleWalls")]
-        private TileBase tripleExcetDownWall;
-
-        [SerializeField, WallTileGroup("TripleWalls")]
-        private TileBase tripleExceptLeftWall;
-
-        [SerializeField, WallTileGroup("TripleWalls")]
-        private TileBase tripleExceptRightWall;
-
-        [SerializeField, WallTileGroup("TripleInnerWalls")]
-        private TileBase tripleExceptLeftInnerWall;
-
-        [SerializeField, WallTileGroup("TripleInnerWalls")]
-        private TileBase tripleExceptRightInnerWall;
-
-        [SerializeField, WallTileGroup("AloneWalls")]
-        private TileBase aloneWall;
-
-        #endregion
+        [SerializeField] public Tilemap wallTilemap;
 
         #region Door Tiles
 
@@ -141,18 +77,19 @@ namespace Models
         /// <summary>
         /// Initializes the probabilities for walkable tiles based on their priorities.
         /// </summary>
-        private void InitializeWalkableTilesProbabilities()
+        /// <param name="preset"></param>
+        private void InitializeWalkableTilesProbabilities(TilesetPreset preset)
         {
             _walkableTilesProbabilities = new Dictionary<TileBase, float>();
-            var totalPriority = walkableTilesPriorities.Sum();
-            for (var i = 0; i < walkableTileBases.Count; i++)
+            var totalPriority = preset.walkableTilesPriorities.Sum();
+            for (var i = 0; i < preset.walkableTileBases.Count; i++)
             {
-                var prob = (i < walkableTilesPriorities.Count && totalPriority != 0)
-                    ? (float)walkableTilesPriorities[i] / totalPriority
+                var prob = (i < preset.walkableTilesPriorities.Count && totalPriority != 0)
+                    ? (float)preset.walkableTilesPriorities[i] / totalPriority
                     : 0f;
-                if (i >= walkableTilesPriorities.Count)
+                if (i >= preset.walkableTilesPriorities.Count)
                     Debug.LogWarning($"No priority defined for tile at index {i}. Defaulting to 0.");
-                _walkableTilesProbabilities[walkableTileBases[i]] = prob;
+                _walkableTilesProbabilities[preset.walkableTileBases[i]] = prob;
             }
         }
 
@@ -185,11 +122,12 @@ namespace Models
         /// <param name="tilePositions">The positions of the tiles to paint.</param>
         public void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions)
         {
-            InitializeWalkableTilesProbabilities();
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            InitializeWalkableTilesProbabilities(preset);
             var positions = tilePositions.ToList();
             var cellPositions = GetCellPositions(positions, walkableTilemap);
 
-            if (randomWalkableTilesPlacement)
+            if (preset.randomWalkableTilesPlacement)
                 PaintTilesRandomly(cellPositions);
             else
                 PaintTilesWithProbabilities(cellPositions);
@@ -203,10 +141,11 @@ namespace Models
         /// <param name="cellPositions">The cell positions to paint.</param>
         private void PaintTilesRandomly(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
             var rnd = new System.Random();
             foreach (var (_, cellPos) in cellPositions)
             {
-                var tile = walkableTileBases[rnd.Next(walkableTileBases.Count)];
+                var tile = preset.walkableTileBases[rnd.Next(preset.walkableTileBases.Count)];
                 walkableTilemap.SetTile(cellPos, tile);
             }
         }
@@ -217,10 +156,11 @@ namespace Models
         /// <param name="cellPositions">The cell positions to paint.</param>
         private void PaintTilesWithProbabilities(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
             var total = _walkableTilesProbabilities.Values.Sum();
             List<(TileBase tile, float cumulative)> cumulativeList = new();
             var accumulator = 0f;
-            foreach (var tile in walkableTileBases)
+            foreach (var tile in preset.walkableTileBases)
             {
                 if (!_walkableTilesProbabilities.TryGetValue(tile, out var prob))
                 {
@@ -239,7 +179,7 @@ namespace Models
                 foreach (var (tile, cumulative) in cumulativeList)
                 {
                     if (!(randomValue <= cumulative)) continue;
-                    
+
                     walkableTilemap.SetTile(cellPos, tile);
                     break;
                 }
@@ -253,28 +193,29 @@ namespace Models
         /// <param name="wallPosition">The type of wall to paint.</param>
         public void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition)
         {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
             var tile = wallPosition switch
             {
-                Utils.Utils.WallPosition.Up => upWall,
-                Utils.Utils.WallPosition.Down => downWall,
-                Utils.Utils.WallPosition.Left => leftWall,
-                Utils.Utils.WallPosition.Right => rightWall,
-                Utils.Utils.WallPosition.TopLeft => topLeftWall,
-                Utils.Utils.WallPosition.BottomLeft => bottomLeftWall,
-                Utils.Utils.WallPosition.TopRight => topRightWall,
-                Utils.Utils.WallPosition.BottomRight => bottomRightWall,
-                Utils.Utils.WallPosition.TripleExceptUp => tripleExceptUpWall,
-                Utils.Utils.WallPosition.TripleExceptDown => tripleExcetDownWall,
-                Utils.Utils.WallPosition.TripleExceptLeft => tripleExceptLeftWall,
-                Utils.Utils.WallPosition.TripleExceptRight => tripleExceptRightWall,
-                Utils.Utils.WallPosition.AllWallCorner => allCornersWall,
-                Utils.Utils.WallPosition.TopLeftInner => topLeftInnerWall,
-                Utils.Utils.WallPosition.TopRightInner => topRightInnerWall,
-                Utils.Utils.WallPosition.BottomLeftInner => bottomLeftInnerWall,
-                Utils.Utils.WallPosition.BottomRightInner => bottomRightInnerWall,
-                Utils.Utils.WallPosition.Alone => aloneWall,
-                Utils.Utils.WallPosition.TripleExceptLeftInner => tripleExceptLeftInnerWall,
-                Utils.Utils.WallPosition.TripleExceptRightInner => tripleExceptRightInnerWall,
+                Utils.Utils.WallPosition.Up => preset.upWall,
+                Utils.Utils.WallPosition.Down => preset.downWall,
+                Utils.Utils.WallPosition.Left => preset.leftWall,
+                Utils.Utils.WallPosition.Right => preset.rightWall,
+                Utils.Utils.WallPosition.TopLeft => preset.topLeftWall,
+                Utils.Utils.WallPosition.BottomLeft => preset.bottomLeftWall,
+                Utils.Utils.WallPosition.TopRight => preset.topRightWall,
+                Utils.Utils.WallPosition.BottomRight => preset.bottomRightWall,
+                Utils.Utils.WallPosition.TripleExceptUp => preset.tripleExceptUpWall,
+                Utils.Utils.WallPosition.TripleExceptDown => preset.tripleExcetDownWall,
+                Utils.Utils.WallPosition.TripleExceptLeft => preset.tripleExceptLeftWall,
+                Utils.Utils.WallPosition.TripleExceptRight => preset.tripleExceptRightWall,
+                Utils.Utils.WallPosition.AllWallCorner => preset.allCornersWall,
+                Utils.Utils.WallPosition.TopLeftInner => preset.topLeftInnerWall,
+                Utils.Utils.WallPosition.TopRightInner => preset.topRightInnerWall,
+                Utils.Utils.WallPosition.BottomLeftInner => preset.bottomLeftInnerWall,
+                Utils.Utils.WallPosition.BottomRightInner => preset.bottomRightInnerWall,
+                Utils.Utils.WallPosition.Alone => preset.aloneWall,
+                Utils.Utils.WallPosition.TripleExceptLeftInner => preset.tripleExceptLeftInnerWall,
+                Utils.Utils.WallPosition.TripleExceptRightInner => preset.tripleExceptRightInnerWall,
                 _ => null
             };
 
@@ -353,7 +294,9 @@ namespace Models
         /// <param name="path">The folder path to search for tiles.</param>
         public void SelectWalkableTilesFromFolder(string path)
         {
-            SelectTilesFromFolder(walkableTileBases, walkableTilesPriorities, _walkableTilesProbabilities, path);
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            SelectTilesFromFolder(preset.walkableTileBases, preset.walkableTilesPriorities, _walkableTilesProbabilities,
+                path);
         }
 
         #endregion
@@ -365,8 +308,9 @@ namespace Models
         /// </summary>
         public void RemoveAllWalkableTiles()
         {
-            walkableTileBases.Clear();
-            walkableTilesPriorities.Clear();
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            preset.walkableTileBases.Clear();
+            preset.walkableTilesPriorities.Clear();
             _walkableTilesProbabilities.Clear();
             walkableTilemap?.ClearAllTiles();
         }
@@ -376,30 +320,103 @@ namespace Models
         /// </summary>
         public void RemoveAllWallTiles()
         {
-            upWall = null;
-            downWall = null;
-            leftWall = null;
-            rightWall = null;
-            topLeftWall = null;
-            topRightWall = null;
-            bottomLeftWall = null;
-            bottomRightWall = null;
-            allCornersWall = null;
-            topLeftInnerWall = null;
-            topRightInnerWall = null;
-            bottomLeftInnerWall = null;
-            bottomRightInnerWall = null;
-            tripleExceptUpWall = null;
-            tripleExcetDownWall = null;
-            tripleExceptLeftWall = null;
-            tripleExceptRightWall = null;
-            tripleExceptLeftInnerWall = null;
-            tripleExceptRightInnerWall = null;
-            aloneWall = null;
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            preset.upWall = null;
+            preset.downWall = null;
+            preset.leftWall = null;
+            preset.rightWall = null;
+            preset.topLeftWall = null;
+            preset.topRightWall = null;
+            preset.bottomLeftWall = null;
+            preset.bottomRightWall = null;
+            preset.allCornersWall = null;
+            preset.topLeftInnerWall = null;
+            preset.topRightInnerWall = null;
+            preset.bottomLeftInnerWall = null;
+            preset.bottomRightInnerWall = null;
+            preset.tripleExceptUpWall = null;
+            preset.tripleExcetDownWall = null;
+            preset.tripleExceptLeftWall = null;
+            preset.tripleExceptRightWall = null;
+            preset.tripleExceptLeftInnerWall = null;
+            preset.tripleExceptRightInnerWall = null;
+            preset.aloneWall = null;
 
             wallTilemap?.ClearAllTiles();
         }
 
         #endregion
+
+        public List<TileBase> GetWalkableTileBases()
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            return preset.walkableTileBases;
+        }
+
+        public List<int> GetWalkableTilesPriorities()
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            return preset.walkableTilesPriorities;
+        }
+
+        public bool GetRandomWalkableTilesPlacement()
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            return preset.randomWalkableTilesPlacement;
+        }
+
+        public void SetRandomWalkableTilesPlacement(bool evtNewValue)
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            if (preset.randomWalkableTilesPlacement == evtNewValue) return;
+            preset.randomWalkableTilesPlacement = evtNewValue;
+            InitializeWalkableTilesProbabilities(preset);
+        }
+
+        public void SetWalkableTileBases(int index, TileBase newTile)
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            if (index < 0 || index >= preset.walkableTileBases.Count)
+            {
+                Debug.LogError($"Index {index} is out of range for walkable tile bases.");
+                return;
+            }
+
+            if (preset.walkableTileBases[index] == newTile) return;
+            preset.walkableTileBases[index] = newTile;
+            InitializeWalkableTilesProbabilities(preset);
+        }
+
+        public void ClearWalkableTileBases()
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            preset.walkableTileBases.Clear();
+        }
+
+        public void ClearWalkableTilesPriorities()
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            preset.walkableTilesPriorities.Clear();
+        }
+
+        public void AddTileWalkableTileBases(Tile tile)
+        {
+            var preset = _tilesetPresets[_tilesetPresetIndex];
+            if (preset.walkableTileBases.Contains(tile))
+            {
+                Debug.LogWarning($"Tile {tile.name} already exists in walkable tile bases.");
+                return;
+            }
+
+            preset.walkableTileBases.Add(tile);
+            preset.walkableTilesPriorities.Add(1);
+        }
+
+        public TilesetPreset GetCurrentTilesetPreset()
+        {
+            if (_tilesetPresets != null && _tilesetPresets.Count != 0) return _tilesetPresets[_tilesetPresetIndex];
+            Debug.LogError("No tileset presets available.");
+            return null;
+        }
     }
 }

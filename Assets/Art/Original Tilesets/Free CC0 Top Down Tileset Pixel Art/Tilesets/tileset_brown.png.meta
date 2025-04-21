@@ -422,7 +422,19 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      tileset_brown_0: -9099764225364432770
+      tileset_brown_1: 9130232094516490368
+      tileset_brown_10: 2534285005224082553
+      tileset_brown_11: 2356508051890952375
+      tileset_brown_2: -7342925929596827528
+      tileset_brown_3: 423253822464585332
+      tileset_brown_4: 3619748486259094546
+      tileset_brown_5: -1625074700630062446
+      tileset_brown_6: 2987100949951747730
+      tileset_brown_7: 3579917097275793884
+      tileset_brown_8: 542049032545837725
+      tileset_brown_9: 2682653476171898192
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

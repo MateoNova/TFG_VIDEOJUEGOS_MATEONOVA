@@ -1422,7 +1422,59 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      tileset_full_0: 2384573467158749095
+      tileset_full_1: -3499538111182831275
+      tileset_full_10: -2274296628345196517
+      tileset_full_11: 6494764369960610867
+      tileset_full_12: 3420628468027383485
+      tileset_full_13: 4950846838256928793
+      tileset_full_14: 394579644708852519
+      tileset_full_15: -3775569553456572646
+      tileset_full_16: 9162271583308437803
+      tileset_full_17: -8341447190083639130
+      tileset_full_18: 7948278218760795340
+      tileset_full_19: 7039550183137232788
+      tileset_full_2: -2908195241881833153
+      tileset_full_20: 9097851505403875165
+      tileset_full_21: 497788485121306610
+      tileset_full_22: -4679203815883691737
+      tileset_full_23: -2020060489827041686
+      tileset_full_24: 2927253139968990849
+      tileset_full_25: -4540980454047837179
+      tileset_full_26: -6988395229229775304
+      tileset_full_27: 8633051034580711475
+      tileset_full_28: 8052773629284568756
+      tileset_full_29: -6871617877291067921
+      tileset_full_3: -6856162205617569526
+      tileset_full_30: -1942719622858211217
+      tileset_full_31: 2050731660041993601
+      tileset_full_32: -7668244738790177758
+      tileset_full_33: -4175884202191641751
+      tileset_full_34: -4332006062203213598
+      tileset_full_35: -3310728328328801913
+      tileset_full_36: 6050734713213732631
+      tileset_full_37: -2603656320388244382
+      tileset_full_38: 8709828042900433971
+      tileset_full_39: -1946419956346212535
+      tileset_full_4: -7281388679950469445
+      tileset_full_40: -6281963454511915687
+      tileset_full_41: -3444629369077092832
+      tileset_full_42: -5432908069743533237
+      tileset_full_43: -140255580650494924
+      tileset_full_44: -5663767892997118438
+      tileset_full_45: 5678356510865130499
+      tileset_full_46: 3508277024225717473
+      tileset_full_47: 8041436453929355738
+      tileset_full_48: 5891741444204604838
+      tileset_full_49: -7033055454871072359
+      tileset_full_5: 7591932293194823120
+      tileset_full_50: 8930981553363666566
+      tileset_full_51: 2804506929848700772
+      tileset_full_6: 2943477475950770513
+      tileset_full_7: -2596192323547721535
+      tileset_full_8: -4914755104536476224
+      tileset_full_9: -3060014113722862512
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
