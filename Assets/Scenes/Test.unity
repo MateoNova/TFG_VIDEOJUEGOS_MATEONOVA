@@ -506,7 +506,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1001 &1583451628
+--- !u!1001 &845326568
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -559,13 +559,9 @@ PrefabInstance:
       value: GenerationManager
       objectReference: {fileID: 0}
     - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
-      propertyPath: doorOpen
-      value: 
-      objectReference: {fileID: 11400000, guid: a2570766bf9d8bc4c89e83dd4af668f5, type: 2}
-    - target: {fileID: 4841484267194583844, guid: 7c9a6055558b6c243b0790fb15a7ff6f, type: 3}
-      propertyPath: doorClosed
-      value: 
-      objectReference: {fileID: 11400000, guid: 825e41f1a08fecb44a06e15d34faba52, type: 2}
+      propertyPath: _tilesetPresets.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -657,4 +653,4 @@ SceneRoots:
   - {fileID: 180042138}
   - {fileID: 1743934326}
   - {fileID: 430197338}
-  - {fileID: 1583451628}
+  - {fileID: 845326568}

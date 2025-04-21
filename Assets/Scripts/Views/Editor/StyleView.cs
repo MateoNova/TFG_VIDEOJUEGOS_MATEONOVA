@@ -19,6 +19,15 @@ namespace Views.Editor
 {
     public class StyleView
     {
+        
+        private const string LoadedPresetsKey = "StyleView_LoadedPresets";
+
+        
+        public StyleView()
+        {
+            LoadPresetsFromEditorPrefs();
+        }
+        
         /// <summary>
         /// The controller responsible for handling style-related logic.
         /// </summary>
@@ -49,23 +58,33 @@ namespace Views.Editor
         /// </summary>
         public VisualElement CreateUI()
         {
-            if (GeneratorService.Instance.CurrentGenerator == null ||
-                GeneratorService.Instance.CurrentGenerator.TilemapPainter == null)
-            {
+            var gen = GeneratorService.Instance.CurrentGenerator;
+            if (gen == null || gen.TilemapPainter == null)
                 return new VisualElement();
-            }
 
-            var tilemapPainter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
-            _walkableTileBases = tilemapPainter.GetWalkableTileBases();
-            _walkableTilesPriorities = tilemapPainter.GetWalkableTilesPriorities();
-            _randomPlacement = tilemapPainter.GetRandomWalkableTilesPlacement();
+            // 2.1) Aplico todos los presets guardados
+            foreach (var preset in _loadedPresets)
+                _styleController.LoadPreset(preset);
+
+            // 2.2) recupero el estado actual (walkables, random, etc)
+            var painter = gen.TilemapPainter;
+            _walkableTileBases       = painter.GetWalkableTileBases();
+            _walkableTilesPriorities = painter.GetWalkableTilesPriorities();
+            _randomPlacement         = painter.GetRandomWalkableTilesPlacement();
 
             _root ??= StyleUtils.SimpleContainer();
             _root.Clear();
+
+            // 3) construyo la UI con todos los foldouts
             _root.Add(CreateStyleSection());
+            foreach (var preset in _loadedPresets)
+                _root.Add(CreatePresetSubsection(preset));
 
             return _root;
         }
+
+
+
 
         /// <summary>
         /// Creates the style section UI element.
@@ -75,16 +94,21 @@ namespace Views.Editor
             var styleSection = StyleUtils.ModernFoldout("");
             styleSection.SetLocalizedText("Style", "StyleTable");
             styleSection.Add(CreatePresetSettings());
-            styleSection.Add(CreateFloorTileSettings());
-            styleSection.Add(CreateWallTileSettings());
+            //styleSection.Add(CreateFloorTileSettings());
+            //styleSection.Add(CreateWallTileSettings());
             return styleSection;
         }
+        
+        private readonly List<TilesetPreset> _loadedPresets = new();
+
 
         /// <summary>
         /// Creates the preset settings UI element.
         /// </summary>
         private VisualElement CreatePresetSettings()
         {
+            var container = new VisualElement();
+
             var loadPresetButton = new Button(() =>
             {
                 var presetPath = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
@@ -96,7 +120,16 @@ namespace Views.Editor
                 if (preset != null)
                 {
                     _styleController.LoadPreset(preset);
-                    EditorUtility.DisplayDialog("Success", "Preset loaded successfully.", "OK");
+                    EditorUtility.DisplayDialog("Success", $"Preset '{preset.name}' loaded successfully.", "OK");
+
+                    // Add the preset to the list of loaded presets
+                    _loadedPresets.Add(preset);
+                    SavePresetsToEditorPrefs(); // Save the updated list
+
+                    // Create a new subsection for the loaded preset
+                    var presetSection = CreatePresetSubsection(preset);
+                    container.Add(presetSection);
+
                     RefreshUI();
                 }
                 else
@@ -108,7 +141,23 @@ namespace Views.Editor
                 text = "Load Preset"
             };
             loadPresetButton.SetLocalizedText("loadPreset", "StyleTable");
-            return loadPresetButton;
+            container.Add(loadPresetButton);
+
+            return container;
+        }
+        
+        /// <summary>
+        /// Creates a subsection for the loaded preset.
+        /// </summary>
+        private VisualElement CreatePresetSubsection(TilesetPreset preset)
+        {
+            var presetSection = StyleUtils.ModernSubFoldout($"{preset.name}");
+            //presetSection.SetLocalizedText(preset.name, "StyleTable");
+            // Add floor and wall tile settings for the preset
+            presetSection.Add(CreateFloorTileSettings());
+            presetSection.Add(CreateWallTileSettings());
+        
+            return presetSection;
         }
 
         /// <summary>
@@ -517,9 +566,45 @@ namespace Views.Editor
                 _root = StyleUtils.SimpleContainer();
             else
                 _root.Clear();
+
+            _root.Add(CreateStyleSection());
+
+            // Recreate subsections for all loaded presets
+            foreach (var preset in _loadedPresets)
+            {
+                var presetSection = CreatePresetSubsection(preset);
+                _root.Add(presetSection);
+            }
+
             _root.MarkDirtyRepaint();
-            CreateUI();
         }
+        
+        /// <summary>
+        /// Saves the loaded presets to EditorPrefs.
+        /// </summary>
+        private void SavePresetsToEditorPrefs()
+        {
+            var presetPaths = _loadedPresets.Select(AssetDatabase.GetAssetPath).ToArray();
+            EditorPrefs.SetString(LoadedPresetsKey, string.Join(";", presetPaths));
+        }
+        
+        /// <summary>
+        /// Loads the presets from EditorPrefs.
+        /// </summary>
+        private void LoadPresetsFromEditorPrefs()
+        {
+            _loadedPresets.Clear();
+            if (!EditorPrefs.HasKey(LoadedPresetsKey)) return;
+
+            var paths = EditorPrefs.GetString(LoadedPresetsKey).Split(';');
+            foreach (var path in paths)
+            {
+                var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(path);
+                if (preset != null)
+                    _loadedPresets.Add(preset);
+            }
+        }
+
     }
 }
 

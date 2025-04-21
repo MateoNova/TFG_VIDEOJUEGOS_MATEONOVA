@@ -52,7 +52,15 @@ namespace Models
         }
 
         [SerializeField] private List<TilesetPreset> _tilesetPresets = new();
-        private int _tilesetPresetIndex = 0;
+        private int _tilesetPresetIndex = -1; // The index of the current tileset preset is none
+
+        public void AddAndSelectPreset(TilesetPreset preset)
+        {
+            if (preset == null) return;
+            if (!_tilesetPresets.Contains(preset))
+                _tilesetPresets.Add(preset);
+            _tilesetPresetIndex = _tilesetPresets.IndexOf(preset);
+        }
 
         #region Walkable Tiles
 
@@ -122,7 +130,7 @@ namespace Models
         /// <param name="tilePositions">The positions of the tiles to paint.</param>
         public void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             InitializeWalkableTilesProbabilities(preset);
             var positions = tilePositions.ToList();
             var cellPositions = GetCellPositions(positions, walkableTilemap);
@@ -141,7 +149,7 @@ namespace Models
         /// <param name="cellPositions">The cell positions to paint.</param>
         private void PaintTilesRandomly(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             var rnd = new System.Random();
             foreach (var (_, cellPos) in cellPositions)
             {
@@ -156,7 +164,7 @@ namespace Models
         /// <param name="cellPositions">The cell positions to paint.</param>
         private void PaintTilesWithProbabilities(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             var total = _walkableTilesProbabilities.Values.Sum();
             List<(TileBase tile, float cumulative)> cumulativeList = new();
             var accumulator = 0f;
@@ -193,7 +201,7 @@ namespace Models
         /// <param name="wallPosition">The type of wall to paint.</param>
         public void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             var tile = wallPosition switch
             {
                 Utils.Utils.WallPosition.Up => preset.upWall,
@@ -294,7 +302,7 @@ namespace Models
         /// <param name="path">The folder path to search for tiles.</param>
         public void SelectWalkableTilesFromFolder(string path)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             SelectTilesFromFolder(preset.walkableTileBases, preset.walkableTilesPriorities, _walkableTilesProbabilities,
                 path);
         }
@@ -308,7 +316,7 @@ namespace Models
         /// </summary>
         public void RemoveAllWalkableTiles()
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             preset.walkableTileBases.Clear();
             preset.walkableTilesPriorities.Clear();
             _walkableTilesProbabilities.Clear();
@@ -320,7 +328,7 @@ namespace Models
         /// </summary>
         public void RemoveAllWallTiles()
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             preset.upWall = null;
             preset.downWall = null;
             preset.leftWall = null;
@@ -349,25 +357,49 @@ namespace Models
 
         public List<TileBase> GetWalkableTileBases()
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            if (_tilesetPresets == null
+                || _tilesetPresets.Count == 0
+                || _tilesetPresetIndex < 0
+                || _tilesetPresetIndex >= _tilesetPresets.Count)
+            {
+                return new List<TileBase>();
+            }
+
+            var preset = GetCurrentTilesetPreset();
             return preset.walkableTileBases;
         }
 
         public List<int> GetWalkableTilesPriorities()
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            if (_tilesetPresets == null
+                || _tilesetPresets.Count == 0
+                || _tilesetPresetIndex < 0
+                || _tilesetPresetIndex >= _tilesetPresets.Count)
+            {
+                return new List<int>();
+            }
+
+            var preset = GetCurrentTilesetPreset();
             return preset.walkableTilesPriorities;
         }
 
         public bool GetRandomWalkableTilesPlacement()
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            if (_tilesetPresets == null
+                || _tilesetPresets.Count == 0
+                || _tilesetPresetIndex < 0
+                || _tilesetPresetIndex >= _tilesetPresets.Count)
+            {
+                return false;
+            }
+
+            var preset = GetCurrentTilesetPreset();
             return preset.randomWalkableTilesPlacement;
         }
 
         public void SetRandomWalkableTilesPlacement(bool evtNewValue)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             if (preset.randomWalkableTilesPlacement == evtNewValue) return;
             preset.randomWalkableTilesPlacement = evtNewValue;
             InitializeWalkableTilesProbabilities(preset);
@@ -375,7 +407,7 @@ namespace Models
 
         public void SetWalkableTileBases(int index, TileBase newTile)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             if (index < 0 || index >= preset.walkableTileBases.Count)
             {
                 Debug.LogError($"Index {index} is out of range for walkable tile bases.");
@@ -389,19 +421,27 @@ namespace Models
 
         public void ClearWalkableTileBases()
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             preset.walkableTileBases.Clear();
+        }
+
+        public TilesetPreset GetCurrentTilesetPreset()
+        {
+            if (_tilesetPresets == null || _tilesetPresets.Count == 0) return null;
+            if (_tilesetPresetIndex < 0 || _tilesetPresetIndex >= _tilesetPresets.Count) return null;
+            return _tilesetPresets[_tilesetPresetIndex];
         }
 
         public void ClearWalkableTilesPriorities()
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
             preset.walkableTilesPriorities.Clear();
         }
 
         public void AddTileWalkableTileBases(Tile tile)
         {
-            var preset = _tilesetPresets[_tilesetPresetIndex];
+            var preset = GetCurrentTilesetPreset();
+            ;
             if (preset.walkableTileBases.Contains(tile))
             {
                 Debug.LogWarning($"Tile {tile.name} already exists in walkable tile bases.");
@@ -410,13 +450,6 @@ namespace Models
 
             preset.walkableTileBases.Add(tile);
             preset.walkableTilesPriorities.Add(1);
-        }
-
-        public TilesetPreset GetCurrentTilesetPreset()
-        {
-            if (_tilesetPresets != null && _tilesetPresets.Count != 0) return _tilesetPresets[_tilesetPresetIndex];
-            Debug.LogError("No tileset presets available.");
-            return null;
         }
     }
 }

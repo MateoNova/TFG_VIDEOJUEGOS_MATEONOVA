@@ -530,8 +530,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e11540d13f24937bf4a62d0ee88e7c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tilesetPresets:
-  - {fileID: 11400000, guid: 498495cb930744a4ea62dd0e59ddb9bd, type: 2}
+  _tilesetPresets: []
   walkableTilemap: {fileID: 7209869302509103302}
   wallTilemap: {fileID: 3826764859063543759}
   doorTilemap: {fileID: 3926002330551509252}
