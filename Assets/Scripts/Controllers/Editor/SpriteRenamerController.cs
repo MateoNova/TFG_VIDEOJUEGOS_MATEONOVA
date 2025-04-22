@@ -18,105 +18,68 @@ namespace Controllers.Editor
 
         public bool RenameSprites(string imagePath)
         {
-            var importer = ConfigureTextureImporter(imagePath);
-            if (importer == null) return false;
-
-            var dataProvider = InitializeDataProvider(importer);
-            if (dataProvider == null) return false;
-
-            var rects = SliceAndNameSprites(imagePath);
-            if (rects == null) return false;
-
-            RegisterSpriteNames(dataProvider, rects);
-            ApplySlicing(dataProvider);
-
-            return true;
-        }
-
-        private TextureImporter ConfigureTextureImporter(string imagePath)
-        {
+            // 1) Configure importer for slicing
             var importer = AssetImporter.GetAtPath(imagePath) as TextureImporter;
-            if (importer == null) return null;
-
+            if (importer == null) return false;
             importer.isReadable = true;
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
             importer.spritePixelsPerUnit = CellSize;
             importer.filterMode = FilterMode.Point;
             importer.mipmapEnabled = false;
-
             EditorUtility.SetDirty(importer);
             importer.SaveAndReimport();
 
-            return importer;
-        }
-
-        private ISpriteEditorDataProvider InitializeDataProvider(TextureImporter importer)
-        {
+            // 2) Prepare Data Provider
             var factory = new SpriteDataProviderFactories();
             factory.Init();
-
             var dataProvider = factory.GetSpriteEditorDataProviderFromObject(importer);
-            dataProvider?.InitSpriteEditorDataProvider();
+            dataProvider.InitSpriteEditorDataProvider();
 
-            return dataProvider;
-        }
-
-        private List<SpriteRect> SliceAndNameSprites(string imagePath)
-        {
+            // 3) Slice and name sprites
             var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
-            if (texture == null) return null;
-
+            int texW = texture.width, texH = texture.height;
             var rects = new List<SpriteRect>();
-            int texW = texture.width, texH = texture.height, idx = 0;
-
+            int idx = 0;
             for (int y = texH - CellSize; y >= 0; y -= CellSize)
+            for (int x = 0; x < texW; x += CellSize)
             {
-                for (int x = 0; x < texW; x += CellSize)
+                if (IsCellBlank(texture, x, y)) continue;
+                string baseName = idx < Utils.Utils.PredefinedTileNames.Count
+                    ? Utils.Utils.PredefinedTileNames[idx]
+                    : $"Floor {idx - Utils.Utils.PredefinedTileNames.Count + 1}";
+                rects.Add(new SpriteRect
                 {
-                    if (IsCellBlank(texture, x, y)) continue;
-
-                    string baseName = idx < Utils.Utils.PredefinedTileNames.Count
-                        ? Utils.Utils.PredefinedTileNames[idx]
-                        : $"Floor {idx - Utils.Utils.PredefinedTileNames.Count + 1}";
-
-                    rects.Add(new SpriteRect
-                    {
-                        name = $"{idx}_{baseName}",
-                        spriteID = GUID.Generate(),
-                        rect = new Rect(x, y, CellSize, CellSize),
-                        alignment = (int)SpriteAlignment.Center,
-                        pivot = new Vector2(PivotValue, PivotValue)
-                    });
-                    idx++;
-                }
+                    name = $"{idx}_{baseName}",
+                    spriteID = GUID.Generate(),
+                    rect = new Rect(x, y, CellSize, CellSize),
+                    alignment = (int)SpriteAlignment.Center,
+                    pivot = new Vector2(PivotValue, PivotValue)
+                });
+                idx++;
             }
 
-            return rects;
-        }
-
-        private void RegisterSpriteNames(ISpriteEditorDataProvider dataProvider, List<SpriteRect> rects)
-        {
-            var nameProvider = dataProvider.GetDataProvider<ISpriteNameFileIdDataProvider>();
-            var pairs = nameProvider.GetNameFileIdPairs().ToList();
-
+            // 4) Register name↔ID pairs
+            var nameProv = dataProvider.GetDataProvider<ISpriteNameFileIdDataProvider>();
+            var pairs = nameProv.GetNameFileIdPairs().ToList();
             pairs.AddRange(rects.Select(r => new SpriteNameFileIdPair(r.name, r.spriteID)));
-            nameProvider.SetNameFileIdPairs(pairs);
-        }
+            nameProv.SetNameFileIdPairs(pairs);
 
-        private void ApplySlicing(ISpriteEditorDataProvider dataProvider)
-        {
+            // 5) Apply slicing
+            dataProvider.SetSpriteRects(rects.ToArray());
             dataProvider.Apply();
-            (dataProvider.targetObject as AssetImporter)?.SaveAndReimport();
+            (dataProvider.targetObject as AssetImporter).SaveAndReimport();
             AssetDatabase.Refresh();
+
+            return true;
         }
 
-        private bool IsCellBlank(Texture2D texture, int x, int y)
+        private bool IsCellBlank(Texture2D tex, int x, int y)
         {
             try
             {
-                var pixels = texture.GetPixels(x, y, CellSize, CellSize);
-                return pixels.All(c => c.a == 0f);
+                var px = tex.GetPixels(x, y, CellSize, CellSize);
+                return px.All(c => c.a == 0f);
             }
             catch
             {
@@ -126,74 +89,44 @@ namespace Controllers.Editor
 
         public bool CreatePreset(string imagePath)
         {
-            var sprites = LoadAndSortSprites(imagePath);
-            if (sprites == null || sprites.Length == 0) return false;
-
-            var presetPath = GetPresetSavePath();
-            if (string.IsNullOrEmpty(presetPath)) return false;
-
-            var folderPath = CreateTilesFolder(presetPath);
-            var tiles = CreateTiles(sprites, folderPath);
-
-            CreateTilesetPreset(presetPath, tiles);
-            CreateTilePalette(imagePath, folderPath, Path.GetFileNameWithoutExtension(presetPath));
-
-            return true;
-        }
-
-        private Sprite[] LoadAndSortSprites(string imagePath)
-        {
             var subs = AssetDatabase.LoadAllAssetRepresentationsAtPath(imagePath).OfType<Sprite>();
-            return subs
+            var sprites = subs.ToArray();
+            if (sprites.Length == 0) return false;
+
+            var sorted = sprites
                 .OrderByDescending(s => s.rect.y)
                 .ThenBy(s => s.rect.x)
                 .ToArray();
-        }
 
-        private string GetPresetSavePath()
-        {
-            return EditorUtility.SaveFilePanelInProject(
+            var presetPath = EditorUtility.SaveFilePanelInProject(
                 "Save Tileset Preset", "NewTilesetPreset", "asset", "Select a location to save the preset");
-        }
+            if (string.IsNullOrEmpty(presetPath)) return false;
 
-        private string CreateTilesFolder(string presetPath)
-        {
             var dir = Path.GetDirectoryName(presetPath);
             var presetName = Path.GetFileNameWithoutExtension(presetPath);
             var tilesFolder = presetName.Replace("Preset", "Tiles");
             var folderPath = Path.Combine(dir, tilesFolder);
-
             if (!AssetDatabase.IsValidFolder(folderPath))
                 AssetDatabase.CreateFolder(dir, tilesFolder);
 
-            return folderPath;
-        }
-
-        private List<Tile> CreateTiles(Sprite[] sprites, string folderPath)
-        {
             var tiles = new List<Tile>();
-
-            foreach (var sprite in sprites)
+            foreach (var spr in sorted)
             {
-                var tile = ScriptableObject.CreateInstance<Tile>();
-                tile.sprite = sprite;
-
-                var path = Path.Combine(folderPath, sprite.name + ".asset");
-                AssetDatabase.CreateAsset(tile, path);
-                tiles.Add(tile);
+                var t = ScriptableObject.CreateInstance<Tile>();
+                t.sprite = spr;
+                var p = Path.Combine(folderPath, spr.name + ".asset");
+                AssetDatabase.CreateAsset(t, p);
+                tiles.Add(t);
             }
 
-            return tiles;
-        }
-
-        private void CreateTilesetPreset(string presetPath, List<Tile> tiles)
-        {
             var preset = ScriptableObject.CreateInstance<TilesetPreset>();
             preset.tiles = tiles.ToArray();
-
             AssetDatabase.CreateAsset(preset, presetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            CreateTilePalette(imagePath, folderPath, presetName);
+            return true;
         }
 
         private void CreateTilePalette(string imagePath, string tilesFolderPath, string presetName)
@@ -205,42 +138,119 @@ namespace Controllers.Editor
                 GridPalette.CellSizing.Automatic,
                 Vector3.one, GridLayout.CellSwizzle.XYZ
             );
-
             var palettePath = Path.Combine(tilesFolderPath, paletteName + ".prefab");
+
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
+            int texW = texture.width, texH = texture.height;
             var root = PrefabUtility.LoadPrefabContents(palettePath);
             var tilemap = root.GetComponentInChildren<Tilemap>();
 
-            var tiles = LoadTilesFromFolder(tilesFolderPath);
-            AssignTilesToTilemap(tiles, tilemap, imagePath);
-
-            PrefabUtility.SaveAsPrefabAsset(root, palettePath);
-            PrefabUtility.UnloadPrefabContents(root);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
-
-        private Tile[] LoadTilesFromFolder(string folderPath)
-        {
-            return AssetDatabase
-                .FindAssets("t:Tile", new[] { folderPath })
+            var tiles = AssetDatabase
+                .FindAssets("t:Tile", new[] { tilesFolderPath })
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(p => AssetDatabase.LoadAssetAtPath<Tile>(p))
                 .Where(t => t != null)
                 .ToArray();
-        }
-
-        private void AssignTilesToTilemap(Tile[] tiles, Tilemap tilemap, string imagePath)
-        {
-            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(imagePath);
-            int texH = texture.height;
 
             foreach (var tile in tiles)
             {
                 var rect = tile.sprite.rect;
                 var xIdx = (int)(rect.x / CellSize);
                 var yIdx = (int)((texH - CellSize - rect.y) / CellSize);
-
                 tilemap.SetTile(new Vector3Int(xIdx, -yIdx, 0), tile);
+            }
+
+            PrefabUtility.SaveAsPrefabAsset(root, palettePath);
+            PrefabUtility.UnloadPrefabContents(root);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+    }
+
+    /// <summary>
+    /// AssetPostprocessor para forzar colliders distintos según el nombre de la tile.
+    /// </summary>
+    internal class CustomPhysicsShapePostprocessor : AssetPostprocessor
+    {
+        // Grupos de nombres tal como están en Utils.Utils.PredefinedTileNames
+        static readonly HashSet<string> LeftEdgeAt60 = new()
+        {
+            "TopLeftWall", "TripleExceptLeftWall", "BottomLeftWall",
+            "TopLeftInnerWall", "TripleExceptLeftInnerWall", "BottomLeftInnerWall",
+            "RightWall"
+        };
+
+        static readonly HashSet<string> RightEdgeAt60 = new()
+        {
+            "TopRightWall", "TripleExceptRightWall", "BottomRightWall",
+            "TopRightInnerWall", "TripleExceptRightInnerWall", "BottomRightInnerWall",
+            "LeftWall"
+        };
+
+        // Subconjunto dentro de LeftEdgeAt60 que en realidad deben empezar al 40%
+        static readonly HashSet<string> SpecialLeft40 = new()
+        {
+            "TripleExceptLeftInnerWall",
+            "RightWall",
+            "TopLeftInnerWall",
+            "TripleExceptLeftWall"
+        };
+
+        private const string AloneWallName = "AloneWall";
+
+        private void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
+        {
+            if (sprites == null || sprites.Length == 0) return;
+
+            foreach (var sprite in sprites)
+            {
+                // Extraer el nombre real (sin índice “0_”)
+                var baseName = sprite.name.Split('_').Last();
+
+                // Saltar si no es tile de muro
+                if (!LeftEdgeAt60.Contains(baseName)
+                    && !RightEdgeAt60.Contains(baseName)
+                    && baseName != AloneWallName)
+                    continue;
+
+                var w = sprite.rect.width;
+                var h = sprite.rect.height;
+
+                // Calcular porcentajes de inicio/fin en X
+                float leftPct, rightPct;
+                if (baseName == AloneWallName)
+                {
+                    // 60% centrado
+                    var span = 0.4f;
+                    leftPct = (1f - span) * 0.5f;
+                    rightPct = leftPct + span;
+                }
+                else if (RightEdgeAt60.Contains(baseName))
+                {
+                    leftPct = 0f;
+                    rightPct = 0.7f;
+                }
+                else // es del grupo LeftEdgeAt60
+                {
+                    leftPct = 0.3f;
+                    rightPct = 1.0f;
+                }
+
+                // Convertir a coordenadas de píxel dentro de sprite.rect
+                float x0 = w * leftPct;
+                float x1 = w * rightPct;
+
+                // Crear rectángulo de colisión (un polígono en cuatro vértices)
+                var shape = new Vector2[]
+                {
+                    new(x0, 0f),
+                    new(x1, 0f),
+                    new(x1, h),
+                    new(x0, h),
+                };
+
+                // Sobrescribir la forma original
+                sprite.OverridePhysicsShape(new List<Vector2[]> { shape });
             }
         }
     }
