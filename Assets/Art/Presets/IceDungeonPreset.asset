@@ -15,7 +15,7 @@ MonoBehaviour:
   tiles: []
   walkableTileBases:
   - {fileID: 11400000, guid: 7711afafee3984b4b9faf098be71e513, type: 2}
-  walkableTilesPriorities: 01000000
+  walkableTilesPriorities: 00000000
   randomWalkableTilesPlacement: 1
   upWall: {fileID: 11400000, guid: ea0c65dfbcd863343b72202137bf45a8, type: 2}
   downWall: {fileID: 11400000, guid: 6e932bfbfb44b5a4fbff0c3545a2cf32, type: 2}
