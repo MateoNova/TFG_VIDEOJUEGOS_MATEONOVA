@@ -8,7 +8,7 @@ namespace Models
     [CreateAssetMenu(menuName = "Tileset/Tileset Preset", fileName = "NewTilesetPreset")]
     public class TilesetPreset : ScriptableObject
     {
-        [Header("Renamed Tiles")] public Tile[] tiles;
+        //[Header("Renamed Tiles")] public Tile[] tiles;
 
         [Header("Floor tiles")] [SerializeField]
         public List<TileBase> walkableTileBases = new();
@@ -79,5 +79,8 @@ namespace Models
 
         [SerializeField, WallTileGroup("AloneWalls")]
         public TileBase aloneWall;
+        
+        [SerializeField] public TileBase doorClosed;
+        [SerializeField] public TileBase doorOpen;
     }
 }

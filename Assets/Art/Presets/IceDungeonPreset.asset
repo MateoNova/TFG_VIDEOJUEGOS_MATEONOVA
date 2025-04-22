@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0529b97667a4a9b935624147353860d, type: 3}
   m_Name: IceDungeonPreset
   m_EditorClassIdentifier: 
-  tiles: []
   walkableTileBases:
   - {fileID: 11400000, guid: 7711afafee3984b4b9faf098be71e513, type: 2}
   walkableTilesPriorities: 00000000
@@ -37,3 +36,5 @@ MonoBehaviour:
   tripleExceptLeftInnerWall: {fileID: 11400000, guid: aa683ec3ad037794e8c10ff2c89823dd, type: 2}
   tripleExceptRightInnerWall: {fileID: 11400000, guid: 2551e9f593dbf8f4c9a2da49e0dd6e1f, type: 2}
   aloneWall: {fileID: 11400000, guid: 7711c43c81ad29a4daf1c727be4bceba, type: 2}
+  doorClosed: {fileID: 0}
+  doorOpen: {fileID: 0}

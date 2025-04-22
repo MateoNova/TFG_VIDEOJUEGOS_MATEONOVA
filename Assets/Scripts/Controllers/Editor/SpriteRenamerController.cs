@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.U2D.Sprites;
 using UnityEditor.Tilemaps;
@@ -89,19 +91,22 @@ namespace Controllers.Editor
 
         public bool CreatePreset(string imagePath)
         {
-            var subs = AssetDatabase.LoadAllAssetRepresentationsAtPath(imagePath).OfType<Sprite>();
-            var sprites = subs.ToArray();
-            if (sprites.Length == 0) return false;
-
-            var sorted = sprites
+            // Carga todos los sprites renombrados del asset
+            var subs = AssetDatabase.LoadAllAssetRepresentationsAtPath(imagePath)
+                .OfType<Sprite>()
                 .OrderByDescending(s => s.rect.y)
                 .ThenBy(s => s.rect.x)
                 .ToArray();
+            if (subs.Length == 0) return false;
 
+            // Panel para guardar el nuevo TilesetPreset
             var presetPath = EditorUtility.SaveFilePanelInProject(
-                "Save Tileset Preset", "NewTilesetPreset", "asset", "Select a location to save the preset");
+                "Save Tileset Preset", "NewTilesetPreset", "asset",
+                "Select a location to save the preset"
+            );
             if (string.IsNullOrEmpty(presetPath)) return false;
 
+            // Prepara carpeta para los assets Tile
             var dir = Path.GetDirectoryName(presetPath);
             var presetName = Path.GetFileNameWithoutExtension(presetPath);
             var tilesFolder = presetName.Replace("Preset", "Tiles");
@@ -109,25 +114,79 @@ namespace Controllers.Editor
             if (!AssetDatabase.IsValidFolder(folderPath))
                 AssetDatabase.CreateFolder(dir, tilesFolder);
 
-            var tiles = new List<Tile>();
-            foreach (var spr in sorted)
+            // Crea el ScriptableObject
+            var preset = ScriptableObject.CreateInstance<TilesetPreset>();
+            preset.walkableTileBases = new List<TileBase>();
+            preset.walkableTilesPriorities = new List<int>();
+            preset.randomWalkableTilesPlacement = false;
+
+            // Recorre cada sprite, crea un Tile y lo asigna
+            foreach (var spr in subs)
             {
-                var t = ScriptableObject.CreateInstance<Tile>();
-                t.sprite = spr;
-                var p = Path.Combine(folderPath, spr.name + ".asset");
-                AssetDatabase.CreateAsset(t, p);
-                tiles.Add(t);
+                // 1) Crea el asset Tile
+                var tile = ScriptableObject.CreateInstance<Tile>();
+                tile.sprite = spr;
+                var tileAssetPath = Path.Combine(folderPath, spr.name + ".asset");
+                AssetDatabase.CreateAsset(tile, tileAssetPath);
+
+                // 2) Extrae la parte después del guión bajos
+                //    Ej: "3_FloorGrass" => ["3","FloorGrass"] => key="FloorGrass"
+                var parts = spr.name.Split('_');
+                var key = parts.Length > 1 ? parts[1] : parts[0];
+
+                // 3) Ignora puertas (se asignarán más adelante manualmente)
+                if (key.Equals("DoorClosed", StringComparison.OrdinalIgnoreCase)
+                    || key.Equals("DoorOpen", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                // 4) Si es Floor*, lo añadimos a walkableTileBases
+                else if (key.StartsWith("Floor", StringComparison.OrdinalIgnoreCase))
+                {
+                    preset.walkableTileBases.Add(tile);
+                    preset.walkableTilesPriorities.Add(1);
+                }
+                // 5) Si es *Wall, lo asignamos al campo correspondiente de TilesetPreset
+                else if (key.EndsWith("Wall", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Busca el field en el preset cuyo nombre case con key (ignorando mayúsc/minúsc)
+                    var field = typeof(TilesetPreset)
+                        .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        .FirstOrDefault(f =>
+                            f.FieldType == typeof(TileBase) &&
+                            f.Name.Equals(
+                                // normaliza: e.g. "upWall" vs "UpWall"
+                                char.ToLowerInvariant(key[0]) + key.Substring(1),
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        );
+                    if (field != null)
+                    {
+                        field.SetValue(preset, tile);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[CreatePreset] No se encontró campo para muro '{key}' en {preset.name}");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"[CreatePreset] Sprite '{spr.name}' no encaja en Floor* ni *Wall ni Door*, se ignora.");
+                }
             }
 
-            var preset = ScriptableObject.CreateInstance<TilesetPreset>();
-            preset.tiles = tiles.ToArray();
+            // 4) Finalmente guarda el TilesetPreset
             AssetDatabase.CreateAsset(preset, presetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
+            // 5) Crea la paleta (igual que antes)
             CreateTilePalette(imagePath, folderPath, presetName);
+
             return true;
         }
+
 
         private void CreateTilePalette(string imagePath, string tilesFolderPath, string presetName)
         {

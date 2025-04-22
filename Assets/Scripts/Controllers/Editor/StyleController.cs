@@ -36,7 +36,7 @@ namespace Controllers.Editor
         /// Loads a TilesetPreset and assigns its sprites to the TilemapPainter wall fields.
         /// </summary>
         /// <param name="preset">The preset asset with the renamed sprites.</param>
-        public void LoadPreset(TilesetPreset preset)
+        /*public void LoadPreset(TilesetPreset preset)
         {
             if (preset == null) { Debug.LogError("Preset is null."); return; }
             var gen = GeneratorService.Instance.CurrentGenerator;
@@ -78,7 +78,7 @@ namespace Controllers.Editor
 
             EditorUtility.SetDirty(painter);
             AssetDatabase.SaveAssets();
-        }
+        }*/
 
     }
 }

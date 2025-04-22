@@ -463,6 +463,15 @@
         },
         {
             "position": {
+                "x": 4,
+                "y": 1,
+                "z": 0
+            },
+            "tileGuid": "f60e86fece0804041bc857b3be17f691",
+            "isDoor": false
+        },
+        {
+            "position": {
                 "x": -3,
                 "y": 2,
                 "z": 0

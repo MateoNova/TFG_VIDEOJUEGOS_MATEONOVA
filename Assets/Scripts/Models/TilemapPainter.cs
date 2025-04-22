@@ -60,8 +60,7 @@ namespace Models
         #region Door Tiles
 
         [SerializeField] public Tilemap doorTilemap;
-        [SerializeField] private TileBase doorClosed;
-        [SerializeField] private TileBase doorOpen;
+
 
         #endregion
 
@@ -209,9 +208,10 @@ namespace Models
         public void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions)
         {
             var cellPositions = GetCellPositions(tilePositions, doorTilemap);
+            var preset = GetCurrentTilesetPreset();
             foreach (var (_, cellPos) in cellPositions)
             {
-                doorTilemap.SetTile(cellPos, doorClosed);
+                doorTilemap.SetTile(cellPos, preset.doorClosed);
             }
         }
 

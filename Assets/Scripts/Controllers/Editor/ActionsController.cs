@@ -18,33 +18,49 @@ namespace Controllers.Editor
         {
             var gen = GeneratorService.Instance.CurrentGenerator;
             var painter = gen?.TilemapPainter;
-            if (gen == null || painter == null) return;
+            if (gen == null || painter == null) 
+                return;
 
-            // 1) Run generation -> all walkable positions
-            var allList = gen.RunGeneration(true, gen.Origin).ToList();
-            int totalCount = allList.Count;
-            if (totalCount == 0) return;
+            // Caso especial: GraphBasedGenerator maneja su propia pintura interna
+            if (gen is Generators.GraphBased.GraphBasedGenerator graphGen)
+            {
+                if (ClearDungeonToggle)
+                    painter.ResetAllTiles();
+                
+                // Ya pinta puertas, muros y suelos internos
+                graphGen.RunGeneration(false, gen.Origin);
+                return;
+            }
 
-            // 2) Reset map
+            // 1) Ejecutar generación lógica -> obtenemos todas las posiciones walkables
+            var allWalkables = gen.RunGeneration(true, gen.Origin).ToList();
+            int totalCount = allWalkables.Count;
+            if (totalCount == 0)
+                return;
+
+            // 2) Limpiar completamente el tilemap antes de pintar por biomas
             painter.ResetAllTiles();
 
-            // 3) Presets & coverages
-            var presets = painter.GetAllPresets();
+            // 3) Recuperar presets y sus coberturas configuradas
+            var presets   = painter.GetAllPresets();
             var coverages = painter.GetPresetCoverages();
             if (presets.Count != coverages.Count)
             {
-                Debug.LogWarning("Presets/coverages mismatch; rebalancing.");
+                Debug.LogWarning("Mismatch entre presets y coverages; reequilibrando automáticamente.");
                 painter.RebalanceCoverages();
                 coverages = painter.GetPresetCoverages();
             }
 
-            // 4) Compute exact counts per bioma
+            // 4) Calcular cuántos tiles asignar a cada bioma
             var counts = new int[presets.Count];
             int sumSoFar = 0;
             for (int i = 0; i < presets.Count; i++)
             {
                 if (i == presets.Count - 1)
+                {
+                    // El último recoge lo que quede
                     counts[i] = totalCount - sumSoFar;
+                }
                 else
                 {
                     counts[i] = Mathf.RoundToInt(totalCount * (coverages[i] / 100f));
@@ -52,30 +68,28 @@ namespace Controllers.Editor
                 }
             }
 
-            // 5) Flood-fill por bioma
-            var unassigned = new HashSet<Vector2Int>(allList);
+            // 5) Flood‑fill aleatorio para distribuir tiles por bioma
+            var unassigned = new HashSet<Vector2Int>(allWalkables);
             var rng = new System.Random();
-
             for (int i = 0; i < presets.Count; i++)
             {
                 int need = counts[i];
                 if (need <= 0) continue;
 
-                // 5.1) Escoger semilla aleatoria
+                // 5.1) Semilla aleatoria no asignada
                 var seed = unassigned.ElementAt(rng.Next(unassigned.Count));
                 var region = new HashSet<Vector2Int>();
                 var queue = new Queue<Vector2Int>();
                 queue.Enqueue(seed);
 
-                // 5.2) BFS hasta need o agotarse vecinos
+                // 5.2) BFS hasta cubrir el need o agotarse vecinos
                 while (queue.Count > 0 && region.Count < need)
                 {
                     var pos = queue.Dequeue();
                     if (!unassigned.Remove(pos))
                         continue;
                     region.Add(pos);
-
-                    // enqueue vecinos 4‑direcciones
+                    // Enqueue vecinos
                     foreach (var dir in Utils.Utils.Directions)
                     {
                         var nb = pos + dir;
@@ -84,7 +98,7 @@ namespace Controllers.Editor
                     }
                 }
 
-                // 5.3) Si faltan, rellenar aleatoriamente
+                // 5.3) Si faltan, completar aleatoriamente
                 while (region.Count < need && unassigned.Count > 0)
                 {
                     var extra = unassigned.ElementAt(rng.Next(unassigned.Count));
@@ -92,12 +106,13 @@ namespace Controllers.Editor
                     region.Add(extra);
                 }
 
-                // 5.4) Pintar suelo y paredes para esta región
+                // 5.4) Pintar este bioma: suelo y luego muros
                 painter.AddAndSelectPreset(presets[i]);
                 painter.PaintWalkableTiles(region);
                 WallGenerator.GenerateWalls(region, painter);
             }
         }
+
 
         public void ClearDungeon()
         {

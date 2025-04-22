@@ -1,26 +1,26 @@
 {
     "nodes": [
         {
-            "nodeId": "d7ef4c09-43de-4768-910f-86325a043f7e",
+            "nodeId": "14266f59-27f3-4aca-be8e-626aaaa258a6",
             "position": {
-                "x": 375.0,
-                "y": -75.0
+                "x": 44.0,
+                "y": -164.0
             },
-            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/Sala2.json"
+            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/SimpleRoom1Style.json"
         },
         {
-            "nodeId": "775d70a3-341c-40e7-81db-9214ee7b57c4",
+            "nodeId": "96c32116-7c6a-48a3-a546-833c2dac45ce",
             "position": {
-                "x": 25.0,
-                "y": 25.0
+                "x": -253.0,
+                "y": -368.0
             },
-            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/Sala1.json"
+            "jsonFilePath": "C:/Users/USUARIO/Documents/TFG VIDEOJUEGO FINAL/Unity projecto/TFG_VIDEOJUEGOS_MATEONOVA/Assets/SavedDungeons/SimpleRoom1Style.json"
         }
     ],
     "edges": [
         {
-            "sourceId": "775d70a3-341c-40e7-81db-9214ee7b57c4",
-            "targetId": "d7ef4c09-43de-4768-910f-86325a043f7e"
+            "sourceId": "14266f59-27f3-4aca-be8e-626aaaa258a6",
+            "targetId": "96c32116-7c6a-48a3-a546-833c2dac45ce"
         }
     ]
 }
