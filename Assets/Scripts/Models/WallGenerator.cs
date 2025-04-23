@@ -34,6 +34,7 @@ namespace Models
                     : kvp.Value;
                 painter.PaintWallTiles(positions, kvp.Key);
             }
+            
         }
 
         #region Wall Position Construction

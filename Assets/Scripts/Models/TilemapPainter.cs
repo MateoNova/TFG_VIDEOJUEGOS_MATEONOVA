@@ -38,7 +38,7 @@ namespace Models
                 _tilesetPresets.Add(preset);
             _tilesetPresetIndex = _tilesetPresets.IndexOf(preset);
 
-            RebalanceCoverages();          // <— Asegura same length
+            //RebalanceCoverages();          // <— Asegura same length
         }
 
         public void RebalanceCoverages()
@@ -379,7 +379,7 @@ namespace Models
             {
                 if (_tilesetPresetIndex >= _tilesetPresets.Count)
                     _tilesetPresetIndex = _tilesetPresets.Count - 1;
-                RebalanceCoverages();      // <— Vuelve a sincronizar
+                //RebalanceCoverages();      // <— Vuelve a sincronizar
             }
         }
 

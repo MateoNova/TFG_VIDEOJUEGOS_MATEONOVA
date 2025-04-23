@@ -14,128 +14,115 @@ namespace Controllers.Editor
     {
         public bool ClearDungeonToggle { get; private set; } = true;
 
+
         public void Generate()
+{
+    var gen     = GeneratorService.Instance.CurrentGenerator;
+    var painter = gen?.TilemapPainter as TilemapPainter;
+    if (gen == null || painter == null) return;
+
+    // 1) Obtener todas las posiciones caminables
+    var allWalkables = gen.RunGeneration(true, gen.Origin).ToList();
+    if (allWalkables.Count == 0) return;
+    int total = allWalkables.Count;
+
+    // 2) Limpiar el tilemap
+    painter.ResetAllTiles();
+
+    // 3) Recuperar presets + coverages
+    var presets   = painter.GetAllPresets();
+    var coverages = painter.GetPresetCoverages().Select(c => c / 100f).ToList();
+
+    // 4) Filtrar biomas con coverage > 0
+    var active = presets
+        .Select((ps, i) => new { ps, cov = coverages[i], idx = i })
+        .Where(x => x.cov > 0f)
+        .ToList();
+    if (active.Count == 0) return;
+
+    // Reconstruir listas filtradas
+    presets   = active.Select(x => x.ps).ToList();
+    coverages = active.Select(x => x.cov).ToList();
+
+    // 5) Elegir semillas aleatorias
+    var rng   = new System.Random();
+    var seeds = presets.Select(_ => allWalkables[rng.Next(total)]).ToList();
+
+    // 6) Construir mapa Voronoi ponderado + domain warp
+    var biomeMap    = new Dictionary<Vector2Int, int>(total);
+    float noiseScale  = 0.1f, warpStrength = 2f;
+    foreach (var pos in allWalkables)
+    {
+        float nx = pos.x * noiseScale;
+        float ny = pos.y * noiseScale;
+        float ox = (Mathf.PerlinNoise(nx, ny) - 0.5f) * warpStrength;
+        float oy = (Mathf.PerlinNoise(nx + 100f, ny + 100f) - 0.5f) * warpStrength;
+        Vector2 warped = new Vector2(pos.x + ox, pos.y + oy);
+
+        int   best   = 0;
+        float bestD  = float.MaxValue;
+        for (int i = 0; i < seeds.Count; i++)
         {
-            var gen = GeneratorService.Instance.CurrentGenerator;
-            var painter = gen?.TilemapPainter;
-            if (gen == null || painter == null) 
-                return;
-
-            // Caso especial: GraphBasedGenerator maneja su propia pintura interna
-            if (gen is Generators.GraphBased.GraphBasedGenerator graphGen)
+            // penalizamos distancia por coverage
+            float d = Vector2.SqrMagnitude(warped - (Vector2)seeds[i]) / coverages[i];
+            if (d < bestD)
             {
-                if (ClearDungeonToggle)
-                    painter.ResetAllTiles();
-                
-                // Ya pinta puertas, muros y suelos internos
-                graphGen.RunGeneration(false, gen.Origin);
-                return;
-            }
-
-            // 1) Ejecutar generación lógica -> obtenemos todas las posiciones walkables
-            var allWalkables = gen.RunGeneration(true, gen.Origin).ToList();
-            int totalCount = allWalkables.Count;
-            if (totalCount == 0)
-                return;
-
-            // 2) Limpiar completamente el tilemap antes de pintar por biomas
-            painter.ResetAllTiles();
-
-            // 3) Recuperar presets y sus coberturas configuradas
-            var presets   = painter.GetAllPresets();
-            var coverages = painter.GetPresetCoverages();
-            if (presets.Count != coverages.Count)
-            {
-                Debug.LogWarning("Mismatch entre presets y coverages; reequilibrando automáticamente.");
-                painter.RebalanceCoverages();
-                coverages = painter.GetPresetCoverages();
-            }
-
-            // 4) Calcular cuántos tiles asignar a cada bioma
-            var counts = new int[presets.Count];
-            int sumSoFar = 0;
-            for (int i = 0; i < presets.Count; i++)
-            {
-                if (i == presets.Count - 1)
-                {
-                    // El último recoge lo que quede
-                    counts[i] = totalCount - sumSoFar;
-                }
-                else
-                {
-                    counts[i] = Mathf.RoundToInt(totalCount * (coverages[i] / 100f));
-                    sumSoFar += counts[i];
-                }
-            }
-
-            // 5) Flood‑fill aleatorio para distribuir tiles por bioma
-            var unassigned = new HashSet<Vector2Int>(allWalkables);
-            var rng = new System.Random();
-            for (int i = 0; i < presets.Count; i++)
-            {
-                int need = counts[i];
-                if (need <= 0) continue;
-
-                // 5.1) Semilla aleatoria no asignada
-                var seed = unassigned.ElementAt(rng.Next(unassigned.Count));
-                var region = new HashSet<Vector2Int>();
-                var queue = new Queue<Vector2Int>();
-                queue.Enqueue(seed);
-
-                // 5.2) BFS hasta cubrir el need o agotarse vecinos
-                while (queue.Count > 0 && region.Count < need)
-                {
-                    var pos = queue.Dequeue();
-                    if (!unassigned.Remove(pos))
-                        continue;
-                    region.Add(pos);
-                    // Enqueue vecinos
-                    foreach (var dir in Utils.Utils.Directions)
-                    {
-                        var nb = pos + dir;
-                        if (unassigned.Contains(nb) && !region.Contains(nb))
-                            queue.Enqueue(nb);
-                    }
-                }
-
-                // 5.3) Si faltan, completar aleatoriamente
-                while (region.Count < need && unassigned.Count > 0)
-                {
-                    var extra = unassigned.ElementAt(rng.Next(unassigned.Count));
-                    unassigned.Remove(extra);
-                    region.Add(extra);
-                }
-
-                // 5.4) Pintar este bioma: suelo y luego muros
-                painter.AddAndSelectPreset(presets[i]);
-                painter.PaintWalkableTiles(region);
-                WallGenerator.GenerateWalls(region, painter);
+                bestD = d;
+                best  = i;
             }
         }
+        biomeMap[pos] = best;
+    }
+
+    // 7) Agrupar por bioma y mostrar logs de cobertura real vs esperada
+    var allSet  = new HashSet<Vector2Int>(allWalkables);
+    var regions = biomeMap
+        .GroupBy(kv => kv.Value)
+        .ToDictionary(g => g.Key, g => g.Select(kv => kv.Key).ToList());
+
+    foreach (var kv in regions)
+    {
+        int idx    = kv.Key;
+        var region = kv.Value;
+        int count   = region.Count;
+        float realPct = count / (float)total * 100f;
+        float expPct  = coverages[idx] * 100f;
+
+        Debug.Log(
+            $"[CoverageCheck] Region {idx}: {count} tiles ({realPct:F2}%) — expected {expPct:F2}%"
+        );
+
+        // Pintar suelos
+        painter.AddAndSelectPreset(presets[idx]);
+        painter.PaintWalkableTiles(region);
+
+        // Pintar muros de la región
+        WallGenerator.GenerateWalls(
+            new HashSet<Vector2Int>(region),
+            painter,
+            allSet
+        );
+    }
+}
 
 
-        public void ClearDungeon()
-        {
-            GeneratorService.Instance.CurrentGenerator?.ClearDungeon();
-        }
+
+        public void ClearDungeon() => GeneratorService.Instance.CurrentGenerator?.ClearDungeon();
 
         public void SaveDungeon()
         {
             var path = EditorUtility.SaveFilePanel("Save Dungeon", "", "Dungeon.json", "json");
-            if (string.IsNullOrEmpty(path)) return;
-            GeneratorService.Instance.CurrentGenerator.SaveDungeon(path);
+            if (!string.IsNullOrEmpty(path))
+                GeneratorService.Instance.CurrentGenerator.SaveDungeon(path);
         }
 
         public void LoadDungeon()
         {
             var path = EditorUtility.OpenFilePanel("Load Dungeon", "", "json");
-            if (string.IsNullOrEmpty(path)) return;
-            GeneratorService.Instance.CurrentGenerator.LoadDungeon(path);
+            if (!string.IsNullOrEmpty(path))
+                GeneratorService.Instance.CurrentGenerator.LoadDungeon(path);
         }
 
-        public void SetClearDungeon(bool newValue)
-        {
-            ClearDungeonToggle = newValue;
-        }
+        public void SetClearDungeon(bool newValue) => ClearDungeonToggle = newValue;
     }
 }

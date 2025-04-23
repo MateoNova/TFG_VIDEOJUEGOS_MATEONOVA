@@ -89,33 +89,50 @@ namespace Views.Editor
             return container;
         }
 
+
         private VisualElement CreateBiomeCoverageFolder()
         {
             var fold = StyleUtils.ModernFoldout("");
             fold.SetLocalizedText("BiomeCoverage", "StyleTable");
 
+            // 1) Aseguramos que _presetCoverage y _loadedPresets tengan la misma longitud
             while (_presetCoverage.Count < _loadedPresets.Count)
                 _presetCoverage.Add(100f / _loadedPresets.Count);
             while (_presetCoverage.Count > _loadedPresets.Count)
                 _presetCoverage.RemoveAt(_presetCoverage.Count - 1);
 
+            // 2) Volcamos siempre la lista completa al painter para que no se reequilibre internamente
+            var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter as TilemapPainter;
+            painter.SetPresetCoverages(_presetCoverage);
+
+            // 3) Construimos cada fila capturando el índice por valor
             for (int i = 0; i < _loadedPresets.Count; i++)
             {
+                int idx = i;
                 var row = StyleUtils.HorizontalContainerCentered();
-                var label = new Label(_loadedPresets[i].name) { style = { width = 100 } };
+
+                // Nombre
+                var label = new Label(_loadedPresets[idx].name) { style = { width = 100 } };
                 row.Add(label);
-                var field = new FloatField { value = _presetCoverage[i], style = { width = 50 } };
+
+                // FloatField con callback seguro
+                var field = new FloatField { value = _presetCoverage[idx], style = { width = 50 } };
                 field.RegisterValueChangedCallback(evt =>
                 {
-                    _presetCoverage[i] = Mathf.Clamp(evt.newValue, 0f, 100f);
-                    EditorUtility.SetDirty(_loadedPresets[i]);
+                    _presetCoverage[idx] = Mathf.Clamp(evt.newValue, 0f, 100f);
+                    // Volcamos toda la colección de vuelta
+                    painter.SetPresetCoverages(_presetCoverage);
+                    EditorUtility.SetDirty(_loadedPresets[idx]);
                 });
                 row.Add(field);
+
                 fold.Add(row);
             }
 
             return fold;
         }
+
+
 
         private VisualElement CreatePresetSubsection(TilesetPreset preset, int presetIdx)
         {
