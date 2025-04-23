@@ -49,9 +49,9 @@
         public const string SpriteProcessRenameError = "renameError";
 
         #endregion
-        
+
         # region Style View
-        
+
         public const string StyleTable = "StyleTable";
         public const string StyleFoldout = "Style";
         public const string StyleLoadPresetError = "LoadPresetError";
@@ -64,7 +64,32 @@
         public const string StyleClearFloorTiles = "ClearAllFloorTiles";
         public const string StylePriority = "Priority";
         public const string StyleNoSelected = "NoSelected";
-        
+
+        # endregion
+
+        # region Actions View
+
+        public const string ActionsTable = "ActionsTable";
+        public const string Actions = "GenerationActions";
+        public const string ActionsGenerate = "GenerateDungeon";
+        public const string ActionsClear = "ClearDungeon";
+        public const string ActionsSave = "SaveDungeon";
+        public const string ActionsLoad = "LoadDungeon";
+        public const string ActionsClearToggle = "ClearDungeonToggle";
+        public const string ActionsClearTooltip = "ClearDungeonTooltip";
+
+        # endregion
+
+        # region Spawning View
+
+        public const string SpawnTable = "SpawningTable";
+        public const string SpawnFoldout = "SpawningOptions";
+        public const string SpawnPointScene = "SetSpawnpointInScene";
+        public const string SpawnCharacterLabel = "CharacterLabel";
+        public const string SpawnSelectionTitle = "SpawnpointSelectionTitle";
+        public const string SpawnSelectionMessage = "SpawnpointSelectionMessage";
+        public const string SpawnOkBtn = "OkButton";
+
         # endregion
     }
 }

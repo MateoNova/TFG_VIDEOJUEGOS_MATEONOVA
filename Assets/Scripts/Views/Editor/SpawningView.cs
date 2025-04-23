@@ -18,12 +18,12 @@ namespace Views.Editor
         /// The controller responsible for handling spawning logic.
         /// </summary>
         private VisualElement _root;
-        
+
         /// <summary>
         /// The controller responsible for handling spawning logic.
         /// </summary>
         private InstantiateCharacter _spawnPointInstance;
-        
+
         /// <summary>
         /// The field info for the character prefab.
         /// </summary>
@@ -37,14 +37,14 @@ namespace Views.Editor
         {
             _root = new VisualElement();
 
-            var actionsFoldout = StyleUtils.ModernFoldout("");
-            actionsFoldout.SetLocalizedText("SpawningOptions", "SpawningTable");
+            var actionsFoldout = StyleUtils.ModernFoldout(string.Empty);
+            actionsFoldout.SetLocalizedText(LocalizationKeysHelper.SpawnFoldout, LocalizationKeysHelper.SpawnTable);
             _root.Add(actionsFoldout);
 
             actionsFoldout.Add(CreateCharacterSelector());
 
             var spawnButton = new Button(EnableSpawnPointSelection);
-            spawnButton.SetLocalizedText("SetSpawnpointInScene", "SpawningTable");
+            spawnButton.SetLocalizedText(LocalizationKeysHelper.SpawnPointScene, LocalizationKeysHelper.SpawnTable);
             actionsFoldout.Add(spawnButton);
 
             InitializeSpawnPointReference();
@@ -89,17 +89,11 @@ namespace Views.Editor
         /// <returns>A VisualElement containing the prefab selector.</returns>
         private VisualElement CreateCharacterSelector()
         {
-            var container = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Column,
-                    alignItems = Align.FlexStart
-                }
-            };
+            var container = StyleUtils.ColumnButtonContainer();
+            container.style.marginLeft = 5;
 
-            var label = StyleUtils.LabelForTile("");
-            label.SetLocalizedText("CharacterLabel", "SpawningTable");
+            var label = StyleUtils.LabelForTile(string.Empty);
+            label.SetLocalizedText(LocalizationKeysHelper.SpawnCharacterLabel, LocalizationKeysHelper.SpawnTable);
             container.Add(label);
 
             var previewContainer = new IMGUIContainer(() =>
@@ -133,9 +127,6 @@ namespace Views.Editor
             previewContainer.style.height = Utils.Utils.GetPreviewTileSize();
             container.Add(previewContainer);
 
-            container.style.marginLeft = 5;
-            container.style.marginBottom = 10;
-
             return container;
         }
 
@@ -146,9 +137,12 @@ namespace Views.Editor
         {
             SpawningController.IsSettingSpawnPoint = true;
             EditorUtility.DisplayDialog(
-                LocalizationUIHelper.SetLocalizedText("SpawnpointSelectionTitle", "SpawningTable"),
-                LocalizationUIHelper.SetLocalizedText("SpawnpointSelectionMessage", "SpawningTable"),
-                LocalizationUIHelper.SetLocalizedText("OkButton", "SpawningTable")
+                LocalizationUIHelper.SetLocalizedText(LocalizationKeysHelper.SpawnSelectionTitle,
+                    LocalizationKeysHelper.SpawnTable),
+                LocalizationUIHelper.SetLocalizedText(LocalizationKeysHelper.SpawnSelectionMessage,
+                    LocalizationKeysHelper.SpawnTable),
+                LocalizationUIHelper.SetLocalizedText(LocalizationKeysHelper.SpawnOkBtn,
+                    LocalizationKeysHelper.SpawnTable)
             );
         }
     }

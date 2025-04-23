@@ -15,11 +15,6 @@ namespace Views.Editor
     public class ActionsView
     {
         /// <summary>
-        /// The name of the localization table used for UI text.
-        /// </summary>
-        private const string TableName = "ActionsTable";
-
-        /// <summary>
         /// Indicates whether the generation actions foldout is expanded or collapsed.
         /// </summary>
         private bool _showGenerationActions = true;
@@ -64,7 +59,7 @@ namespace Views.Editor
         /// <param name="foldout">The foldout element to configure.</param>
         private void ConfigureFoldout(Foldout foldout)
         {
-            foldout.SetLocalizedText("GenerationActions", TableName);
+            foldout.SetLocalizedText(LocalizationKeysHelper.Actions, LocalizationKeysHelper.ActionsTable);
             foldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
         }
 
@@ -85,10 +80,10 @@ namespace Views.Editor
         /// <param name="container">The container to which the buttons will be added.</param>
         private static void AddActionButtonsToContainer(VisualElement container)
         {
-            CreateAndAddButton("GenerateDungeon", container, ActionsController.Generate);
-            CreateAndAddButton("ClearDungeon", container, ActionsController.ClearDungeon);
-            CreateAndAddButton("SaveDungeon", container, ActionsController.SaveDungeon);
-            CreateAndAddButton("LoadDungeon", container, ActionsController.LoadDungeon);
+            CreateAndAddButton(LocalizationKeysHelper.ActionsGenerate, container, ActionsController.Generate);
+            CreateAndAddButton(LocalizationKeysHelper.ActionsClear, container, ActionsController.ClearDungeon);
+            CreateAndAddButton(LocalizationKeysHelper.ActionsSave, container, ActionsController.SaveDungeon);
+            CreateAndAddButton(LocalizationKeysHelper.ActionsLoad, container, ActionsController.LoadDungeon);
         }
 
         /// <summary>
@@ -100,7 +95,7 @@ namespace Views.Editor
         private static void CreateAndAddButton(string text, VisualElement container, Action action)
         {
             var button = new Button(action);
-            button.SetLocalizedText(text, TableName);
+            button.SetLocalizedText(text, LocalizationKeysHelper.ActionsTable);
             container.Add(button);
         }
 
@@ -125,8 +120,8 @@ namespace Views.Editor
         /// <param name="toggle">The toggle element to configure.</param>
         private void ConfigureClearToggle(Toggle toggle)
         {
-            toggle.SetLocalizedText("ClearDungeonToggle", TableName);
-            toggle.SetLocalizedTooltip("ClearDungeonTooltip", TableName);
+            toggle.SetLocalizedText(LocalizationKeysHelper.ActionsClearToggle, LocalizationKeysHelper.ActionsTable);
+            toggle.SetLocalizedTooltip(LocalizationKeysHelper.ActionsClearTooltip, LocalizationKeysHelper.ActionsTable);
             toggle.RegisterValueChangedCallback(evt => _actionsController.SetClearDungeon(evt.newValue));
         }
     }
