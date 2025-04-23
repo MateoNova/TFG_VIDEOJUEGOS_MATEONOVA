@@ -1,4 +1,5 @@
-﻿using UnityEngine.UIElements;
+﻿using System;
+using UnityEngine.UIElements;
 using ActionsController = Controllers.Editor.ActionsController;
 using StyleUtils = Utils.StyleUtils;
 using Utils;
@@ -13,6 +14,11 @@ namespace Views.Editor
     /// </summary>
     public class ActionsView
     {
+        /// <summary>
+        /// The name of the localization table used for UI text.
+        /// </summary>
+        private const string TableName = "ActionsTable";
+
         /// <summary>
         /// Indicates whether the generation actions foldout is expanded or collapsed.
         /// </summary>
@@ -47,35 +53,54 @@ namespace Views.Editor
         /// <returns>A <see cref="Foldout"/> element for grouping generation actions.</returns>
         private Foldout CreateActionsFoldout()
         {
-            var actionsFoldout = StyleUtils.ModernFoldout("");
-            actionsFoldout.SetLocalizedText("GenerationActions", "ActionsTable");
-            actionsFoldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
+            var actionsFoldout = StyleUtils.ModernFoldout(string.Empty);
+            ConfigureFoldout(actionsFoldout);
             return actionsFoldout;
+        }
+
+        /// <summary>
+        /// Configures the foldout element with localized text and a value change callback.
+        /// </summary>
+        /// <param name="foldout">The foldout element to configure.</param>
+        private void ConfigureFoldout(Foldout foldout)
+        {
+            foldout.SetLocalizedText("GenerationActions", TableName);
+            foldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
         }
 
         /// <summary>
         /// Adds buttons for generation actions (e.g., Generate, Clear, Save, Load) to the foldout.
         /// </summary>
         /// <param name="actionsFoldout">The foldout to which the buttons will be added.</param>
-        private void AddActionsButtons(Foldout actionsFoldout)
+        private static void AddActionsButtons(Foldout actionsFoldout)
         {
             var buttonsContainer = StyleUtils.ColumnButtonContainer();
-
-            CreateButton("GenerateDungeon", buttonsContainer, _actionsController.Generate);
-            CreateButton("ClearDungeon", buttonsContainer, _actionsController.ClearDungeon);
-            CreateButton("SaveDungeon", buttonsContainer, _actionsController.SaveDungeon);
-            CreateButton("LoadDungeon", buttonsContainer, _actionsController.LoadDungeon);
-
+            AddActionButtonsToContainer(buttonsContainer);
             actionsFoldout.Add(buttonsContainer);
         }
-        
+
+        /// <summary>
+        /// Adds action buttons to the specified container.
+        /// </summary>
+        /// <param name="container">The container to which the buttons will be added.</param>
+        private static void AddActionButtonsToContainer(VisualElement container)
+        {
+            CreateAndAddButton("GenerateDungeon", container, ActionsController.Generate);
+            CreateAndAddButton("ClearDungeon", container, ActionsController.ClearDungeon);
+            CreateAndAddButton("SaveDungeon", container, ActionsController.SaveDungeon);
+            CreateAndAddButton("LoadDungeon", container, ActionsController.LoadDungeon);
+        }
+
         /// <summary>
         /// Creates a button with the specified text and action, and adds it to the given container.
         /// </summary>
-        private void CreateButton(string text, VisualElement container, System.Action action)
+        /// <param name="text">The localized text key for the button label.</param>
+        /// <param name="container">The container to which the button will be added.</param>
+        /// <param name="action">The action to execute when the button is clicked.</param>
+        private static void CreateAndAddButton(string text, VisualElement container, Action action)
         {
             var button = new Button(action);
-            button.SetLocalizedText(text, "ActionsTable");
+            button.SetLocalizedText(text, TableName);
             container.Add(button);
         }
 
@@ -86,16 +111,23 @@ namespace Views.Editor
         private void AddClearToggle(Foldout actionsFoldout)
         {
             var clearToggle = StyleUtils.SimpleToggle(
-                "",
+                string.Empty,
                 _actionsController.ClearDungeonToggle,
-                ""
+                string.Empty
             );
-
-            clearToggle.SetLocalizedText("ClearDungeonToggle", "ActionsTable");
-            clearToggle.SetLocalizedTooltip("ClearDungeonTooltip", "ActionsTable");
-            clearToggle.RegisterValueChangedCallback(evt => _actionsController.SetClearDungeon(evt.newValue));
-
+            ConfigureClearToggle(clearToggle);
             actionsFoldout.Add(clearToggle);
+        }
+
+        /// <summary>
+        /// Configures the toggle element with localized text, tooltip, and a value change callback.
+        /// </summary>
+        /// <param name="toggle">The toggle element to configure.</param>
+        private void ConfigureClearToggle(Toggle toggle)
+        {
+            toggle.SetLocalizedText("ClearDungeonToggle", TableName);
+            toggle.SetLocalizedTooltip("ClearDungeonTooltip", TableName);
+            toggle.RegisterValueChangedCallback(evt => _actionsController.SetClearDungeon(evt.newValue));
         }
     }
 }
