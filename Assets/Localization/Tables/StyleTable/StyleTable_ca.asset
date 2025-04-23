@@ -192,6 +192,18 @@ MonoBehaviour:
     m_Localized: Carregar preset
     m_Metadata:
       m_Items: []
+  - m_Id: 3619395965194240
+    m_Localized: Error carregant el preset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3628876933533696
+    m_Localized: Cobertura del bioma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3648686606159872
+    m_Localized: Esborrar preset
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

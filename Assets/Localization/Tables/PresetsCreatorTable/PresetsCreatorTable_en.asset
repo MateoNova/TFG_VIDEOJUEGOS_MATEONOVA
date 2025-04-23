@@ -74,6 +74,14 @@ MonoBehaviour:
     m_Localized: 'Selected image:'
     m_Metadata:
       m_Items: []
+  - m_Id: 3225979498434560
+    m_Localized: Preset created successfully.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3226303248371712
+    m_Localized: Error creating preset
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

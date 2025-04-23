@@ -31,8 +31,5 @@ namespace Controllers.Editor
                             f.IsDefined(typeof(TAttribute), false)) // Filter by type and attribute.
                 .GroupBy(f => groupSelector(f.GetCustomAttribute<TAttribute>())); // Group by the provided selector.
         }
-
-       
-
     }
 }

@@ -6,12 +6,12 @@ namespace Controllers.Editor
     /// <summary>
     /// Controller responsible for handling initialization, reloading, and clearing cached data in the editor.
     /// </summary>
-    public static class InitializationController
+    public class InitializationController
     {
         /// <summary>
         /// Initializes the scene by triggering the OnInitScene event on the EventBus.
         /// </summary>
-        public static void InitScene()
+        public void InitScene()
         {
             EventBus.OnInitScene();
             EventBus.OnReload();
@@ -20,7 +20,7 @@ namespace Controllers.Editor
         /// <summary>
         /// Reloads all relevant data or components by triggering the OnReload event on the EventBus.
         /// </summary>
-        public static void ReloadAll()
+        public void ReloadAll()
         {
             EventBus.OnReload();
         }
@@ -28,7 +28,7 @@ namespace Controllers.Editor
         /// <summary>
         /// Clears all cached data by deleting all editor preferences and triggering the OnClearCachedData event on the EventBus.
         /// </summary>
-        public static void ClearCachedData()
+        public void ClearCachedData()
         {
             EditorPrefs.DeleteAll();
             EventBus.OnClearCachedData();

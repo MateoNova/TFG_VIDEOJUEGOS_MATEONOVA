@@ -1,4 +1,5 @@
-﻿using UnityEngine.UIElements;
+﻿using System.Collections.Generic;
+using UnityEngine.UIElements;
 using SelectionController = Controllers.Editor.SelectionController;
 using StyleUtils = Utils.StyleUtils;
 using Utils;
@@ -14,14 +15,9 @@ namespace Views.Editor
     public class SelectionView
     {
         /// <summary>
-        /// The container for the UI elements of the selection view.
-        /// </summary>
-        private VisualElement _container;
-
-        /// <summary>
         /// The controller responsible for handling generator selection logic.
         /// </summary>
-        private readonly SelectionController _controller = new();
+        private readonly SelectionController controller = new();
 
         /// <summary>
         /// Creates the UI for the generator selection view.
@@ -29,40 +25,57 @@ namespace Views.Editor
         /// <returns>A <see cref="VisualElement"/> containing the UI elements for generator selection.</returns>
         public VisualElement CreateUI()
         {
-            _container = StyleUtils.SimpleContainer();
+            var container = StyleUtils.SimpleContainer();
 
-            var foldout = StyleUtils.ModernFoldout("");
-            foldout.SetLocalizedText("GeneratorSelection", "SelectionTable");
+            var foldout = StyleUtils.ModernFoldout(string.Empty);
+            foldout.SetLocalizedText(LocalizationKeysHelper.SelectionFoldout, LocalizationKeysHelper.SelectionTable);
 
-            var cachedNames = _controller.CachedGeneratorNames();
+            var cachedNames = controller.CachedGeneratorNames();
 
-            if (cachedNames == null || cachedNames.Count == 0)
+            if (cachedNames == null || cachedNames.Count == 0) AddHelpLabel(foldout);
+            else AddDropdown(cachedNames, foldout);
+
+            container.Add(foldout);
+            return container;
+        }
+
+        /// <summary>
+        /// Adds a dropdown element to the foldout for selecting a generator.
+        /// </summary>
+        /// <param name="cachedNames">The list of cached generator names.</param>
+        /// <param name="foldout">The foldout to which the dropdown will be added.</param>
+        private void AddDropdown(List<string> cachedNames, Foldout foldout)
+        {
+            var dropdown = StyleUtils.SimpleDropdown();
+            dropdown.SetLocalizedTitle(LocalizationKeysHelper.SelectionGeneratorDropdown,
+                LocalizationKeysHelper.SelectionTable);
+
+            dropdown.choices = cachedNames;
+
+            var selectedIndex = controller.SelectedGeneratorIndex();
+            if (selectedIndex < 0 || selectedIndex >= cachedNames.Count)
             {
-                var helpLabel = StyleUtils.HelpLabel("");
-                helpLabel.SetLocalizedText("NoGeneratorsFound", "SelectionTable");
-                foldout.Add(helpLabel);
-            }
-            else
-            {
-                var dropdown = StyleUtils.SimpleDropdown();
-                dropdown.SetLocalizedTitle("SelectGenerator", "SelectionTable");
-
-                dropdown.choices = cachedNames;
-
-                var selectedIndex = _controller.SelectedGeneratorIndex();
-                if (selectedIndex < 0 || selectedIndex >= cachedNames.Count)
-                {
-                    selectedIndex = 0;
-                }
-
-                dropdown.value = cachedNames[selectedIndex];
-                dropdown.RegisterValueChangedCallback(evt => _controller.ChangeGenerator(evt.newValue));
-
-                foldout.Add(dropdown);
+                selectedIndex = 0;
             }
 
-            _container.Add(foldout);
-            return _container;
+            dropdown.value = cachedNames[selectedIndex];
+            dropdown.RegisterValueChangedCallback(evt => controller.ChangeGenerator(evt.newValue));
+
+            foldout.Add(dropdown);
+        }
+
+        /// <summary>
+        /// Adds a help label to the foldout when no generators are found.
+        /// </summary>
+        /// <param name="foldout">The foldout to which the help label will be added.</param>
+        private void AddHelpLabel(Foldout foldout)
+        {
+            var helpLabel = StyleUtils.HelpLabel(string.Empty);
+
+            helpLabel.SetLocalizedText(LocalizationKeysHelper.SelectionNoGeneratorFound,
+                LocalizationKeysHelper.SelectionTable);
+
+            foldout.Add(helpLabel);
         }
     }
 }

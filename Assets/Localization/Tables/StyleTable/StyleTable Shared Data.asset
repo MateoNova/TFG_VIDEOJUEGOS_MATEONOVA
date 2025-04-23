@@ -159,6 +159,18 @@ MonoBehaviour:
     m_Key: loadPreset
     m_Metadata:
       m_Items: []
+  - m_Id: 3619395965194240
+    m_Key: LoadPresetError
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3628876933533696
+    m_Key: biomeCoverage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3648686606159872
+    m_Key: DeletePreset
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

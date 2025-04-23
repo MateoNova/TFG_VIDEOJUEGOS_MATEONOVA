@@ -29,7 +29,7 @@ namespace Utils
                 }
             };
         }
-        
+
         public static VisualElement ColumnButtonContainer()
         {
             return new VisualElement
@@ -125,7 +125,8 @@ namespace Utils
                 {
                     flexDirection = FlexDirection.Row,
                     alignItems = Align.Center,
-                    marginTop = 5
+                    marginTop = 5,
+                    flexGrow = 1
                 }
             };
         }
@@ -148,8 +149,9 @@ namespace Utils
             {
                 style =
                 {
-                    width = 50,
-                    marginRight = 5
+                    marginRight = 5,
+                    flexGrow = 0,
+                    flexShrink = 0
                 }
             };
         }
@@ -254,6 +256,14 @@ namespace Utils
             });
 
             return dropdown;
+        }
+
+        public static Button DisplayChangeButton(bool condition, Action action)
+        {
+            return new Button(action)
+            {
+                style = { display = condition ? DisplayStyle.Flex : DisplayStyle.None }
+            };
         }
     }
 }

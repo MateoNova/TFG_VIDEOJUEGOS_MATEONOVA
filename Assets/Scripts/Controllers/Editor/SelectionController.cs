@@ -77,11 +77,8 @@ namespace Controllers.Editor
         /// <param name="index">The index of the generator to select.</param>
         private void SelectGenerator(int index)
         {
-            if (index < 0 || index >= _generators.Count)
-            {
-                return;
-            }
-
+            if (index < 0 || index >= _generators.Count) return;
+            
             _selectedGeneratorIndex = index;
             var selectedGenerator = _generators[_selectedGeneratorIndex];
             GeneratorService.Instance.SetCurrentGenerator(selectedGenerator);
@@ -132,6 +129,7 @@ namespace Controllers.Editor
             {
                 _generationManager = InstantiateGenerationManager();
             }
+
             EventBus.OnReload();
         }
 
@@ -142,7 +140,7 @@ namespace Controllers.Editor
         /// <returns>The cached generation manager GameObject, or null if not found.</returns>
         private static GameObject RetrieveCachedGenerationManager()
         {
-            GenerationManager existingManager = Object.FindFirstObjectByType<GenerationManager>();
+            var existingManager = Object.FindFirstObjectByType<GenerationManager>();
             return existingManager != null ? existingManager.gameObject : null;
         }
 
@@ -151,7 +149,7 @@ namespace Controllers.Editor
         /// Instantiates the generation manager prefab and caches its instance ID.
         /// </summary>
         /// <returns>The instantiated generation manager GameObject.</returns>
-        private GameObject InstantiateGenerationManager()
+        private static GameObject InstantiateGenerationManager()
         {
             if (_cachedPrefab == null)
             {

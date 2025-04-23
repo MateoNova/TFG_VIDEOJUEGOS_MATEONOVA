@@ -106,6 +106,7 @@ namespace Controllers.Editor
             object target = serializedObject.targetObject;
             var conditionField = target.GetType()
                 .GetField(group, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            
             if (conditionField == null)
             {
                 Debug.LogWarning($"Condition field not found for group: '{group}'.");

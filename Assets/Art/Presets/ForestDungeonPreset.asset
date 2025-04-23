@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0529b97667a4a9b935624147353860d, type: 3}
+  m_Name: ForestDungeonPreset
+  m_EditorClassIdentifier: 
+  walkableTileBases:
+  - {fileID: 11400000, guid: 710a21bcec31e10448be96608c50c99f, type: 2}
+  - {fileID: 11400000, guid: 7e73b4798a9f9ad43be780e4333f6dcb, type: 2}
+  - {fileID: 11400000, guid: 9015a3da30868ab448247635630df5b8, type: 2}
+  - {fileID: 11400000, guid: 2d6ee32768f3aba4f81b57254f7edfa6, type: 2}
+  - {fileID: 11400000, guid: 6b069af8f6b8b194ea881841d36af706, type: 2}
+  - {fileID: 11400000, guid: f486077ccc342d941909d12fc5bff646, type: 2}
+  - {fileID: 11400000, guid: e095bbb6dd76a4843a8b80e4bfe955bb, type: 2}
+  - {fileID: 11400000, guid: 6bd5da7d8919bbe49b0fcb295f1a884f, type: 2}
+  walkableTilesPriorities: 0100000001000000010000000100000001000000010000000100000001000000
+  randomWalkableTilesPlacement: 1
+  upWall: {fileID: 11400000, guid: d62964b6e5163ab4987894bb5a533ea4, type: 2}
+  downWall: {fileID: 11400000, guid: 28f12bf10befb174fa8c021beef5e807, type: 2}
+  leftWall: {fileID: 11400000, guid: 6c5bab83871c01141b1774a66a37619d, type: 2}
+  rightWall: {fileID: 11400000, guid: 7a2a1ee67e41d3140873a16b37569af3, type: 2}
+  topLeftWall: {fileID: 11400000, guid: 311f9a00ef8bbb54e84a38085d2ebba3, type: 2}
+  topRightWall: {fileID: 11400000, guid: d97d44e37dbfa484598a156ff0afa96e, type: 2}
+  bottomLeftWall: {fileID: 11400000, guid: af64713f2de69c94a880ecef1c732a30, type: 2}
+  bottomRightWall: {fileID: 11400000, guid: 81ad10cf5f264f04286518998bed3011, type: 2}
+  allCornersWall: {fileID: 11400000, guid: ea8d7edc8726e6946a057cf7c2d29121, type: 2}
+  topLeftInnerWall: {fileID: 11400000, guid: 939b9a3a2f880f945a195d5685cc0a99, type: 2}
+  topRightInnerWall: {fileID: 11400000, guid: d8435eaf6e75dce498fa5027a5b6324e, type: 2}
+  bottomLeftInnerWall: {fileID: 11400000, guid: f10f77e9f7817574b94cd888acf7f965, type: 2}
+  bottomRightInnerWall: {fileID: 11400000, guid: 77c8c15bf6ac3894a99fed9973ed7552, type: 2}
+  tripleExceptUpWall: {fileID: 11400000, guid: 3dffeaccb84e18b4191ea2630899e848, type: 2}
+  tripleExcetDownWall: {fileID: 11400000, guid: 7c5f55450eb053849a9c0bc230cb9dc9, type: 2}
+  tripleExceptLeftWall: {fileID: 11400000, guid: 75808beb9539b63498edc1c1ce60f63a, type: 2}
+  tripleExceptRightWall: {fileID: 11400000, guid: fa6f44e31e3156a44bf30f5bc95597ca, type: 2}
+  tripleExceptLeftInnerWall: {fileID: 11400000, guid: 6ccf259588b524a47b020d3c714ce9e1, type: 2}
+  tripleExceptRightInnerWall: {fileID: 11400000, guid: a928e21a2a93329419d337eccffda74c, type: 2}
+  aloneWall: {fileID: 11400000, guid: ee63d1d1d5607cb4dac473f67f1f9470, type: 2}
+  doorClosed: {fileID: 11400000, guid: 0d6d982b7e7c9ff49a0316ce85765fdf, type: 2}
+  doorOpen: {fileID: 11400000, guid: 6220eed4cb326ce4e97132900c86c6fd, type: 2}

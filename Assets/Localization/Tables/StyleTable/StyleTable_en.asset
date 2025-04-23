@@ -192,6 +192,18 @@ MonoBehaviour:
     m_Localized: Load Preset
     m_Metadata:
       m_Items: []
+  - m_Id: 3619395965194240
+    m_Localized: Error loading preset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3628876933533696
+    m_Localized: Biome coverage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3648686606159872
+    m_Localized: Delete preset
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

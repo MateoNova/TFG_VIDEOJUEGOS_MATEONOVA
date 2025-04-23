@@ -16,14 +16,14 @@ namespace Views.Editor
     /// </summary>
     public class InitializationView
     {
-        private const string LocalizationTable = "InitializationTable";
+        private readonly InitializationController _initializationController = new();
 
         /// <summary>
         /// Subscribes to the ToolOpened event to initialize the scene when the tool is opened.
         /// </summary>
         public InitializationView()
         {
-            EventBus.ToolOpened += InitializationController.InitScene;
+            EventBus.ToolOpened += _initializationController.InitScene;
         }
 
         /// <summary>
@@ -31,14 +31,14 @@ namespace Views.Editor
         /// </summary>
         ~InitializationView()
         {
-            EventBus.ToolOpened -= InitializationController.InitScene;
+            EventBus.ToolOpened -= _initializationController.InitScene;
         }
 
         /// <summary>
         /// Creates the UI for the initialization view.
         /// </summary>
         /// <returns>A <see cref="VisualElement"/> containing the UI elements for initialization actions.</returns>
-        public static VisualElement CreateUI()
+        public VisualElement CreateUI()
         {
             var container = StyleUtils.SimpleContainer();
             var foldout = CreateFoldout();
@@ -53,20 +53,22 @@ namespace Views.Editor
         /// <summary>
         /// Creates a foldout for the initialization view.
         /// </summary>
-        private static Foldout CreateFoldout()
+        private Foldout CreateFoldout()
         {
-            var foldout = StyleUtils.ModernFoldout("");
-            foldout.SetLocalizedText("Initialization", LocalizationTable);
+            var foldout = StyleUtils.ModernFoldout(string.Empty);
+            foldout.SetLocalizedText(LocalizationKeysHelper.InitFoldout,
+                LocalizationKeysHelper.InitTable);
             return foldout;
         }
 
         /// <summary>
         /// Creates a dropdown field for selecting the language.
         /// </summary>
-        private static DropdownField CreateLanguageSelector()
+        private DropdownField CreateLanguageSelector()
         {
             var dropdown = StyleUtils.SimpleDropdown();
-            dropdown.SetLocalizedTitle("SelectLanguage", LocalizationTable);
+            dropdown.SetLocalizedTitle(LocalizationKeysHelper.InitLanguageDropdown,
+                LocalizationKeysHelper.InitTable);
 
             if (LocalizationSettings.InitializationOperation.IsDone)
             {
@@ -83,7 +85,7 @@ namespace Views.Editor
         /// <summary>
         /// Populates the language dropdown with available locales.
         /// </summary>
-        private static void PopulateDropdown(DropdownField dropdown)
+        private void PopulateDropdown(DropdownField dropdown)
         {
             var availableLocales = LocalizationSettings.AvailableLocales?.Locales;
             if (availableLocales == null)
@@ -111,13 +113,14 @@ namespace Views.Editor
         /// <summary>
         /// Creates a container for action buttons (e.g., Clear, Initialize, Reload).
         /// </summary>
-        private static VisualElement CreateButtonContainer()
+        private VisualElement CreateButtonContainer()
         {
             var buttonContainer = StyleUtils.RowButtonContainer();
 
-            AddButton(buttonContainer, "ClearAndDelete", InitializationController.ClearCachedData, true);
-            AddButton(buttonContainer, "InitializeScene", InitializationController.InitScene);
-            AddButton(buttonContainer, "Reload", InitializationController.ReloadAll);
+            AddButton(buttonContainer, LocalizationKeysHelper.InitClearBtn, _initializationController.ClearCachedData,
+                true);
+            AddButton(buttonContainer, LocalizationKeysHelper.InitBtn, _initializationController.InitScene);
+            AddButton(buttonContainer, LocalizationKeysHelper.InitReloadBtn, _initializationController.ReloadAll);
 
             return buttonContainer;
         }
@@ -125,10 +128,10 @@ namespace Views.Editor
         /// <summary>
         /// Adds a button to the specified container.
         /// </summary>
-        private static void AddButton(VisualElement container, string key, Action onClick, bool isPrimary = false)
+        private void AddButton(VisualElement container, string key, Action onClick, bool isPrimary = false)
         {
-            var button = StyleUtils.ButtonInRowContainer("", onClick, isPrimary);
-            button.SetLocalizedText(key, LocalizationTable);
+            var button = StyleUtils.ButtonInRowContainer(string.Empty, onClick, isPrimary);
+            button.SetLocalizedText(key, LocalizationKeysHelper.InitTable);
             container.Add(button);
         }
     }

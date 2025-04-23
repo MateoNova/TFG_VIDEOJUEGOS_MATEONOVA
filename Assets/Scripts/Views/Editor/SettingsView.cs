@@ -22,7 +22,7 @@ namespace Views.Editor
         /// <summary>
         /// Indicates whether the "Open Graph Window" button should be displayed.
         /// </summary>
-        private static bool _showOpenGraphButton;
+        private bool _showOpenGraphButton;
 
         /// <summary>
         /// The controller responsible for handling settings logic.
@@ -63,66 +63,106 @@ namespace Views.Editor
             _container ??= StyleUtils.SimpleContainer();
             _container.Clear();
 
-            _foldout = StyleUtils.ModernFoldout("");
-            _foldout.SetLocalizedText("GeneratorSettings", "SettingsTable");
+            _foldout = CreateFoldout();
 
-            if (GeneratorService.Instance.CurrentGenerator == null)
-            {
-                var infoLabel = StyleUtils.HelpLabel("No generator selected.");
-                _foldout.Add(infoLabel);
-            }
-            else
-            {
-                var settingsContainer = new VisualElement();
-                var serializedObject = new SerializedObject(GeneratorService.Instance.CurrentGenerator);
-
-                var conditionFields = new Dictionary<string, PropertyField>();
-                var conditionalFields = new Dictionary<string, List<PropertyField>>();
-                var property = serializedObject.GetIterator();
-                var enterChildren = true;
-
-                while (property.NextVisible(enterChildren))
-                {
-                    enterChildren = false;
-                    if (property.name == "m_Script") continue;
-
-                    var fieldInfo = serializedObject.targetObject.GetType().GetField(property.name, BindingFlags.Instance | BindingFlags.NonPublic);
-
-                    if (fieldInfo == null)
-                    {
-                        _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
-                        continue;
-                    }
-
-                    if (_settingsController.CheckForConditionAttribute(fieldInfo, property, serializedObject, settingsContainer, conditionFields, conditionalFields))
-                        continue;
-
-                    if (!_settingsController.CheckForConditionalAttribute(fieldInfo, property, serializedObject, settingsContainer, conditionalFields))
-                    {
-                        _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
-                    }
-                }
-
-
-                foreach (var group in conditionalFields.Keys)
-                {
-                    _settingsController.UpdateConditionalVisibility(group, serializedObject, conditionalFields);
-                }
-
-                _foldout.Add(settingsContainer);
-            }
-
-            _openGraphButton = new Button(() => GeneratorService.Instance.CurrentGenerator.OpenGraphWindow())
-            {
-                style = { display = _showOpenGraphButton ? DisplayStyle.Flex : DisplayStyle.None }
-            };
-            _openGraphButton.SetLocalizedText("OpenGraphWindow", "SettingsTable");
-
-            _foldout.Add(_openGraphButton);
-
+            AddGeneratorSettings();
+            AddOpenGraphButton();
             _container.Add(_foldout);
 
             return _container;
+        }
+
+        /// <summary>
+        /// Creates the foldout element for grouping generator settings.
+        /// </summary>
+        /// <returns>A <see cref="Foldout"/> element with localized text.</returns>
+        private Foldout CreateFoldout()
+        {
+            var foldout = StyleUtils.ModernFoldout(string.Empty);
+            foldout.SetLocalizedText(LocalizationKeysHelper.SettingsFoldout, LocalizationKeysHelper.SettingsTable);
+            return foldout;
+        }
+
+        /// <summary>
+        /// Adds generator-specific settings to the foldout.
+        /// Displays a placeholder message if no generator is selected.
+        /// </summary>
+        private void AddGeneratorSettings()
+        {
+            if (GeneratorService.Instance.CurrentGenerator == null) AddNoGeneratorSelectedLabel();
+            else AddGeneratorProperties();
+        }
+
+        /// <summary>
+        /// Adds a label to the foldout indicating that no generator is selected.
+        /// </summary>
+        private void AddNoGeneratorSelectedLabel()
+        {
+            var infoLabel = StyleUtils.HelpLabel("No generator selected.");
+            _foldout.Add(infoLabel);
+        }
+
+        /// <summary>
+        /// Adds the properties of the selected generator to the UI.
+        /// </summary>
+        private void AddGeneratorProperties()
+        {
+            var settingsContainer = new VisualElement();
+            var serializedObject = new SerializedObject(GeneratorService.Instance.CurrentGenerator);
+
+            // Dictionaries to manage conditional and conditionally visible fields.
+            var conditionFields = new Dictionary<string, PropertyField>();
+            var conditionalFields = new Dictionary<string, List<PropertyField>>();
+            var property = serializedObject.GetIterator();
+            var enterChildren = true;
+
+            while (property.NextVisible(enterChildren))
+            {
+                enterChildren = false;
+                if (property.name == "m_Script") continue;
+
+                var fieldInfo = serializedObject.targetObject.GetType()
+                    .GetField(property.name, BindingFlags.Instance | BindingFlags.NonPublic);
+
+                if (fieldInfo == null)
+                {
+                    // Add fields without custom attributes to the UI.
+                    _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
+                    continue;
+                }
+
+                // Check for and handle condition attributes.
+                if (_settingsController.CheckForConditionAttribute(fieldInfo, property, serializedObject,
+                        settingsContainer, conditionFields, conditionalFields))
+                    continue;
+
+                // Check for and handle conditional attributes.
+                if (!_settingsController.CheckForConditionalAttribute(fieldInfo, property, serializedObject,
+                        settingsContainer, conditionalFields))
+                {
+                    _settingsController.AddNoCustomAttributesField(property, serializedObject, settingsContainer);
+                }
+            }
+
+            foreach (var group in conditionalFields.Keys)
+            {
+                _settingsController.UpdateConditionalVisibility(group, serializedObject, conditionalFields);
+            }
+
+            _foldout.Add(settingsContainer);
+        }
+
+        /// <summary>
+        /// Adds the "Open Graph Window" button to the foldout.
+        /// </summary>
+        private void AddOpenGraphButton()
+        {
+            _openGraphButton = StyleUtils.DisplayChangeButton(_showOpenGraphButton,
+                () => GeneratorService.Instance.CurrentGenerator.OpenGraphWindow());
+
+            _openGraphButton.SetLocalizedText(LocalizationKeysHelper.SettingsGraphWindow,
+                LocalizationKeysHelper.SettingsTable);
+            _foldout.Add(_openGraphButton);
         }
 
         /// <summary>

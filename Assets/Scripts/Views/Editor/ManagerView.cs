@@ -31,7 +31,7 @@ namespace Views.Editor
         /// <summary>
         /// View responsible for sprite renaming actions.
         /// </summary>
-        private SpriteRenamerView _spriteRenamerView;
+        private SpriteProcessView spriteProcessView;
 
         /// <summary>
         /// View responsible for style customization.
@@ -91,7 +91,7 @@ namespace Views.Editor
             _initializationView = new InitializationView();
             _selectionView = new SelectionView();
             _settingsView = new SettingsView();
-            _spriteRenamerView = new SpriteRenamerView();
+            spriteProcessView = new SpriteProcessView();
             _styleView = new StyleView();
             _actionsView = new ActionsView();
             _spawningView = new SpawningView();
@@ -106,10 +106,10 @@ namespace Views.Editor
             root.Clear();
 
             var scrollView = StyleUtils.SimpleScrollView();
-            scrollView.Add(InitializationView.CreateUI());
+            scrollView.Add(_initializationView.CreateUI());
             scrollView.Add(_selectionView.CreateUI());
             scrollView.Add(_settingsView.CreateUI());
-            scrollView.Add(_spriteRenamerView.CreateUI());
+            scrollView.Add(spriteProcessView.CreateUI());
             scrollView.Add(_styleView.CreateUI());
             scrollView.Add(_actionsView.CreateUI());
             scrollView.Add(_spawningView.CreateUI());

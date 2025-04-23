@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2300646448356940483
+--- !u!1 &1850552722648793113
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,54 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5856974931245333146}
-  - component: {fileID: 7561222432131536417}
-  - component: {fileID: 4471873394673552985}
+  - component: {fileID: 7511065442803492246}
+  - component: {fileID: 8761917177535844258}
+  m_Layer: 0
+  m_Name: DesertDungeonTilePalette
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7511065442803492246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850552722648793113}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2928552205196956639}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &8761917177535844258
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850552722648793113}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
+--- !u!1 &1984612114759412678
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2928552205196956639}
+  - component: {fileID: 2712705842856779070}
+  - component: {fileID: 7332422617478522249}
   m_Layer: 0
   m_Name: Layer1
   m_TagString: Untagged
@@ -18,28 +63,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5856974931245333146
+--- !u!4 &2928552205196956639
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300646448356940483}
+  m_GameObject: {fileID: 1984612114759412678}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9052904607748405933}
+  m_Father: {fileID: 7511065442803492246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1839735485 &7561222432131536417
+--- !u!1839735485 &2712705842856779070
 Tilemap:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300646448356940483}
+  m_GameObject: {fileID: 1984612114759412678}
   m_Enabled: 1
   m_Tiles:
   - first: {x: 0, y: -6, z: 0}
@@ -406,65 +451,65 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: ec42e8097fcdf8d4c873a6c11c0656ed, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 1
-    m_Data: {fileID: 337456625, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -59853969, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -1261455604, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1394945216, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 2841859, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -15559645, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -782863472, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 1484036795, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -465735027, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -2050077546, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1506825387, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 704720014, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1794350500, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 1847720948, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1178541306, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 438689605, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1503100874, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1469603066, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1754856412, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -775496877, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1109160024, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1857343341, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1890294477, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 1292507383, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -693451452, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1261493595, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 2003461260, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1515468944, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 1079027527, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 1074336424, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -717654001, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1174228538, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -843561543, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 1042646757, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -1091644905, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1870200536, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -1067366352, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -1051635296, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -2079690255, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 918441119, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -436231960, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 1076336166, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -1778419554, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 904390317, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -356253700, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 102593301, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -1118468700, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 1422694138, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 7443320, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -9118395, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -981893808, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -754480020, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 210827509, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -912020165, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -1183790144, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -986154597, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: -1911542999, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: -2088954979, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 722412542, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
+    m_Data: {fileID: 2145289669, guid: 5b1dd0059529b404891ea482c0066106, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 30
     m_Data:
@@ -511,13 +556,13 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!483693784 &4471873394673552985
+--- !u!483693784 &7332422617478522249
 TilemapRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300646448356940483}
+  m_GameObject: {fileID: 1984612114759412678}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -563,52 +608,7 @@ TilemapRenderer:
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
---- !u!1 &7573322178547891914
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9052904607748405933}
-  - component: {fileID: 7325677033645106019}
-  m_Layer: 0
-  m_Name: DesertDungeonTilePalette
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &9052904607748405933
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7573322178547891914}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5856974931245333146}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!156049354 &7325677033645106019
-Grid:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7573322178547891914}
-  m_Enabled: 1
-  m_CellSize: {x: 1, y: 1, z: 1}
-  m_CellGap: {x: 0, y: 0, z: 0}
-  m_CellLayout: 0
-  m_CellSwizzle: 0
---- !u!114 &8803013494029968824
+--- !u!114 &5019002384716785633
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
