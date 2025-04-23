@@ -35,20 +35,18 @@ namespace Views.Editor
             _root ??= StyleUtils.SimpleContainer();
             _root.Clear();
 
-            // 1) Carga sección general y botones de preset
-            _root.Add(CreateStyleSection());
+            var styleSection = CreateStyleSection();
+            _root.Add(styleSection);
 
-            // 2) Si hay más de un preset, mostrar cobertura de biomas
             if (_loadedPresets.Count > 1)
-                _root.Add(CreateBiomeCoverageFolder());
+                styleSection.Add(CreateBiomeCoverageFolder());
 
-            // 3) Para cada preset, forzar selección y dibujar subsección
             var painter = gen.TilemapPainter as TilemapPainter;
             for (int idx = 0; idx < _loadedPresets.Count; idx++)
             {
                 var preset = _loadedPresets[idx];
                 painter.AddAndSelectPreset(preset);
-                _root.Add(CreatePresetSubsection(preset, idx));
+                styleSection.Add(CreatePresetSubsection(preset, idx));
             }
 
             return _root;
@@ -66,27 +64,26 @@ namespace Views.Editor
         {
             var container = new VisualElement();
             var loadBtn = new Button(() =>
+            {
+                var path = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
+                if (string.IsNullOrEmpty(path) || !path.StartsWith(Application.dataPath)) return;
+                path = "Assets" + path.Substring(Application.dataPath.Length);
+
+                var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(path);
+                if (preset == null)
                 {
-                    var path = EditorUtility.OpenFilePanel("Select Preset", "Assets", "asset");
-                    if (string.IsNullOrEmpty(path) || !path.StartsWith(Application.dataPath)) return;
-                    path = "Assets" + path.Substring(Application.dataPath.Length);
+                    EditorUtility.DisplayDialog("Error", "Failed to load preset.", "OK");
+                    return;
+                }
 
-                    var preset = AssetDatabase.LoadAssetAtPath<TilesetPreset>(path);
-                    if (preset == null)
-                    {
-                        EditorUtility.DisplayDialog("Error", "Failed to load preset.", "OK");
-                        return;
-                    }
+                _loadedPresets.Add(preset);
+                _presetCoverage.Add(100f / _loadedPresets.Count);
+                EditorPrefs.SetString(LoadedPresetsKey,
+                    string.Join(";", _loadedPresets.Select(AssetDatabase.GetAssetPath)));
 
-                    _loadedPresets.Add(preset);
-                    _presetCoverage.Add(100f / _loadedPresets.Count);
-                    EditorPrefs.SetString(LoadedPresetsKey,
-                        string.Join(";", _loadedPresets.Select(AssetDatabase.GetAssetPath)));
-
-                    RefreshUI();
-                    EditorUtility.DisplayDialog("Success", $"Preset '{preset.name}' loaded.", "OK");
-                })
-                { text = "Load Preset" };
+                RefreshUI();
+                EditorUtility.DisplayDialog("Success", $"Preset '{preset.name}' loaded.", "OK");
+            }) { text = "Load Preset" };
             loadBtn.SetLocalizedText("loadPreset", "StyleTable");
             container.Add(loadBtn);
             return container;
@@ -97,7 +94,6 @@ namespace Views.Editor
             var fold = StyleUtils.ModernFoldout("");
             fold.SetLocalizedText("BiomeCoverage", "StyleTable");
 
-            // Sincronizar cobertura
             while (_presetCoverage.Count < _loadedPresets.Count)
                 _presetCoverage.Add(100f / _loadedPresets.Count);
             while (_presetCoverage.Count > _loadedPresets.Count)
@@ -152,11 +148,9 @@ namespace Views.Editor
             RefreshUI();
         }
 
-        // ─── Floor Settings ─────────────────────────────────────────────────
 
         private VisualElement CreateFloorTileSettings(TilesetPreset preset, int presetIdx)
         {
-            // 1) Asegurarse de que priorities tenga la misma longitud que walkableTileBases
             SyncWalkableLists(preset);
 
             var walkables = preset.walkableTileBases;
@@ -165,7 +159,6 @@ namespace Views.Editor
             var fe = StyleUtils.ModernSubFoldout("");
             fe.SetLocalizedText("FloorTileSettings", "StyleTable");
 
-            // Random toggle
             var toggleRow = StyleUtils.HorizontalContainerCentered();
             var lbl = StyleUtils.LabelForToggle("");
             lbl.SetLocalizedText("RandomFloorPlacement", "StyleTable");
@@ -180,7 +173,6 @@ namespace Views.Editor
             toggleRow.Add(tog);
             fe.Add(toggleRow);
 
-            // Add / Clear buttons
             var btnRow = StyleUtils.HorizontalContainerCentered();
             var addBtn = new Button(() =>
             {
@@ -204,7 +196,6 @@ namespace Views.Editor
 
             fe.Add(btnRow);
 
-            // Tile previews + priority
             var previewRow = StyleUtils.HorizontalContainerWrapped();
             for (int i = 0; i < walkables.Count; i++)
                 previewRow.Add(CreateWalkableTileControl(preset, presetIdx, i));
@@ -217,9 +208,7 @@ namespace Views.Editor
         {
             var w = preset.walkableTileBases;
             var p = preset.walkableTilesPriorities;
-            // añadir prioridades faltantes
             while (p.Count < w.Count) p.Add(1);
-            // recortar excesos
             while (p.Count > w.Count) p.RemoveAt(p.Count - 1);
             EditorUtility.SetDirty(preset);
         }
@@ -235,7 +224,6 @@ namespace Views.Editor
             var label = GetLabelForWalkableTile(walkables[tileIdx]);
             cont.Add(label);
 
-            // IMGUI preview + picker
             cont.Add(new IMGUIContainer(() =>
                 {
                     var curr = walkables[tileIdx];
@@ -260,7 +248,6 @@ namespace Views.Editor
                 })
                 { style = { height = Utils.Utils.GetPreviewTileSize() } });
 
-            // Priority field
             if (!isRandom)
             {
                 var row = StyleUtils.HorizontalContainerCentered();
@@ -299,7 +286,6 @@ namespace Views.Editor
             return pr ?? (Texture2D)EditorGUIUtility.ObjectContent(tile, typeof(TileBase)).image;
         }
 
-        // ─── Wall Settings ─────────────────────────────────────────────────
 
         private VisualElement CreateWallTileSettings(TilesetPreset preset, int presetIdx)
         {
@@ -360,19 +346,24 @@ namespace Views.Editor
         private void RefreshUI()
         {
             _root.Clear();
-            _root.Add(CreateStyleSection());
+
+            var styleSection = CreateStyleSection();
+            _root.Add(styleSection);
+
             if (_loadedPresets.Count > 1)
-                _root.Add(CreateBiomeCoverageFolder());
+                styleSection.Add(CreateBiomeCoverageFolder());
+
             var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter as TilemapPainter;
             for (int idx = 0; idx < _loadedPresets.Count; idx++)
             {
-                var p = _loadedPresets[idx];
-                painter.AddAndSelectPreset(p);
-                _root.Add(CreatePresetSubsection(p, idx));
+                var preset = _loadedPresets[idx];
+                painter.AddAndSelectPreset(preset);
+                styleSection.Add(CreatePresetSubsection(preset, idx));
             }
 
             _root.MarkDirtyRepaint();
         }
+
 
         private void LoadPresetsFromEditorPrefs()
         {
