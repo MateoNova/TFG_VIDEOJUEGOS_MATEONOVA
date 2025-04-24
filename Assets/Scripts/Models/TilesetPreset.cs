@@ -111,123 +111,29 @@ namespace Models
                 //REGLAS DE ASIGNACION DE PAREDES -> FALSE ES PARED TRUE ES WALL
 
                 if (n && ne && e && !w) wp = Utils.Utils.WallPosition.TopRightInner;
-                else if (n && !e && sw && w && nw) wp = Utils.Utils.WallPosition.TopLeftInner;
+                else if (n && !e && (sw || nw) && w) wp = Utils.Utils.WallPosition.TopLeftInner;
                 else if (!n && e && se && s && !w) wp = Utils.Utils.WallPosition.BottomRightInner;
-                else if (!n && !e  && s && sw && w && nw) wp = Utils.Utils.WallPosition.BottomLeftInner;
+                else if (!n && !e && s && (sw || nw) && w) wp = Utils.Utils.WallPosition.BottomLeftInner;
                 else if (!n && e && !s && w) wp = Utils.Utils.WallPosition.Alone;
-                else if (!n && !e && !s && w && sw &&se ) wp = Utils.Utils.WallPosition.TripleExceptLeftInner;
-                else if (!n && e && !s && sw) wp = Utils.Utils.WallPosition.TripleExceptRightInner;
-                else if (n && ne && !e && !s && sw && w) wp = Utils.Utils.WallPosition.TripleExceptUp;
+                else if (!n && !e && !s && w && (sw || nw) && (ne || se))
+                    wp = Utils.Utils.WallPosition.TripleExceptLeftInner;
+                else if (!n && e && !s && ne && (nw || sw)) wp = Utils.Utils.WallPosition.TripleExceptRightInner;
+                else if (!n && !e && !w && ne && nw) wp = Utils.Utils.WallPosition.TripleExceptDown;
+                
                 else if (!e && s && !w) wp = Utils.Utils.WallPosition.Up;
+                else if (n && (ne || nw) && !e && !s && (sw || se)) wp = Utils.Utils.WallPosition.TripleExceptUp;
+                else if (n && !e && !w) wp = Utils.Utils.WallPosition.Down;
+                else if (!n && !e && !s && !w &&
+                         ((nw && ne) || (nw && se) || (nw && sw) || (ne && sw) || (ne && se) || (sw && se)))
+                    wp = Utils.Utils.WallPosition.AllWallCorner;
                 else if (!s && sw && !w) wp = Utils.Utils.WallPosition.TopRight;
                 else if (!n && !s && w) wp = Utils.Utils.WallPosition.Right;
+                
                 else if (!n && !w && nw) wp = Utils.Utils.WallPosition.BottomRight;
-                else if (n && !e && !w) wp = Utils.Utils.WallPosition.Down;
                 else if (!n && !e && ne) wp = Utils.Utils.WallPosition.BottomLeft;
                 else if (!n && !s && e) wp = Utils.Utils.WallPosition.Left;
                 else if (!e && se && !s) wp = Utils.Utils.WallPosition.TopLeft;
                 else wp = Utils.Utils.WallPosition.Alone;
-
-                /*// 1) Alone
-                if (!(n || ne || e || se || s || sw || w || nw))
-                {
-                    wp = Utils.Utils.WallPosition.Alone;
-                }
-
-                else if ( // bottomleftinner
-                    !n && !e
-                      && nw
-                      && w
-                      && sw
-                      && s
-                      && se
-                )
-                    wp = Utils.Utils.WallPosition.BottomLeftInner;
-
-                else if ( // bottomRighteftinner
-                         !n && !w && nw && sw && s && se && e && ne
-                        )
-                    wp = Utils.Utils.WallPosition.BottomRightInner;
-
-
-                // 2) End-caps
-                else if (e && !(n || ne || se || s || sw || w || nw))
-                    wp = Utils.Utils.WallPosition.Left;
-                else if (n && !(nw || ne || e || se || s || sw || w))
-                    wp = Utils.Utils.WallPosition.Down;
-                else if (s && !(se || sw || w || nw || n || ne || e))
-                    wp = Utils.Utils.WallPosition.Up;
-                else if (w && !(nw || sw || s || se || e || ne || n))
-                    wp = Utils.Utils.WallPosition.Right;
-
-                // 3) External corners prioritarios
-                else if (!e && !s && se)
-                    wp = Utils.Utils.WallPosition.TopLeft;
-                else if (!w && !s && sw)
-                    wp = Utils.Utils.WallPosition.TopRight;
-
-
-
-                // 4) Straights
-                else if (n && s && !(e || w || ne || se || sw || nw))
-                    wp = Utils.Utils.WallPosition.Up;
-                else if (e && w && !(n || s || ne || se || sw || nw))
-                    wp = Utils.Utils.WallPosition.Left;
-
-                // 5) Esquinas externas estándar
-                else if (s && w && !(n || e || nw || sw || ne || se))
-                    wp = Utils.Utils.WallPosition.TopRight;
-                else if (s && e && !(n || w || ne || se || sw || nw))
-                    wp = Utils.Utils.WallPosition.TopLeft;
-                else if (n && w && !(s || e || nw || sw || ne || se))
-                    wp = Utils.Utils.WallPosition.BottomLeft;
-                else if (n && e && !(s || w || ne || se || sw || nw))
-                    wp = Utils.Utils.WallPosition.BottomRight;
-
-                // 6) Casos especiales añadidos:
-                // 6.1 bottomLeftWall: vecinos 8 y 6 deben ser walls (no floor), diagonal 9 floor
-                else if (!n && !e && ne)
-                    wp = Utils.Utils.WallPosition.BottomLeft;
-                // 6.2 bottomRightWall: vecinos 8 y 4 deben ser walls (no floor), diagonal 7 floor
-                else if (!n && !w && nw)
-                    wp = Utils.Utils.WallPosition.BottomRight;
-
-                // 7) Inner corners
-                else if (n && e && w && !s)
-                    wp = Utils.Utils.WallPosition.BottomLeftInner;
-                else if (n && e && s && !w)
-                    wp = Utils.Utils.WallPosition.TopLeftInner;
-                else if (s && e && w && !n)
-                    wp = Utils.Utils.WallPosition.TopRightInner;
-                else if (n && s && w && !e)
-                    wp = Utils.Utils.WallPosition.BottomRightInner;
-
-                // 8) T-junctions
-                else if (e && w && s && !n)
-                    wp = Utils.Utils.WallPosition.TripleExceptUp;
-                else if (e && w && n && !s)
-                    wp = Utils.Utils.WallPosition.TripleExceptDown;
-                else if (n && s && w && !e)
-                    wp = Utils.Utils.WallPosition.TripleExceptRight;
-                else if (n && s && e && !w)
-                    wp = Utils.Utils.WallPosition.TripleExceptLeft;
-
-                // 9) Triple-inner específicos
-                else if (w && s && !n && !nw && !e && !ne && !se)
-                    wp = Utils.Utils.WallPosition.TopRightInner;
-                else if (e && s && !n && !ne && !w && !nw && !sw)
-                    wp = Utils.Utils.WallPosition.TopLeftInner;
-
-                // 10) Cross completo
-                else if (n && ne && e && se && s && sw && w && nw)
-                    wp = Utils.Utils.WallPosition.AllWallCorner;
-
-                // 11) Fallback a cardinales
-                else if (n) wp = Utils.Utils.WallPosition.Down;
-                else if (s) wp = Utils.Utils.WallPosition.Up;
-                else if (e) wp = Utils.Utils.WallPosition.Left;
-                else if (w) wp = Utils.Utils.WallPosition.Right;
-                else wp = Utils.Utils.WallPosition.Alone;*/
 
                 // Asignación final de TileBase
                 maskTiles[mask] = wp switch
