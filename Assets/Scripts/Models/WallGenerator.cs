@@ -15,25 +15,18 @@ namespace Models
         /// <param name="walkablePositions">A set of positions that are walkable.</param>
         /// <param name="painter">The tilemap painter used to paint the walls.</param>
         /// <param name="nonWallPositions">Optional. A set of positions where walls should not be placed.</param>
-        public static void GenerateWalls(HashSet<Vector2Int> walkablePositions, ITilemapPainter painter,
-            HashSet<Vector2Int> nonWallPositions = null)
+        public static void GenerateWalls(HashSet<Vector2Int> walkable, ITilemapPainter painter,
+            HashSet<Vector2Int> nonWall = null)
         {
-            // 1. Build initial wall positions
-            var wallPositionsByType = BuildInitialWallPositions(walkablePositions);
-            Debug.Log("Initial wall count: " + wallPositionsByType.Values.Sum(set => set.Count));
+            var tp = painter as TilemapPainter;
+            if (tp == null) return;
 
-            // 2. Apply override rules to optimize wall placement
-            var overridesCount = ApplyWallOverrides(wallPositionsByType, walkablePositions);
-            Debug.Log("Overrides applied: " + overridesCount);
+            var preset = tp.GetCurrentTilesetPreset();
+            var wallMap = tp.wallTilemap;
+            if (preset == null || wallMap == null) return;
 
-            // 3. Paint each type of wall
-            foreach (var kvp in wallPositionsByType)
-            {
-                var positions = (nonWallPositions != null)
-                    ? new HashSet<Vector2Int>(kvp.Value.Except(nonWallPositions))
-                    : kvp.Value;
-                painter.PaintWallTiles(positions, kvp.Key);
-            }
+            // use optimized autotiler
+            new WallAutoTiler(preset, wallMap).PaintWalls(walkable, nonWall);
             
         }
 
