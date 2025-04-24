@@ -117,15 +117,17 @@ namespace Models
                 else if (!n && e && !s && w) wp = Utils.Utils.WallPosition.Alone;
                 else if (!n && !e && !s && w && (sw || nw) && (ne || se))
                     wp = Utils.Utils.WallPosition.TripleExceptLeftInner;
-                else if (!n && e && !s && ne && (nw || sw)) wp = Utils.Utils.WallPosition.TripleExceptRightInner;
+                else if (!n && e && !s && (ne || se) && (nw || sw)) wp = Utils.Utils.WallPosition.TripleExceptRightInner;
                 else if (!n && !e && !w && ne && nw) wp = Utils.Utils.WallPosition.TripleExceptDown;
-                
                 else if (!e && s && !w) wp = Utils.Utils.WallPosition.Up;
                 else if (n && (ne || nw) && !e && !s && (sw || se)) wp = Utils.Utils.WallPosition.TripleExceptUp;
-                else if (n && !e && !w) wp = Utils.Utils.WallPosition.Down;
                 else if (!n && !e && !s && !w &&
-                         ((nw && ne) || (nw && se) || (nw && sw) || (ne && sw) || (ne && se) || (sw && se)))
+                         ((nw && ne) || (nw && se) || (nw && sw && (ne || se)) || (ne && sw) || (ne && se && (nw||sw)) || (sw && se)))
                     wp = Utils.Utils.WallPosition.AllWallCorner;
+                else if (!n && !e && !s && ne && se) wp = Utils.Utils.WallPosition.TripleExceptLeft;
+                else if (!n && !w && !s && nw && sw) wp = Utils.Utils.WallPosition.TripleExceptRight;
+                else if (n && !e && !w) wp = Utils.Utils.WallPosition.Down;
+                
                 else if (!s && sw && !w) wp = Utils.Utils.WallPosition.TopRight;
                 else if (!n && !s && w) wp = Utils.Utils.WallPosition.Right;
                 
