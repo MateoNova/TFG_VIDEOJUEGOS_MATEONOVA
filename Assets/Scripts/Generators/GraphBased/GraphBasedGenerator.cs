@@ -73,7 +73,7 @@ namespace Generators.GraphBased
             var wallPositions = _allFloorPositions.Except(_allDoorsPositions).ToHashSet();
             WallGenerator.GenerateWalls(wallPositions, tilemapPainter, _allWallPositions);
 
-            return new HashSet<Vector2Int>(_allFloorPositions);
+            return null;
         }
 
         /// <summary>

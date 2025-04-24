@@ -2,591 +2,384 @@
     "walkableTiles": [
         {
             "position": {
-                "x": -4,
-                "y": -2,
+                "x": -11,
+                "y": 11,
                 "z": 0
             },
-            "tileGuid": "66ca3f5bcfc18f7439237032470ba150",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -3,
-                "y": -2,
+                "x": -10,
+                "y": 11,
                 "z": 0
             },
-            "tileGuid": "300db432924ead1428e62d81d8fe2815",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -2,
-                "y": -2,
+                "x": -9,
+                "y": 11,
                 "z": 0
             },
-            "tileGuid": "5a4510cd462239b409fadc8efda4293d",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -1,
-                "y": -2,
+                "x": -8,
+                "y": 11,
                 "z": 0
             },
-            "tileGuid": "947613723e8f40146bd5b70b8ef07c8a",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 0,
-                "y": -2,
+                "x": -7,
+                "y": 11,
                 "z": 0
             },
-            "tileGuid": "6847f2c7760c4c544a925b3e359361b5",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 1,
-                "y": -2,
+                "x": -11,
+                "y": 12,
                 "z": 0
             },
-            "tileGuid": "b1a104c848dc9914fbd7c989f0f2453e",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 2,
-                "y": -2,
+                "x": -10,
+                "y": 12,
                 "z": 0
             },
-            "tileGuid": "300db432924ead1428e62d81d8fe2815",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -3,
-                "y": -1,
+                "x": -9,
+                "y": 12,
                 "z": 0
             },
-            "tileGuid": "86cf4be8f6234084195f37148e4d9e77",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -2,
-                "y": -1,
+                "x": -8,
+                "y": 12,
                 "z": 0
             },
-            "tileGuid": "009df6a3855ada64687340b2dc589a8a",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -1,
-                "y": -1,
+                "x": -7,
+                "y": 12,
                 "z": 0
             },
-            "tileGuid": "86cf4be8f6234084195f37148e4d9e77",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 0,
-                "y": -1,
+                "x": -11,
+                "y": 13,
                 "z": 0
             },
-            "tileGuid": "6b13482e7606f6241ab29ae8528dde79",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 1,
-                "y": -1,
+                "x": -10,
+                "y": 13,
                 "z": 0
             },
-            "tileGuid": "5a4510cd462239b409fadc8efda4293d",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 2,
-                "y": -1,
+                "x": -9,
+                "y": 13,
                 "z": 0
             },
-            "tileGuid": "009df6a3855ada64687340b2dc589a8a",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -2,
-                "y": 0,
+                "x": -8,
+                "y": 13,
                 "z": 0
             },
-            "tileGuid": "947613723e8f40146bd5b70b8ef07c8a",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -1,
-                "y": 0,
+                "x": -7,
+                "y": 13,
                 "z": 0
             },
-            "tileGuid": "947613723e8f40146bd5b70b8ef07c8a",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 0,
-                "y": 0,
+                "x": -11,
+                "y": 14,
                 "z": 0
             },
-            "tileGuid": "7fd5a945dc841fa40b7287830e0d453a",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 1,
-                "y": 0,
+                "x": -10,
+                "y": 14,
                 "z": 0
             },
-            "tileGuid": "86cf4be8f6234084195f37148e4d9e77",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 2,
-                "y": 0,
+                "x": -9,
+                "y": 14,
                 "z": 0
             },
-            "tileGuid": "c0c59f6c62748a044b51441fdb839b88",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": 3,
-                "y": 0,
+                "x": -8,
+                "y": 14,
                 "z": 0
             },
-            "tileGuid": "5a4510cd462239b409fadc8efda4293d",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         },
         {
             "position": {
-                "x": -2,
-                "y": 1,
+                "x": -7,
+                "y": 14,
                 "z": 0
             },
-            "tileGuid": "7fd5a945dc841fa40b7287830e0d453a",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": -1,
-                "y": 1,
-                "z": 0
-            },
-            "tileGuid": "66ca3f5bcfc18f7439237032470ba150",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 0,
-                "y": 1,
-                "z": 0
-            },
-            "tileGuid": "6b13482e7606f6241ab29ae8528dde79",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 1,
-                "y": 1,
-                "z": 0
-            },
-            "tileGuid": "6847f2c7760c4c544a925b3e359361b5",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 2,
-                "y": 1,
-                "z": 0
-            },
-            "tileGuid": "300db432924ead1428e62d81d8fe2815",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 3,
-                "y": 1,
-                "z": 0
-            },
-            "tileGuid": "86cf4be8f6234084195f37148e4d9e77",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": -2,
-                "y": 2,
-                "z": 0
-            },
-            "tileGuid": "009df6a3855ada64687340b2dc589a8a",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": -1,
-                "y": 2,
-                "z": 0
-            },
-            "tileGuid": "5a4510cd462239b409fadc8efda4293d",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 0,
-                "y": 2,
-                "z": 0
-            },
-            "tileGuid": "947613723e8f40146bd5b70b8ef07c8a",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 1,
-                "y": 2,
-                "z": 0
-            },
-            "tileGuid": "6847f2c7760c4c544a925b3e359361b5",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 2,
-                "y": 2,
-                "z": 0
-            },
-            "tileGuid": "86cf4be8f6234084195f37148e4d9e77",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 3,
-                "y": 2,
-                "z": 0
-            },
-            "tileGuid": "6b13482e7606f6241ab29ae8528dde79",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 2,
-                "y": 3,
-                "z": 0
-            },
-            "tileGuid": "300db432924ead1428e62d81d8fe2815",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 3,
-                "y": 3,
-                "z": 0
-            },
-            "tileGuid": "86cf4be8f6234084195f37148e4d9e77",
+            "tileGuid": "dd212158944572646a03f2459e204148",
             "isDoor": false
         }
     ],
     "wallTiles": [
         {
             "position": {
-                "x": -5,
-                "y": -3,
+                "x": -12,
+                "y": 10,
                 "z": 0
             },
-            "tileGuid": "fbb223b672169ae4cb03fca1563652e0",
+            "tileGuid": "9c95f4d33bc93774880a3517b15cb100",
             "isDoor": false
         },
         {
             "position": {
-                "x": -4,
-                "y": -3,
+                "x": -11,
+                "y": 10,
                 "z": 0
             },
-            "tileGuid": "3f590a9dcb32ce6409117608f35b9cfa",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": -3,
-                "y": -3,
+                "x": -10,
+                "y": 10,
                 "z": 0
             },
-            "tileGuid": "3f590a9dcb32ce6409117608f35b9cfa",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": -2,
-                "y": -3,
+                "x": -9,
+                "y": 10,
                 "z": 0
             },
-            "tileGuid": "3f590a9dcb32ce6409117608f35b9cfa",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": -1,
-                "y": -3,
+                "x": -7,
+                "y": 10,
                 "z": 0
             },
-            "tileGuid": "3f590a9dcb32ce6409117608f35b9cfa",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": 1,
-                "y": -3,
+                "x": -6,
+                "y": 10,
                 "z": 0
             },
-            "tileGuid": "3f590a9dcb32ce6409117608f35b9cfa",
+            "tileGuid": "bdde13b5d93243f4f8ed7bdf5bc36a86",
             "isDoor": false
         },
         {
             "position": {
-                "x": 2,
-                "y": -3,
+                "x": -12,
+                "y": 11,
                 "z": 0
             },
-            "tileGuid": "3f590a9dcb32ce6409117608f35b9cfa",
+            "tileGuid": "735d883e460cb0f46aa25864f4af649f",
             "isDoor": false
         },
         {
             "position": {
-                "x": 3,
-                "y": -3,
+                "x": -6,
+                "y": 11,
                 "z": 0
             },
-            "tileGuid": "44526d86ce9128c45b057402222d535b",
+            "tileGuid": "8fdd57c779deac647ad3f930f2a5c1c6",
             "isDoor": false
         },
         {
             "position": {
-                "x": -5,
-                "y": -2,
+                "x": -12,
+                "y": 12,
                 "z": 0
             },
-            "tileGuid": "b8843b530befb8e4188c4adada1d4590",
+            "tileGuid": "735d883e460cb0f46aa25864f4af649f",
             "isDoor": false
         },
         {
             "position": {
-                "x": 3,
-                "y": -2,
+                "x": -6,
+                "y": 12,
                 "z": 0
             },
-            "tileGuid": "f60e86fece0804041bc857b3be17f691",
+            "tileGuid": "8fdd57c779deac647ad3f930f2a5c1c6",
             "isDoor": false
         },
         {
             "position": {
-                "x": -5,
-                "y": -1,
+                "x": -12,
+                "y": 13,
                 "z": 0
             },
-            "tileGuid": "4b2cc73594d25b94bae1f42d0ad0d71c",
+            "tileGuid": "735d883e460cb0f46aa25864f4af649f",
             "isDoor": false
         },
         {
             "position": {
-                "x": -4,
-                "y": -1,
+                "x": -6,
+                "y": 13,
                 "z": 0
             },
-            "tileGuid": "e8bd2dbed7802154989f8182978f461c",
+            "tileGuid": "8fdd57c779deac647ad3f930f2a5c1c6",
             "isDoor": false
         },
         {
             "position": {
-                "x": 3,
-                "y": -1,
+                "x": -12,
+                "y": 14,
                 "z": 0
             },
-            "tileGuid": "8d489c849e793f44fa552d97a9fe1a65",
+            "tileGuid": "735d883e460cb0f46aa25864f4af649f",
             "isDoor": false
         },
         {
             "position": {
-                "x": 4,
-                "y": -1,
+                "x": -6,
+                "y": 14,
                 "z": 0
             },
-            "tileGuid": "44526d86ce9128c45b057402222d535b",
+            "tileGuid": "8fdd57c779deac647ad3f930f2a5c1c6",
             "isDoor": false
         },
         {
             "position": {
-                "x": -4,
-                "y": 0,
+                "x": -12,
+                "y": 15,
                 "z": 0
             },
-            "tileGuid": "4b2cc73594d25b94bae1f42d0ad0d71c",
+            "tileGuid": "935e0ca0f4224ff43b279b308ff4274a",
             "isDoor": false
         },
         {
             "position": {
-                "x": -3,
-                "y": 0,
+                "x": -11,
+                "y": 15,
                 "z": 0
             },
-            "tileGuid": "e8bd2dbed7802154989f8182978f461c",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": 4,
-                "y": 0,
+                "x": -9,
+                "y": 15,
                 "z": 0
             },
-            "tileGuid": "f60e86fece0804041bc857b3be17f691",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": -3,
-                "y": 1,
+                "x": -8,
+                "y": 15,
                 "z": 0
             },
-            "tileGuid": "b8843b530befb8e4188c4adada1d4590",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": 4,
-                "y": 1,
+                "x": -7,
+                "y": 15,
                 "z": 0
             },
-            "tileGuid": "f60e86fece0804041bc857b3be17f691",
+            "tileGuid": "9617749f088108b41add3c6b1334bb0c",
             "isDoor": false
         },
         {
             "position": {
-                "x": -3,
-                "y": 2,
+                "x": -6,
+                "y": 15,
                 "z": 0
             },
-            "tileGuid": "b8843b530befb8e4188c4adada1d4590",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 4,
-                "y": 2,
-                "z": 0
-            },
-            "tileGuid": "f60e86fece0804041bc857b3be17f691",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": -3,
-                "y": 3,
-                "z": 0
-            },
-            "tileGuid": "4b2cc73594d25b94bae1f42d0ad0d71c",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": -1,
-                "y": 3,
-                "z": 0
-            },
-            "tileGuid": "e8e454f68b0d85f42b194a83473ab24f",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 0,
-                "y": 3,
-                "z": 0
-            },
-            "tileGuid": "e8e454f68b0d85f42b194a83473ab24f",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 1,
-                "y": 3,
-                "z": 0
-            },
-            "tileGuid": "e8bd2dbed7802154989f8182978f461c",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 4,
-                "y": 3,
-                "z": 0
-            },
-            "tileGuid": "f60e86fece0804041bc857b3be17f691",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 1,
-                "y": 4,
-                "z": 0
-            },
-            "tileGuid": "4b2cc73594d25b94bae1f42d0ad0d71c",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 2,
-                "y": 4,
-                "z": 0
-            },
-            "tileGuid": "e8e454f68b0d85f42b194a83473ab24f",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 3,
-                "y": 4,
-                "z": 0
-            },
-            "tileGuid": "e8e454f68b0d85f42b194a83473ab24f",
-            "isDoor": false
-        },
-        {
-            "position": {
-                "x": 4,
-                "y": 4,
-                "z": 0
-            },
-            "tileGuid": "72d89357b76e81a49a92f5ac037a14f5",
+            "tileGuid": "053c4ad900fc01741ab6a57bd1100724",
             "isDoor": false
         }
     ],
     "doorTiles": [
         {
             "position": {
-                "x": 0,
-                "y": -3,
+                "x": -8,
+                "y": 10,
                 "z": 0
             },
-            "tileGuid": "825e41f1a08fecb44a06e15d34faba52",
+            "tileGuid": "31ef8d5c6c7e83940be4b34349d0e3d7",
             "isDoor": true
         },
         {
             "position": {
-                "x": -2,
-                "y": 3,
+                "x": -10,
+                "y": 15,
                 "z": 0
             },
-            "tileGuid": "825e41f1a08fecb44a06e15d34faba52",
+            "tileGuid": "31ef8d5c6c7e83940be4b34349d0e3d7",
             "isDoor": true
         }
     ]

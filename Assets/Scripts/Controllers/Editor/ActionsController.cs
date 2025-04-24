@@ -26,8 +26,14 @@ namespace Controllers.Editor
             var painter = gen?.TilemapPainter;
             if (gen == null || painter == null) return;
 
-            var allWalkables = gen.RunGeneration(true, gen.Origin).ToList();
-            if (allWalkables.Count == 0) return;
+            var hashWalkables = gen.RunGeneration(true, gen.Origin);
+            if (hashWalkables == null || hashWalkables.Count == 0)
+            {
+                return;
+            }
+            if (hashWalkables.Count == 0) return;
+            
+            var allWalkables = hashWalkables.ToList();
 
             painter.ResetAllTiles();
 
