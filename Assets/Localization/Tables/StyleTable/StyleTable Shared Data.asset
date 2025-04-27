@@ -171,6 +171,10 @@ MonoBehaviour:
     m_Key: DeletePreset
     m_Metadata:
       m_Items: []
+  - m_Id: 5042755743944704
+    m_Key: DeleteTIle
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

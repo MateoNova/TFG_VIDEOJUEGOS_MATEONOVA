@@ -204,6 +204,10 @@ MonoBehaviour:
     m_Localized: Esborrar preset
     m_Metadata:
       m_Items: []
+  - m_Id: 5042755743944704
+    m_Localized: Esborrar rajola
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
