@@ -64,6 +64,7 @@
         public const string StyleClearFloorTiles = "ClearAllFloorTiles";
         public const string StylePriority = "Priority";
         public const string StyleNoSelected = "NoSelected";
+        public const string StyleDeleteTile = "DeleteTIle";
 
         # endregion
 

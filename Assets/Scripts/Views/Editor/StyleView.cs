@@ -306,12 +306,32 @@ namespace Views.Editor
 
             var cont = StyleUtils.TileContainer(); 
             var label = GetLabelForWalkableTile(walkables[tileIdx]); 
+            
+            label.RegisterCallback<MouseDownEvent>(evt =>
+            {
+                var text = LocalizationUIHelper.SetLocalizedText(LocalizationKeysHelper.StyleDeleteTile,
+                    LocalizationKeysHelper.StyleTable);
+                if (evt.button != (int)MouseButton.RightMouse) return;
+                var menu = new GenericMenu();
+                menu.AddItem(new GUIContent(text), false, () =>
+                {
+                    walkables.RemoveAt(tileIdx);
+                    if (tileIdx < priorities.Count)
+                        priorities.RemoveAt(tileIdx);
+
+                    EditorUtility.SetDirty(preset);
+                    RefreshUI();
+                });
+                menu.ShowAsContext();
+                evt.StopPropagation();
+            });
+        
             cont.Add(label);
 
             // Add a button for selecting a tile with a preview image
             cont.Add(new IMGUIContainer(() =>
                 {
-                    var curr = walkables[tileIdx]; // Current tile
+                    var curr = walkables[tileIdx];
                     var tex = GetPreviewTexture(curr); 
                     var size = Utils.Utils.GetPreviewTileSize();
 
@@ -342,7 +362,7 @@ namespace Views.Editor
             var intF = StyleUtils.SimpleIntField(priorities[tileIdx]);
             intF.RegisterValueChangedCallback(evt =>
             {
-                priorities[tileIdx] = evt.newValue; // Update the priority value
+                priorities[tileIdx] = evt.newValue;
                 EditorUtility.SetDirty(preset);
             });
             row.Add(intF);
