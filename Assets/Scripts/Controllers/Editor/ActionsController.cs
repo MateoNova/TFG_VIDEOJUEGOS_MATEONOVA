@@ -15,7 +15,7 @@ namespace Controllers.Editor
         /// <summary>
         /// Indicates whether the dungeon should be cleared before generating a new one.
         /// </summary>
-        public bool ClearDungeonToggle { get; private set; } = true;
+        public static bool ClearDungeonToggle { get; private set; } = true;
 
         /// <summary>
         /// Generates a dungeon using the current generator and applies biome-based painting.
@@ -26,7 +26,7 @@ namespace Controllers.Editor
             var painter = gen?.TilemapPainter;
             if (gen == null || painter == null) return;
 
-            var hashWalkables = gen.RunGeneration(true, gen.Origin);
+            var hashWalkables = gen.RunGeneration(ClearDungeonToggle, gen.Origin);
             if (hashWalkables == null || hashWalkables.Count == 0)
             {
                 return;
@@ -34,9 +34,7 @@ namespace Controllers.Editor
             if (hashWalkables.Count == 0) return;
             
             var allWalkables = hashWalkables.ToList();
-
-            painter.ResetAllTiles();
-
+            
             var (presets, coverages) = GetActivePresetsAndCoverages(painter);
             if (presets.Count == 0) return;
 

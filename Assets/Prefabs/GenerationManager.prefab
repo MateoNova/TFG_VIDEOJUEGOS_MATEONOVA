@@ -315,6 +315,58 @@ MonoBehaviour:
   corridorCount: 30
   roomPercentage: 0.8
   corridorWidth: 1
+--- !u!1 &4432916588241711176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3055055603820513925}
+  - component: {fileID: 4091125708900481352}
+  m_Layer: 0
+  m_Name: CellularAutomataGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3055055603820513925
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4432916588241711176}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4971274683780202103}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4091125708900481352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4432916588241711176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 218613e0fdef4332b684486932ddc4ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilemapPainter: {fileID: 4841484267194583844}
+  origin: {x: 0, y: 0}
+  width: 100
+  height: 100
+  initialFillPercent: 0.45
+  smoothIterations: 5
+  birthLimit: 4
+  deathLimit: 3
 --- !u!1 &5300050748693222028
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,12 +582,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e11540d13f24937bf4a62d0ee88e7c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tilesetPresets: []
+  _tilesetPresets:
+  - {fileID: 11400000, guid: 1d1a8bfb5e812ca41a5f54f378c9c4a0, type: 2}
+  - {fileID: 11400000, guid: d69ef4f5a9b30ac4489c5ad19093d213, type: 2}
+  - {fileID: 11400000, guid: 5887db857ac8c0941b048c5e2f8dd8ed, type: 2}
   walkableTilemap: {fileID: 7209869302509103302}
   wallTilemap: {fileID: 3826764859063543759}
   doorTilemap: {fileID: 3926002330551509252}
-  doorClosed: {fileID: 11400000, guid: 825e41f1a08fecb44a06e15d34faba52, type: 2}
-  doorOpen: {fileID: 11400000, guid: a2570766bf9d8bc4c89e83dd4af668f5, type: 2}
+  _presetCoverages:
+  - 50
+  - 50
 --- !u!1 &6359850700630042422
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,6 +675,7 @@ Transform:
   - {fileID: 6101538149877583754}
   - {fileID: 2407707290368104602}
   - {fileID: 2555321180088636959}
+  - {fileID: 3055055603820513925}
   m_Father: {fileID: 1853057260870522240}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8038784555793735833

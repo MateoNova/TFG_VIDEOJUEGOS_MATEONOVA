@@ -107,7 +107,7 @@ namespace Views.Editor
         {
             var clearToggle = StyleUtils.SimpleToggle(
                 string.Empty,
-                _actionsController.ClearDungeonToggle,
+                ActionsController.ClearDungeonToggle,
                 string.Empty
             );
             ConfigureClearToggle(clearToggle);

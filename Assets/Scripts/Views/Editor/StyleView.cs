@@ -467,7 +467,6 @@ namespace Views.Editor
                     if (nt == null) return;
                     field.SetValue(preset, nt);
                     EditorUtility.SetDirty(preset);
-                    lbl.text = Utils.Utils.AddSpacesToCamelCase(nt.name);
                 })
                 { style = { height = Utils.Utils.GetPreviewTileSize() } });
 
