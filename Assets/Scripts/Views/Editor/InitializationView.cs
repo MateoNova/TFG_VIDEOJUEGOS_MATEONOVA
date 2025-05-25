@@ -53,7 +53,7 @@ namespace Views.Editor
         /// <summary>
         /// Creates a foldout for the initialization view.
         /// </summary>
-        private Foldout CreateFoldout()
+        private static Foldout CreateFoldout()
         {
             var foldout = StyleUtils.ModernFoldout(string.Empty);
             foldout.SetLocalizedText(LocalizationKeysHelper.InitFoldout,
@@ -64,7 +64,7 @@ namespace Views.Editor
         /// <summary>
         /// Creates a dropdown field for selecting the language.
         /// </summary>
-        private DropdownField CreateLanguageSelector()
+        private static DropdownField CreateLanguageSelector()
         {
             var dropdown = StyleUtils.SimpleDropdown();
             dropdown.SetLocalizedTitle(LocalizationKeysHelper.InitLanguageDropdown,
@@ -85,7 +85,7 @@ namespace Views.Editor
         /// <summary>
         /// Populates the language dropdown with available locales.
         /// </summary>
-        private void PopulateDropdown(DropdownField dropdown)
+        private static void PopulateDropdown(DropdownField dropdown)
         {
             var availableLocales = LocalizationSettings.AvailableLocales?.Locales;
             if (availableLocales == null)
@@ -128,7 +128,7 @@ namespace Views.Editor
         /// <summary>
         /// Adds a button to the specified container.
         /// </summary>
-        private void AddButton(VisualElement container, string key, Action onClick, bool isPrimary = false)
+        private static void AddButton(VisualElement container, string key, Action onClick, bool isPrimary = false)
         {
             var button = StyleUtils.ButtonInRowContainer(string.Empty, onClick, isPrimary);
             button.SetLocalizedText(key, LocalizationKeysHelper.InitTable);

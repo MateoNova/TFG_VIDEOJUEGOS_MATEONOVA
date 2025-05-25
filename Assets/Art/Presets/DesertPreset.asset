@@ -1,0 +1,304 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0529b97667a4a9b935624147353860d, type: 3}
+  m_Name: DesertPreset
+  m_EditorClassIdentifier: 
+  walkableTileBases:
+  - {fileID: 11400000, guid: 012c1284d00446a4cb03fe58b57341ba, type: 2}
+  - {fileID: 11400000, guid: 4569e5a9be3717e4291a1132f50ae7a1, type: 2}
+  - {fileID: 11400000, guid: 354e21bf6891dfb4aaaecf4d46755791, type: 2}
+  - {fileID: 11400000, guid: c8ead9a546d05ba4bb9ff2cc438c45df, type: 2}
+  - {fileID: 11400000, guid: a3b90b442455ab04db791d957afe4391, type: 2}
+  - {fileID: 11400000, guid: a265d01006c8cf340850075e08c8563e, type: 2}
+  - {fileID: 11400000, guid: 0065fd3646f9c794f8e79cca2bd9ff94, type: 2}
+  - {fileID: 11400000, guid: 92a1b9462cdd4674f811f604e7e4cfbd, type: 2}
+  walkableTilesPriorities: 0100000001000000010000000100000001000000010000000100000001000000
+  randomWalkableTilesPlacement: 0
+  upWall: {fileID: 11400000, guid: b21ee1e9eb002194f9f17254b5844905, type: 2}
+  downWall: {fileID: 11400000, guid: fba330bfd6a8e554eb06721044c09bda, type: 2}
+  leftWall: {fileID: 11400000, guid: 21ca32f2e17ec5c4cb652d1a0001096a, type: 2}
+  rightWall: {fileID: 11400000, guid: 2852cbf303585c741897cba3a82793e4, type: 2}
+  topLeftWall: {fileID: 11400000, guid: 1682fcdce1680b241bf0bfa38e4ede0e, type: 2}
+  topRightWall: {fileID: 11400000, guid: 46178e9262ed74e44ab270e86abcd766, type: 2}
+  bottomLeftWall: {fileID: 11400000, guid: 3a1db32d71f6da846a8416aa18793ee2, type: 2}
+  bottomRightWall: {fileID: 11400000, guid: 1bcc1678851c23e4497f3a0097228571, type: 2}
+  allCornersWall: {fileID: 11400000, guid: 5483f379bbbf21a4880702fbcecb88bb, type: 2}
+  topLeftInnerWall: {fileID: 11400000, guid: 257e1074e765400448fa7e4c8833080c, type: 2}
+  topRightInnerWall: {fileID: 11400000, guid: b5cb491f8c74c764698afc40adf08dc9, type: 2}
+  bottomLeftInnerWall: {fileID: 11400000, guid: 95223219f63dbbb4dbab2d45ad796a54, type: 2}
+  bottomRightInnerWall: {fileID: 11400000, guid: 50d298793ac85434da5847a066a53833, type: 2}
+  tripleExceptUpWall: {fileID: 11400000, guid: 7d4344cc707788545a11dd88745a59f8, type: 2}
+  tripleExcetDownWall: {fileID: 11400000, guid: 66c4ea6b48783f641819c3650242ee2d, type: 2}
+  tripleExceptLeftWall: {fileID: 11400000, guid: 79785627e274e154e94b1e1ae468a255, type: 2}
+  tripleExceptRightWall: {fileID: 11400000, guid: f9b42a5267a25fe4cbe7f021ad2be842, type: 2}
+  tripleExceptLeftInnerWall: {fileID: 11400000, guid: b301037facad1ae4687c8c421ad4cef4, type: 2}
+  tripleExceptRightInnerWall: {fileID: 11400000, guid: 3aaf808428bcc9a4381965b680dfebec, type: 2}
+  aloneWall: {fileID: 11400000, guid: 5906e4be302207d4d887034f2548a7ea, type: 2}
+  doorClosed: {fileID: 11400000, guid: 0d6165e6c2f58fd4ead0797b9f82e91e, type: 2}
+  doorOpen: {fileID: 11400000, guid: b4a33cb36c96ea64e9c7182194d8341b, type: 2}
+  maskTiles:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
