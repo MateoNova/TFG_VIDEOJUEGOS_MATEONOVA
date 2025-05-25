@@ -30,11 +30,19 @@ namespace Views.Editor
         /// </summary>
         private DropdownField dropdown;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SelectionView"/> class.
+        /// Subscribes to the locale change event to update UI elements when the selected locale changes.
+        /// </summary>
         public SelectionView()
         {
             LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
         }
 
+        /// <summary>
+        /// Cleans up the <see cref="SelectionView"/> instance.
+        /// Unsubscribes from the locale change event to prevent memory leaks.
+        /// </summary>
         ~SelectionView()
         {
             LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
