@@ -26,6 +26,10 @@ MonoBehaviour:
     m_Localized: "Obrir finestra del gr\xE0fic."
     m_Metadata:
       m_Items: []
+  - m_Id: 15107320678617088
+    m_Localized: Connector de Nodes
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

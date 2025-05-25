@@ -26,6 +26,10 @@ MonoBehaviour:
     m_Localized: Open Graph Window
     m_Metadata:
       m_Items: []
+  - m_Id: 15107320678617088
+    m_Localized: Node Connector
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

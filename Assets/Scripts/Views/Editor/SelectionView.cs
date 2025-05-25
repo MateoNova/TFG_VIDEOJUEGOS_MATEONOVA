@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UIElements;
 using SelectionController = Controllers.Editor.SelectionController;
 using StyleUtils = Utils.StyleUtils;
@@ -20,12 +21,32 @@ namespace Views.Editor
         private readonly SelectionController controller = new();
 
         /// <summary>
+        /// The container for the UI elements of the selection view.
+        /// </summary>
+        private VisualElement _container;
+
+        /// <summary>
+        /// The dropdown field for selecting a generator.
+        /// </summary>
+        private DropdownField dropdown;
+
+        public SelectionView()
+        {
+            LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+        }
+
+        ~SelectionView()
+        {
+            LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+        }
+
+        /// <summary>
         /// Creates the UI for the generator selection view.
         /// </summary>
         /// <returns>A <see cref="VisualElement"/> containing the UI elements for generator selection.</returns>
         public VisualElement CreateUI()
         {
-            var container = StyleUtils.SimpleContainer();
+            _container = StyleUtils.SimpleContainer();
 
             var foldout = StyleUtils.ModernFoldout(string.Empty);
             foldout.SetLocalizedText(LocalizationKeysHelper.SelectionFoldout, LocalizationKeysHelper.SelectionTable);
@@ -35,8 +56,8 @@ namespace Views.Editor
             if (cachedNames == null || cachedNames.Count == 0) AddHelpLabel(foldout);
             else AddDropdown(cachedNames, foldout);
 
-            container.Add(foldout);
-            return container;
+            _container.Add(foldout);
+            return _container;
         }
 
         /// <summary>
@@ -46,11 +67,23 @@ namespace Views.Editor
         /// <param name="foldout">The foldout to which the dropdown will be added.</param>
         private void AddDropdown(List<string> cachedNames, Foldout foldout)
         {
-            var dropdown = StyleUtils.SimpleDropdown();
+            dropdown = StyleUtils.SimpleDropdown();
             dropdown.SetLocalizedTitle(LocalizationKeysHelper.SelectionGeneratorDropdown,
                 LocalizationKeysHelper.SelectionTable);
 
             dropdown.choices = cachedNames;
+
+            dropdown.formatListItemCallback = generatorName =>
+            {
+                var localized = LocalizationUIHelper.GetGeneratorsDisplayName(generatorName + "Table");
+                return string.IsNullOrEmpty(localized) ? generatorName : localized;
+            };
+
+            dropdown.formatSelectedValueCallback = generatorName =>
+            {
+                var localized = LocalizationUIHelper.GetGeneratorsDisplayName(generatorName + "Table");
+                return string.IsNullOrEmpty(localized) ? generatorName : localized;
+            };
 
             var selectedIndex = controller.SelectedGeneratorIndex();
             if (selectedIndex < 0 || selectedIndex >= cachedNames.Count)
@@ -76,6 +109,24 @@ namespace Views.Editor
                 LocalizationKeysHelper.SelectionTable);
 
             foldout.Add(helpLabel);
+        }
+
+        /// <summary>
+        /// Handles locale changes by updating the UI elements in the selection view.
+        /// </summary>
+        private void OnLocaleChanged(UnityEngine.Localization.Locale locale)
+        {
+            if (dropdown == null || _container == null) return;
+
+            var foldout = _container.Q<Foldout>();
+            if (foldout == null) return;
+            foldout.Clear();
+
+            var cachedNames = controller.CachedGeneratorNames();
+            if (cachedNames == null || cachedNames.Count == 0)
+                AddHelpLabel(foldout);
+            else
+                AddDropdown(cachedNames, foldout);
         }
     }
 }

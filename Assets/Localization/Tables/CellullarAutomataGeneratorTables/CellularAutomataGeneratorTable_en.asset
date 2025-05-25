@@ -10,24 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: GraphBasedGeneratorTable_es
+  m_Name: CellularAutomataGeneratorTable_en
   m_EditorClassIdentifier: 
   m_LocaleId:
-    m_Code: es
-  m_SharedData: {fileID: 11400000, guid: 403664c7bd2b09741ab769d0df101971, type: 2}
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 501215b7aa03b274eb954f9dda9a40cb, type: 2}
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 7965937664
-    m_Localized: Factor de escala para ajustar las posiciones.
-    m_Metadata:
-      m_Items: []
-  - m_Id: 165176840192
-    m_Localized: "Abrir ventana del gr\xE1fico."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 15107320678617088
-    m_Localized: Conector de Nodos
+  - m_Id: 14953648128
+    m_Localized: Organic Caverns
     m_Metadata:
       m_Items: []
   references:

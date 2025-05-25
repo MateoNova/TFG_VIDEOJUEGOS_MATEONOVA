@@ -35,6 +35,10 @@ MonoBehaviour:
     m_Key: CorridorWidthKey
     m_Metadata:
       m_Items: []
+  - m_Id: 15070516533432320
+    m_Key: DisplayName
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

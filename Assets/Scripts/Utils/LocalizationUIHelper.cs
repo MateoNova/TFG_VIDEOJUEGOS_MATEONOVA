@@ -127,5 +127,12 @@ namespace Utils
         {
             return LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
         }
+
+        public static string GetGeneratorsDisplayName(string tableName)
+        {
+            return LocalizationSettings.StringDatabase.GetLocalizedString(
+                LocalizationSettings.StringDatabase.GetTable(tableName) != null ? tableName : "DefaultTable",
+                "DisplayName");
+        }
     }
 }

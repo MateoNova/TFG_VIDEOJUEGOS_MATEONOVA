@@ -11,22 +11,22 @@ namespace Generators
     public class BspGenerator : BaseGenerator
     {
         #region Serialized Fields
-        
+
         [SerializeField, LocalizedTooltip("MinRoomSizeKey", "BSPGeneratorTable")]
         private int minRoomSize = 5;
-        
+
         [SerializeField, LocalizedTooltip("MaxRoomSizeKey", "BSPGeneratorTable")]
         private int maxRoomSize = 20;
-        
+
         [SerializeField, LocalizedTooltip("MaxIterationsKey", "BSPGeneratorTable")]
         private int maxIterations = 5;
-        
+
         [SerializeField, LocalizedTooltip("AspectProportionKey", "BSPGeneratorTable")]
         private float aspectProportion = 1.5f;
-        
+
         [SerializeField, Range(0f, 4f), LocalizedTooltip("CorridorWidthKey", "BSPGeneratorTable")]
         private int corridorWidth = 1;
-        
+
         #endregion
 
         #region Generation Process

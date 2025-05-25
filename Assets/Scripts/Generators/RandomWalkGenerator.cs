@@ -12,40 +12,40 @@ namespace Generators
     public class RandomWalkGenerator : BaseGenerator
     {
         #region Serialized Fields
-        
+
         [SerializeField,
-         LocalizedTooltip("WalkIterationsTooltip", "RandomWalkTooltips")]
+         LocalizedTooltip("WalkIterationsTooltip", "RandomWalkGeneratorTable")]
         private int walkIterations = 10;
-        
+
         [SerializeField,
-         LocalizedTooltip("StepsPerIterationTooltip", "RandomWalkTooltips")]
+         LocalizedTooltip("StepsPerIterationTooltip", "RandomWalkGeneratorTable")]
         private int stepsPerIteration = 10;
-        
+
         [SerializeField,
          Condition("generateCorridors"),
-         LocalizedTooltip("GenerateCorridorsTooltip", "RandomWalkTooltips")]
+         LocalizedTooltip("GenerateCorridorsTooltip", "RandomWalkGeneratorTable")]
         private bool generateCorridors;
-        
+
         [SerializeField,
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("CorridorLengthTooltip", "RandomWalkTooltips")]
+         LocalizedTooltip("CorridorLengthTooltip", "RandomWalkGeneratorTable")]
         private int corridorLength = 10;
-        
+
         [SerializeField,
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("CorridorCountTooltip", "RandomWalkTooltips")]
+         LocalizedTooltip("CorridorCountTooltip", "RandomWalkGeneratorTable")]
         private int corridorCount = 5;
-        
+
         [SerializeField, Range(0f, 1f),
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("RoomPercentageTooltip", "RandomWalkTooltips")]
+         LocalizedTooltip("RoomPercentageTooltip", "RandomWalkGeneratorTable")]
         private float roomPercentage = 0.8f;
-        
+
         [SerializeField, Range(1f, 4f),
          ConditionalField("generateCorridors"),
-         LocalizedTooltip("CorridorWidthTooltip", "RandomWalkTooltips")]
+         LocalizedTooltip("CorridorWidthTooltip", "RandomWalkGeneratorTable")]
         private int corridorWidth = 1;
-        
+
         #endregion
 
         #region Generation Methods
@@ -72,8 +72,6 @@ namespace Generators
             }
 
             return walkableTilesPositions;
-
-            
         }
 
         #endregion

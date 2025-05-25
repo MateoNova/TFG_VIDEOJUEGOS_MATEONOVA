@@ -39,6 +39,10 @@ MonoBehaviour:
     m_Localized: Ancho de los pasillos.
     m_Metadata:
       m_Items: []
+  - m_Id: 15070516533432320
+    m_Localized: Sales particionadas
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

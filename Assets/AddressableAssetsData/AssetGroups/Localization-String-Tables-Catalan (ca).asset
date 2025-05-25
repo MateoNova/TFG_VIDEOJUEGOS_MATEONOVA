@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Catalan (ca)
   m_GUID: 6bf135e60dbbf174983d1df4aaf2a9a2
   m_SerializeEntries:
+  - m_GUID: 1c3d24185bd07c44b89bb4c70e7b85d5
+    m_Address: CellularAutomataGeneratorTable_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3a0cdb3925a99154494cb4dd2dfdd827
     m_Address: SettingsTable_ca
     m_ReadOnly: 1
@@ -41,7 +47,7 @@ MonoBehaviour:
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 846f0e643fc1bf8459eea587b8c57ef4
-    m_Address: RandomWalkTooltips_ca
+    m_Address: RandomWalkGeneratorTable_ca
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ca

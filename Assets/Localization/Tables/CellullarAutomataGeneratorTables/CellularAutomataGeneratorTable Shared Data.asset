@@ -10,31 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
-  m_Name: GraphBasedGeneratorTable Shared Data
+  m_Name: CellularAutomataGeneratorTable Shared Data
   m_EditorClassIdentifier: 
-  m_TableCollectionName: GraphBasedGeneratorTable
-  m_TableCollectionNameGuidString: 403664c7bd2b09741ab769d0df101971
+  m_TableCollectionName: CellularAutomataGeneratorTable
+  m_TableCollectionNameGuidString: 501215b7aa03b274eb954f9dda9a40cb
   m_Entries:
-  - m_Id: 7965937664
-    m_Key: scalingFactor
-    m_Metadata:
-      m_Items: []
-  - m_Id: 165176840192
-    m_Key: OpenGraphWindow
-    m_Metadata:
-      m_Items: []
-  - m_Id: 15107320678617088
+  - m_Id: 14953648128
     m_Key: DisplayName
     m_Metadata:
       m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
-    rid: 1698738075095794193
+    rid: 7445555772844408929
   references:
     version: 2
     RefIds:
-    - rid: 1698738075095794193
+    - rid: 7445555772844408929
       type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
       data:
-        m_CustomEpoch: 1744593024502
+        m_CustomEpoch: 1748195019454

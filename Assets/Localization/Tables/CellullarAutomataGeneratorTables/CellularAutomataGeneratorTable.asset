@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5be51871efa6c3e4eae1703925c8f5ac, type: 3}
+  m_Name: CellularAutomataGeneratorTable
+  m_EditorClassIdentifier: 
+  m_SharedTableData: {fileID: 11400000, guid: 501215b7aa03b274eb954f9dda9a40cb, type: 2}
+  m_Tables:
+  - {fileID: 11400000, guid: 1c3d24185bd07c44b89bb4c70e7b85d5, type: 2}
+  - {fileID: 11400000, guid: 5378e8c5d16807240bdccdfd8b2a9f4b, type: 2}
+  - {fileID: 11400000, guid: 7447f8d7bac35eb44bc80f3cda23a11d, type: 2}
+  m_Extensions: []
+  m_Group: String Table
+  references:
+    version: 2
+    RefIds: []

@@ -42,6 +42,12 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 501215b7aa03b274eb954f9dda9a40cb
+    m_Address: Assets/Localization/Tables/CellullarAutomataGeneratorTables/CellularAutomataGeneratorTable
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 59eb7dd480523604e9a17d8c95795e85
     m_Address: Assets/Localization/Tables/BaseGeneratorTables/BaseGeneratorTable
       Shared Data.asset

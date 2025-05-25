@@ -38,6 +38,10 @@ MonoBehaviour:
     m_Localized: Width of the corridors.
     m_Metadata:
       m_Items: []
+  - m_Id: 15070516533432320
+    m_Localized: Partitioned Room
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
