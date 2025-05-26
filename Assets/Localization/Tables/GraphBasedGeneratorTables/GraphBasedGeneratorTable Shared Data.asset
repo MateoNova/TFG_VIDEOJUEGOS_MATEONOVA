@@ -27,6 +27,10 @@ MonoBehaviour:
     m_Key: DisplayName
     m_Metadata:
       m_Items: []
+  - m_Id: 15406205670166528
+    m_Key: ScalingFactorLabel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

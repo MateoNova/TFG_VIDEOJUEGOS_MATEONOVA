@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: Node Connector
     m_Metadata:
       m_Items: []
+  - m_Id: 15406205670166528
+    m_Localized: Scaling Factor
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

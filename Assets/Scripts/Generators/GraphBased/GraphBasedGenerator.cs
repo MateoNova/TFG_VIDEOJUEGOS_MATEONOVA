@@ -13,7 +13,8 @@ namespace Generators.GraphBased
 
         private GraphGeneratorView _graphView;
 
-        [SerializeField, LocalizedTooltip("scalingFactor", "GraphBasedGeneratorTable")]
+        [SerializeField, LocalizedLabel("ScalingFactorLabel", "GraphBasedGeneratorTable"),
+         LocalizedTooltip("scalingFactor", "GraphBasedGeneratorTable")]
         private float scalingFactor = 0.05f;
 
         private readonly HashSet<Vector2Int> _occupiedDoorPositions = new();
