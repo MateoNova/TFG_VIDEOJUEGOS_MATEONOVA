@@ -19,49 +19,52 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 48466137088
-    m_Localized: "El nombre d'iteracions que realitzar\xE0 l'algorisme de caminada
-      aleat\xF2ria.\r\n\r\n - M\xE9s iteracions resultaran en un calab\xF3s m\xE9s
-      gran i complex."
+    m_Localized: "Quantes vegades es repeteix el proc\xE9s de caminada aleat\xF2ria
+      per crear el disseny del calab\xF3s.\\n\\nSi l\u2019augmentes, el calab\xF3s
+      tindr\xE0 m\xE9s camins i cobrir\xE0 una \xE0rea m\xE9s gran.\\n\\nSi la disminueixes,
+      el calab\xF3s tindr\xE0 menys camins i ser\xE0 m\xE9s compacte."
     m_Metadata:
       m_Items: []
   - m_Id: 35344415100928
-    m_Localized: "Percentatge de posicions potencials de sales a convertir en sales.\r\n\r\n
-      - Valors m\xE9s petits creen menys sales, resultant en un disseny de calab\xF3s
-      m\xE9s dispers.\r\n\r\n - Valors m\xE9s grans creen m\xE9s sales, resultant
-      en un disseny de calab\xF3s m\xE9s dens."
+    m_Localized: "Percentatge de possibles ubicacions que realment es convertiran
+      en habitacions.\\n\\nSi l\u2019augmentes, es crearan m\xE9s habitacions i el
+      calab\xF3s estar\xE0 m\xE9s ple.\\n\\nSi la disminueixes, apareixeran menys
+      habitacions i el calab\xF3s es centrar\xE0 m\xE9s en els passadissos."
     m_Metadata:
       m_Items: []
   - m_Id: 35370461728768
-    m_Localized: "Amplada dels corredors.\r\n\r\n - Valors m\xE9s petits creen corredors
-      m\xE9s estrets, resultant en passadissos m\xE9s ajustats.\r\n\r\n - Valors
-      m\xE9s grans creen corredors m\xE9s amples, resultant en passadissos m\xE9s
-      espaiosos."
+    m_Localized: "Amplada dels passadissos que connecten les habitacions.\\n\\nSi
+      l\u2019augmentes, els passadissos seran m\xE9s amples, facilitant el moviment
+      per\xF2 ocupant m\xE9s espai.\\n\\nSi la disminueixes, els passadissos seran
+      m\xE9s estrets, fent el calab\xF3s m\xE9s ajustat."
     m_Metadata:
       m_Items: []
   - m_Id: 35179767697408
-    m_Localized: "Indicador per determinar si s'han de generar corredors i calcular
-      posicions potencials de sales.\r\n\r\n - Si \xE9s cert, el generador crear\xE0
-      corredors i sales.\r\n\r\n - En cas contrari, crear\xE0 una \xFAnica \xE0rea
-      transitable."
+    m_Localized: "Activa la creaci\xF3 de passadissos estructurats i habitacions
+      al calab\xF3s.\\n\\nSi est\xE0 activat, el calab\xF3s tindr\xE0 passadissos
+      que connecten habitacions, facilitant la navegaci\xF3.\\n\\nSi est\xE0 desactivat,
+      el calab\xF3s ser\xE0 una \xE0rea m\xE9s oberta i aleat\xF2ria sense passadissos
+      definits."
     m_Metadata:
       m_Items: []
   - m_Id: 35276333158400
-    m_Localized: "Longitud de cada corredor.\r\n\r\n - Valors m\xE9s petits creen
-      corredors m\xE9s curts, resultant en un disseny de calab\xF3s m\xE9s compacte.\r\n\r\n
-      - Valors m\xE9s grans creen corredors m\xE9s llargs, resultant en un disseny
-      de calab\xF3s m\xE9s dispers."
+    m_Localized: "Longitud de cada passad\xEDs creat en generar passadissos.\\n\\nSi
+      l\u2019augmentes, els passadissos seran m\xE9s llargs i connectaran zones m\xE9s
+      llunyanes.\\n\\nSi la disminueixes, els passadissos seran m\xE9s curts i el
+      calab\xF3s ser\xE0 m\xE9s compacte."
     m_Metadata:
       m_Items: []
   - m_Id: 35311661780992
-    m_Localized: "Nombre de corredors a generar.\r\n\r\n - Valors m\xE9s petits creen
-      menys corredors, resultant en menys connexions entre sales.\r\n\r\n - Valors
-      m\xE9s grans creen m\xE9s corredors, resultant en m\xE9s connexions entre sales."
+    m_Localized: "Nombre de passadissos generats des del punt d\u2019inici.\\n\\nSi
+      l\u2019augmentes, es crearan m\xE9s passadissos, augmentant la connectivitat.\\n\\nSi
+      la disminueixes, es crearan menys passadissos, fent el calab\xF3s m\xE9s senzill."
     m_Metadata:
       m_Items: []
   - m_Id: 59815934988288
-    m_Localized: "El nombre de passos realitzats en cada iteraci\xF3 de l'algorisme
-      de caminada aleat\xF2ria.\r\n\r\n - M\xE9s passos per iteraci\xF3 crearan camins
-      m\xE9s llargs al calab\xF3s."
+    m_Localized: "Nombre de passos que es fan en cada iteraci\xF3 de la caminada
+      aleat\xF2ria.\\n\\nSi l\u2019augmentes, cada cam\xED ser\xE0 m\xE9s llarg i
+      el calab\xF3s estar\xE0 m\xE9s dispers.\\n\\nSi la disminueixes, cada cam\xED
+      ser\xE0 m\xE9s curt i el calab\xF3s ser\xE0 m\xE9s dens."
     m_Metadata:
       m_Items: []
   - m_Id: 15299550643130368

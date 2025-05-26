@@ -73,9 +73,6 @@ namespace Generators
             CreateCorridors(rootNode, walkableTiles, rooms);
 
             return walkableTiles;
-            /*// Render the dungeon.
-            tilemapPainter.PaintWalkableTiles(walkableTiles);
-            WallGenerator.GenerateWalls(walkableTiles, tilemapPainter);*/
         }
 
         #endregion
