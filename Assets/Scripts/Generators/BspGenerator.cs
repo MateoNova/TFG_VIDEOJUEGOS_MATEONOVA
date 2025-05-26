@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Views.Attributes;
-using WallGenerator = Models.WallGenerator;
 
 namespace Generators
 {
@@ -12,19 +11,25 @@ namespace Generators
     {
         #region Serialized Fields
 
-        [SerializeField, LocalizedTooltip("MinRoomSizeKey", "BSPGeneratorTable")]
+        [SerializeField, LocalizedLabel("MinRoomSizeLabel", "BSPGeneratorTable"),
+         LocalizedTooltip("MinRoomSizeKey", "BSPGeneratorTable")]
         private int minRoomSize = 5;
 
-        [SerializeField, LocalizedTooltip("MaxRoomSizeKey", "BSPGeneratorTable")]
+        [SerializeField, LocalizedLabel("MaxRoomSizeLabel", "BSPGeneratorTable"),
+         LocalizedTooltip("MaxRoomSizeKey", "BSPGeneratorTable")]
         private int maxRoomSize = 20;
 
-        [SerializeField, LocalizedTooltip("MaxIterationsKey", "BSPGeneratorTable")]
+        [SerializeField, LocalizedLabel("MaxIterationsLabel", "BSPGeneratorTable"),
+         LocalizedTooltip("MaxIterationsKey", "BSPGeneratorTable")]
         private int maxIterations = 5;
 
-        [SerializeField, LocalizedTooltip("AspectProportionKey", "BSPGeneratorTable")]
+        [SerializeField, LocalizedLabel("AspectProportionLabel", "BSPGeneratorTable"),
+         LocalizedTooltip("AspectProportionKey", "BSPGeneratorTable")]
         private float aspectProportion = 1.5f;
 
-        [SerializeField, Range(0f, 4f), LocalizedTooltip("CorridorWidthKey", "BSPGeneratorTable")]
+        [SerializeField, LocalizedLabel("CorridorWidthLabel", "BSPGeneratorTable"),
+         LocalizedTooltip("CorridorWidthKey", "BSPGeneratorTable"), Range(0f, 4f)
+        ]
         private int corridorWidth = 1;
 
         #endregion

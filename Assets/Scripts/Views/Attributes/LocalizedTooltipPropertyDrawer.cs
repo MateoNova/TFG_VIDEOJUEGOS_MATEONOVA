@@ -18,10 +18,7 @@ namespace Views.Attributes
 
         // Flag to ensure localization is initialized only once.
         private static bool _isInitialized;
-
-        // Fixed width for the label in the property field.
-        private const float FixedLabelWidth = 150f;
-
+        
         // Static constructor to subscribe to locale change events.
         static LocalizedTooltipPropertyDrawer()
         {
@@ -76,17 +73,21 @@ namespace Views.Attributes
             }
 
             // Save the original label width and set a fixed width for the label.
-            var oldLabelWidth = EditorGUIUtility.labelWidth;
-            EditorGUIUtility.labelWidth = FixedLabelWidth;
+            //var oldLabelWidth = EditorGUIUtility.labelWidth;
+            //EditorGUIUtility.labelWidth = FixedLabelWidth;
+            
+            var content = new GUIContent(label.text, localizedText);
+            EditorGUI.PropertyField(position, property, content, true);
+
 
             // Create a GUIContent with the label text and the localized tooltip.
-            var content = new GUIContent(label.text, localizedText);
+            //var content = new GUIContent(label.text, localizedText);
 
             // Draw the property field with the adjusted position and content.
             EditorGUI.PropertyField(position, property, content, true);
 
             // Restore the original label width.
-            EditorGUIUtility.labelWidth = oldLabelWidth;
+            //EditorGUIUtility.labelWidth = oldLabelWidth;
         }
 
         /// <summary>

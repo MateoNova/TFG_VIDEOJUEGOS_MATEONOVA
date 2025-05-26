@@ -43,6 +43,26 @@ MonoBehaviour:
     m_Localized: Sales particionadas
     m_Metadata:
       m_Items: []
+  - m_Id: 15381682325458944
+    m_Localized: "Tama\xF1o m\xEDnimo de habitaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15387579986644992
+    m_Localized: "Tama\xF1o m\xE1ximo de habitaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15388984554196992
+    m_Localized: "Iteraciones m\xE1ximas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128796311552
+    m_Localized: Ancho del pasillo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128255246336
+    m_Localized: "Proporci\xF3n de aspecto"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

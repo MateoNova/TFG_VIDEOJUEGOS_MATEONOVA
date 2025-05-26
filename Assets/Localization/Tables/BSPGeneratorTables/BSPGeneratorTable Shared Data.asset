@@ -39,6 +39,26 @@ MonoBehaviour:
     m_Key: DisplayName
     m_Metadata:
       m_Items: []
+  - m_Id: 15381682325458944
+    m_Key: MinRoomSizeLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15387579986644992
+    m_Key: MaxRoomSizeLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15388984554196992
+    m_Key: MaxIterationsLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128255246336
+    m_Key: AspectProportionLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128796311552
+    m_Key: CorridorWidthLabel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

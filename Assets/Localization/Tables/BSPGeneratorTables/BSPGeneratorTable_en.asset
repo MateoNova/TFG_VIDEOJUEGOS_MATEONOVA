@@ -42,6 +42,26 @@ MonoBehaviour:
     m_Localized: Partitioned Room
     m_Metadata:
       m_Items: []
+  - m_Id: 15381682325458944
+    m_Localized: Minimum room size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15387579986644992
+    m_Localized: Maximum room size
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15388984554196992
+    m_Localized: Maximum iterations
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128796311552
+    m_Localized: Corridor width
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128255246336
+    m_Localized: Aspect proportion
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

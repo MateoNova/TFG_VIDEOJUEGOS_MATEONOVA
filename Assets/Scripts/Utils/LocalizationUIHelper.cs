@@ -134,5 +134,13 @@ namespace Utils
                 LocalizationSettings.StringDatabase.GetTable(tableName) != null ? tableName : "DefaultTable",
                 "DisplayName");
         }
+
+        public static string GetLocalizedString(string localizedAttrKey, string localizedAttrTable)
+        {
+            return LocalizationSettings.StringDatabase.GetLocalizedString(
+                LocalizationSettings.StringDatabase.GetTable(localizedAttrTable)
+                    ? localizedAttrTable
+                    : "DefaultTable", localizedAttrKey);
+        }
     }
 }

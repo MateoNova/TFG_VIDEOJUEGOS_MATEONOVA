@@ -43,6 +43,26 @@ MonoBehaviour:
     m_Localized: Salas particionades
     m_Metadata:
       m_Items: []
+  - m_Id: 15381682325458944
+    m_Localized: "Mida m\xEDnima de l'habitaci\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15387579986644992
+    m_Localized: "Mida maxima de l'habitaci\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15388984554196992
+    m_Localized: "Iteracions m\xE0ximes"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128796311552
+    m_Localized: "Amplada del passad\xEDs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15389128255246336
+    m_Localized: "Proporci\xF3 d'aspecte"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

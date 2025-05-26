@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 26659950592
-    m_Localized: The script used to render the dungeon is assigned by default.
+    m_Localized: The script used to render the dungeon. is assigned by default.
     m_Metadata:
       m_Items: []
   - m_Id: 154514919424

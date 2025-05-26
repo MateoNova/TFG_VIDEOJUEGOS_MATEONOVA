@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 26659950592
-    m_Localized: "El script utilitzat per renderitzar la masmorra est\xE0 assignat
+    m_Localized: "El script utilitzat per renderitzar la masmorra. Est\xE0 assignat
       per defecte"
     m_Metadata:
       m_Items: []
