@@ -16,13 +16,15 @@ namespace Generators
         /// <summary>
         /// The TilemapPainter used to render the dungeon. This is assigned in the Unity Inspector.
         /// </summary>
-        [SerializeField, LocalizedTooltip("tilemapPainter", "BaseGeneratorTable")]
+        [SerializeField, LocalizedLabel("TilemapPainterLabel", "BaseGeneratorTable"),
+         LocalizedTooltip("tilemapPainter", "BaseGeneratorTable")]
         protected TilemapPainter tilemapPainter;
 
         /// <summary>
         /// The origin point for dungeon generation.
         /// </summary>
-        [SerializeField, LocalizedTooltip("origin", "BaseGeneratorTable")]
+        [SerializeField, LocalizedLabel("OriginLabel", "BaseGeneratorTable"),
+         LocalizedTooltip("origin", "BaseGeneratorTable")]
         protected Vector2Int origin = Vector2Int.zero;
 
         #endregion

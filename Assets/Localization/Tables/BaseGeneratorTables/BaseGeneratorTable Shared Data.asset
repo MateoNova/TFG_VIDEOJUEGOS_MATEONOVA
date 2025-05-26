@@ -23,6 +23,14 @@ MonoBehaviour:
     m_Key: origin
     m_Metadata:
       m_Items: []
+  - m_Id: 15402644068536320
+    m_Key: TilemapPainterLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15402857134985216
+    m_Key: OriginLabel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

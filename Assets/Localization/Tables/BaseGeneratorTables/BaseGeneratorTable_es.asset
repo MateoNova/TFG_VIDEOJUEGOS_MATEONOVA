@@ -27,6 +27,14 @@ MonoBehaviour:
     m_Localized: "El punto de origen para la generaci\xF3n de mazmorras."
     m_Metadata:
       m_Items: []
+  - m_Id: 15402644068536320
+    m_Localized: Pintor de Tilemap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15402857134985216
+    m_Localized: "Or\xEDgen"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

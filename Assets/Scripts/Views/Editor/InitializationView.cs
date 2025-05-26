@@ -16,7 +16,15 @@ namespace Views.Editor
     /// </summary>
     public class InitializationView
     {
+        /// <summary>
+        /// The controller responsible for handling initialization logic.
+        /// </summary>
         private readonly InitializationController _initializationController = new();
+
+        /// <summary>
+        /// The container for the UI elements of the initialization view.
+        /// </summary>
+        private VisualElement _container;
 
         /// <summary>
         /// Subscribes to the ToolOpened event to initialize the scene when the tool is opened.
@@ -40,14 +48,14 @@ namespace Views.Editor
         /// <returns>A <see cref="VisualElement"/> containing the UI elements for initialization actions.</returns>
         public VisualElement CreateUI()
         {
-            var container = StyleUtils.SimpleContainer();
+            _container = StyleUtils.SimpleContainer();
             var foldout = CreateFoldout();
 
             foldout.Add(CreateButtonContainer());
             foldout.Add(CreateLanguageSelector());
 
-            container.Add(foldout);
-            return container;
+            _container.Add(foldout);
+            return _container;
         }
 
         /// <summary>

@@ -27,6 +27,14 @@ MonoBehaviour:
     m_Localized: "El punt d'origen per a la generaci\xF3 de masmorres."
     m_Metadata:
       m_Items: []
+  - m_Id: 15402644068536320
+    m_Localized: Pintor de Tilemap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15402857134985216
+    m_Localized: Origen
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
