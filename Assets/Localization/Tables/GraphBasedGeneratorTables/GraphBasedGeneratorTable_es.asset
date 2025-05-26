@@ -19,7 +19,10 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 7965937664
-    m_Localized: Factor de escala para ajustar las posiciones.
+    m_Localized: "Controla cu\xE1nto se separan las habitaciones al colocarlas en
+      la cuadr\xEDcula.\\n\\nSi lo aumentas, las habitaciones estar\xE1n m\xE1s separadas
+      y la mazmorra ser\xE1 m\xE1s amplia.\\n\\nSi lo disminuyes, las habitaciones
+      estar\xE1n m\xE1s juntas y la mazmorra ser\xE1 m\xE1s compacta."
     m_Metadata:
       m_Items: []
   - m_Id: 165176840192

@@ -19,7 +19,10 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 7965937664
-    m_Localized: Factor d'escala per ajustar les posicions.
+    m_Localized: "Controla com es separen les habitacions en col\xB7locar-les a la
+      graella.\\n\\nSi l\u2019augmentes, les habitacions estaran m\xE9s separades
+      i el calab\xF3s ser\xE0 m\xE9s espai\xF3s.\\n\\nSi la disminueixes, les habitacions
+      estaran m\xE9s juntes i el calab\xF3s ser\xE0 m\xE9s compacte."
     m_Metadata:
       m_Items: []
   - m_Id: 165176840192

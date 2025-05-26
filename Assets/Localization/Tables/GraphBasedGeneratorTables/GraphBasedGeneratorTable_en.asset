@@ -19,7 +19,10 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 7965937664
-    m_Localized: Scaling factor for adjusting positions.
+    m_Localized: Controls how much the rooms are spaced apart when placing them on
+      the grid.\n\nIf you set it higher, rooms will be placed farther apart, making
+      the dungeon more spread out.\n\nIf you set it lower, rooms will be closer together,
+      making the dungeon more compact.
     m_Metadata:
       m_Items: []
   - m_Id: 165176840192
