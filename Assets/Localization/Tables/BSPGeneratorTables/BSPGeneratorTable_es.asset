@@ -19,24 +19,45 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 6216912896
-    m_Localized: "Tama\xF1o m\xEDnimo de las habitaciones."
+    m_Localized: "Tama\xF1o m\xEDnimo posible para cada habitaci\xF3n en la mazmorra
+      generada.\\n\\nSi lo aumentas, las habitaciones siempre ser\xE1n al menos de
+      este tama\xF1o, haciendo que la mazmorra sea m\xE1s espaciosa pero con menos
+      habitaciones.\\n\\nSi lo disminuyes, pueden aparecer habitaciones m\xE1s peque\xF1as,
+      lo que puede hacer que la mazmorra se sienta m\xE1s apretada pero permite m\xE1s
+      habitaciones."
     m_Metadata:
       m_Items: []
   - m_Id: 42547974144
-    m_Localized: "Tama\xF1o m\xE1ximo de las habitaciones."
+    m_Localized: "Tama\xF1o m\xE1ximo posible para cada habitaci\xF3n en la mazmorra.\\n\\nSi
+      lo aumentas, las habitaciones pueden ser muy grandes, dominando el dise\xF1o
+      de la mazmorra.\\n\\nSi lo disminuyes, todas las habitaciones ser\xE1n m\xE1s
+      peque\xF1as, haciendo que la mazmorra se sienta m\xE1s segmentada."
     m_Metadata:
       m_Items: []
   - m_Id: 72314949632
-    m_Localized: "N\xFAmero m\xE1ximo de iteraciones para dividir el espacio."
+    m_Localized: "Cu\xE1ntas veces se divide el espacio de la mazmorra para crear
+      habitaciones y pasillos.\\n\\nSi lo aumentas, la mazmorra tendr\xE1 m\xE1s
+      habitaciones y pasillos, siendo m\xE1s compleja.\\n\\nSi lo disminuyes, la
+      mazmorra tendr\xE1 menos habitaciones, m\xE1s grandes y un dise\xF1o m\xE1s
+      simple."
     m_Metadata:
       m_Items: []
   - m_Id: 92061732864
-    m_Localized: "Umbral de proporci\xF3n de aspecto para decidir la direcci\xF3n
-      de la divisi\xF3n."
+    m_Localized: "Controla cu\xE1n alargadas o cuadradas pueden ser las habitaciones
+      y las divisiones. Afecta si la mazmorra se divide m\xE1s horizontal o verticalmente.\\n\\nSi
+      lo aumentas, las habitaciones y divisiones tender\xE1n a ser m\xE1s alargadas
+      en una direcci\xF3n, creando pasillos o habitaciones largas.\\n\\nSi lo disminuyes,
+      las habitaciones y divisiones ser\xE1n m\xE1s equilibradas, resultando en habitaciones
+      m\xE1s cuadradas."
     m_Metadata:
       m_Items: []
   - m_Id: 113020669952
-    m_Localized: Ancho de los pasillos.
+    m_Localized: "El ancho de los pasillos que conectan las habitaciones en la mazmorra.
+      Los pasillos m\xE1s anchos facilitan el movimiento y hacen que la mazmorra
+      se sienta m\xE1s abierta.\\n\\nSi lo aumentas, los pasillos ser\xE1n m\xE1s
+      anchos, facilitando la navegaci\xF3n pero ocupando m\xE1s espacio.\\n\\nSi
+      lo disminuyes, los pasillos ser\xE1n m\xE1s estrechos, haciendo que la mazmorra
+      se sienta m\xE1s ajustada y posiblemente m\xE1s dif\xEDcil de recorrer."
     m_Metadata:
       m_Items: []
   - m_Id: 15070516533432320

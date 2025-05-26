@@ -76,6 +76,8 @@ namespace Views.Attributes
             //var oldLabelWidth = EditorGUIUtility.labelWidth;
             //EditorGUIUtility.labelWidth = FixedLabelWidth;
             
+            localizedText = localizedText.Replace("\\n", "\n");
+            
             var content = new GUIContent(label.text, localizedText);
             EditorGUI.PropertyField(position, property, content, true);
 

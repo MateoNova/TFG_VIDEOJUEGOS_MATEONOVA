@@ -19,24 +19,44 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 6216912896
-    m_Localized: "Mida m\xEDnima de les habitacions."
+    m_Localized: "Mida m\xEDnima possible per a cada habitaci\xF3 del calab\xF3s
+      generat.\\n\\nSi l\u2019augmentes, les habitacions sempre seran com a m\xEDnim
+      d\u2019aquesta mida, fent el calab\xF3s m\xE9s espai\xF3s per\xF2 amb menys
+      habitacions.\\n\\nSi la disminueixes, poden apar\xE8ixer habitacions m\xE9s
+      petites, fent el calab\xF3s m\xE9s atape\xEFt per\xF2 amb m\xE9s habitacions."
     m_Metadata:
       m_Items: []
   - m_Id: 42547974144
-    m_Localized: "Mida m\xE0xima de les habitacions."
+    m_Localized: "Mida m\xE0xima possible per a cada habitaci\xF3 del calab\xF3s.\\n\\nSi
+      l\u2019augmentes, les habitacions poden ser molt grans i dominar l\u2019estructura
+      del calab\xF3s.\\n\\nSi la disminueixes, totes les habitacions seran m\xE9s
+      petites, fent el calab\xF3s m\xE9s fragmentat."
     m_Metadata:
       m_Items: []
   - m_Id: 72314949632
-    m_Localized: "Nombre m\xE0xim d'iteracions per dividir l'espai."
+    m_Localized: "Quantes vegades es divideix l\u2019espai del calab\xF3s per crear
+      habitacions i passadissos.\\n\\nSi l\u2019augmentes, el calab\xF3s tindr\xE0
+      m\xE9s habitacions i passadissos, sent m\xE9s complex.\\n\\nSi la disminueixes,
+      el calab\xF3s tindr\xE0 menys habitacions, m\xE9s grans i un disseny m\xE9s
+      senzill."
     m_Metadata:
       m_Items: []
   - m_Id: 92061732864
-    m_Localized: "Llindar de proporci\xF3 d'aspecte per decidir la direcci\xF3 de
-      la divisi\xF3."
+    m_Localized: "Controla com d\u2019allargades o quadrades poden ser les habitacions
+      i les divisions. Afecta si el calab\xF3s es divideix m\xE9s horitzontalment
+      o verticalment.\\n\\nSi l\u2019augmentes, les habitacions i divisions tendiran
+      a ser m\xE9s allargades en una direcci\xF3, creant passadissos o habitacions
+      llargues.\\n\\nSi la disminueixes, les habitacions i divisions seran m\xE9s
+      equilibrades, resultant en habitacions m\xE9s quadrades."
     m_Metadata:
       m_Items: []
   - m_Id: 113020669952
-    m_Localized: Amplada dels corredors.
+    m_Localized: "L\u2019amplada dels passadissos que connecten les habitacions del
+      calab\xF3s. Passadissos m\xE9s amples faciliten el moviment i fan el calab\xF3s
+      m\xE9s obert.\\n\\nSi l\u2019augmentes, els passadissos seran m\xE9s amples,
+      facilitant la navegaci\xF3 per\xF2 ocupant m\xE9s espai.\\n\\nSi la disminueixes,
+      els passadissos seran m\xE9s estrets, fent el calab\xF3s m\xE9s ajustat i possiblement
+      m\xE9s dif\xEDcil de rec\xF3rrer."
     m_Metadata:
       m_Items: []
   - m_Id: 15070516533432320

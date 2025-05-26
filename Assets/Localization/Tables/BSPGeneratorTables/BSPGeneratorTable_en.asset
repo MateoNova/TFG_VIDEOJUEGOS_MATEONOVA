@@ -19,23 +19,40 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 6216912896
-    m_Localized: Minimum size of the rooms.
+    m_Localized: Minimum possible size for each room in the generated dungeon.\n\nIf
+      you set it higher, rooms will always be at least this big, making the dungeon
+      feel more spacious but possibly with fewer rooms.\n\nIf you set it lower, smaller
+      rooms can appear, which may make the dungeon feel more cramped but allows for
+      more rooms.
     m_Metadata:
       m_Items: []
   - m_Id: 42547974144
-    m_Localized: Maximum size of the rooms.
+    m_Localized: Maximum possible size for each room in the dungeon.\n\nIf you set
+      it higher, rooms can become very large, possibly dominating the dungeon layout.\n\nIf
+      you set it lower, all rooms will be smaller, making the dungeon feel more segmented.
     m_Metadata:
       m_Items: []
   - m_Id: 72314949632
-    m_Localized: Maximum number of iterations for splitting the space.
+    m_Localized: How many times the dungeon space is split to create rooms and corridors.\n\nIf
+      you set it higher, the dungeon will have more rooms and corridors, making it
+      more complex.\n\nIf you set it lower, the dungeon will have fewer, larger rooms
+      and a simpler layout.
     m_Metadata:
       m_Items: []
   - m_Id: 92061732864
-    m_Localized: Aspect ratio threshold for deciding split direction.
+    m_Localized: 'Controls how stretched or square the rooms and splits can be. It
+      affects whether the dungeon splits more horizontally or vertically.\n\nIf you
+      set it higher, rooms and splits will tend to be more elongated in one direction,
+      creating long corridors or rooms.\n\nIf you set it lower, rooms and splits
+      will be more balanced, resulting in more square-shaped rooms. '
     m_Metadata:
       m_Items: []
   - m_Id: 113020669952
-    m_Localized: Width of the corridors.
+    m_Localized: The width of the corridors connecting rooms in the dungeon. Wider
+      corridors make movement easier and the dungeon feel more open.\n\nIf you set
+      it higher, corridors will be wider, making navigation easier but using more
+      space.\n\nIf you set it lower, corridors will be narrower, making the dungeon
+      feel tighter and possibly more challenging to navigate.
     m_Metadata:
       m_Items: []
   - m_Id: 15070516533432320
