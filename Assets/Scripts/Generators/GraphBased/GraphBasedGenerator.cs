@@ -6,6 +6,11 @@ using Views.Attributes;
 
 namespace Generators.GraphBased
 {
+    ///<summary>
+    /// Represents a generator that uses a graph-based approach to create dungeons.
+    /// This generator allows for the creation of complex dungeon layouts by connecting rooms
+    /// and corridors based on a graph structure.
+    /// </summary>
     [OpenGraphEditor]
     public class GraphBasedGenerator : BaseGenerator
     {
@@ -24,6 +29,12 @@ namespace Generators.GraphBased
 
         #endregion
 
+        /// <summary>
+        /// Runs the dungeon generation process using a graph-based approach.
+        /// </summary>
+        /// <param name="resetTilemap">Whether to reset the tilemap before generation.</param>
+        /// <param name="startPoint">The starting point for generation (optional).</param>
+        /// <returns>A set of positions representing the generated dungeon layout.</returns>
         public override HashSet<Vector2Int> RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
             if (resetTilemap)
@@ -49,28 +60,19 @@ namespace Generators.GraphBased
                     edge.input?.node is not GraphNode tgt)
                     continue;
 
-                // obtenemos el corredor *y* los 2 endpoints de puerta
                 if (!ComputeCorridor(src, tgt, roomDoors, out var corridor, out var d1, out var d2))
                     continue;
 
-                // ➤ 0) Eliminamos las puertas del listado para que no las pisemos:
-                //corridor.RemoveAll(p => p == d1 || p == d2);
-
-                // ➤ 1) Pintar el suelo del corredor (sin las puertas)
                 tilemapPainter.PaintWalkableTiles(corridor);
                 _allFloorPositions.UnionWith(corridor);
 
-                // ➤ 2) Pintar de nuevo las puertas en sus posiciones originales
                 var doorList = new List<Vector2Int> { d1, d2 };
-                //tilemapPainter.PaintDoorTiles(doorList);
                 _allDoorsPositions.AddRange(doorList);
             }
 
-            // Marcar puertas como muros internos
             foreach (var door in _allDoorsPositions)
                 _allWallPositions.Add(door);
 
-            // Convert IEnumerable<Vector2Int> to HashSet<Vector2Int>
             var wallPositions = _allFloorPositions.Except(_allDoorsPositions).ToHashSet();
             WallGenerator.GenerateWalls(wallPositions, tilemapPainter, _allWallPositions);
 
@@ -78,9 +80,15 @@ namespace Generators.GraphBased
         }
 
         /// <summary>
-        /// Extrae la lógica de A* y filtra muros, devolviendo el corredor
-        /// y los dos endpoints de puerta que se han usado.
+        /// Computes a corridor between two rooms based on their door positions.
         /// </summary>
+        /// <param name="src">The source room node.</param>
+        /// <param name="tgt">The target room node.</param>
+        /// <param name="roomDoors">A dictionary mapping room nodes to their door positions.</param>
+        /// <param name="corridor">The resulting corridor positions.</param>
+        /// <param name="door1">The first door position used in the corridor.</param>
+        /// <param name="door2">The second door position used in the corridor.</param>
+        /// <returns>True if a corridor was successfully computed, false otherwise.</returns>
         private bool ComputeCorridor(
             GraphNode src,
             GraphNode tgt,
@@ -92,7 +100,6 @@ namespace Generators.GraphBased
             var srcDoors = roomDoors[src];
             var tgtDoors = roomDoors[tgt];
 
-            // 1) Construimos pares ordenados por distancia
             var pairs = (from d1 in srcDoors
                 from d2 in tgtDoors
                 let dist = Vector2Int.Distance(d1, d2)
@@ -112,12 +119,10 @@ namespace Generators.GraphBased
                 if (path == null || path.Count == 0)
                     continue;
 
-                // 2) Filtrar sólo tiles de suelo (sin pisar muros existentes)
                 var filtered = path.Where(p => !_allWallPositions.Contains(p)).ToList();
                 if (filtered.Count == 0)
                     continue;
 
-                // 3) Marcamos ocupadas esas puertas y salimos
                 _occupiedDoorPositions.Add(d1);
                 _occupiedDoorPositions.Add(d2);
 
@@ -136,6 +141,10 @@ namespace Generators.GraphBased
 
         #region Room Painting
 
+        /// <summary>
+        /// Paints the rooms in the dungeon based on the graph nodes.
+        /// </summary>
+        /// <returns>A dictionary mapping each room node to its door positions.</returns>
         private Dictionary<GraphNode, List<Vector2Int>> PaintRooms()
         {
             var roomDoors = new Dictionary<GraphNode, List<Vector2Int>>();
@@ -164,7 +173,6 @@ namespace Generators.GraphBased
                     offset: new Vector3Int(gridPos.x, gridPos.y, 0)
                 );
 
-                // Acumular puertas, pisos y muros de la sala
                 var doors = GetDoorPositions(graphNode.JsonFilePath, gridPos);
                 foreach (var d in doors)
                     _allDoorsPositions.Add(d);
@@ -182,6 +190,21 @@ namespace Generators.GraphBased
 
         #region Position Retrieval Helpers
 
+        /// <summary>
+        /// Retrieves wall and floor positions from the JSON file at the specified path,
+        /// applying the given offset.
+        /// </summary>
+        /// <param name="path">The path to the JSON file containing tilemap data.</param>
+        /// <param name="offset">The offset to apply to the positions.</param>
+        /// <remarks>
+        /// This method reads the JSON file, deserializes it into a TilemapData object,
+        /// and populates the _allWallPositions and _allFloorPositions sets
+        /// with the positions of wall and floor tiles, respectively.
+        /// </remarks>
+        /// <returns>
+        /// A list of Vector2Int positions representing the wall tiles,
+        /// and a list of Vector2Int positions representing the floor tiles.
+        /// </returns>
         private void GetWallPositions(string path, Vector2Int offset)
         {
             var json = System.IO.File.ReadAllText(path);
@@ -190,6 +213,20 @@ namespace Generators.GraphBased
                 _allWallPositions.Add(new Vector2Int(t.position.x, t.position.y) + offset);
         }
 
+        /// <summary>
+        /// Retrieves floor positions from the JSON file at the specified path,
+        /// applying the given offset.
+        /// </summary>
+        /// <param name="path">The path to the JSON file containing tilemap data.</param>
+        /// <param name="offset">The offset to apply to the positions.</param>
+        /// <remarks>
+        /// This method reads the JSON file, deserializes it into a TilemapData object,
+        /// and populates the _allFloorPositions set
+        /// with the positions of walkable tiles.
+        /// </remarks>
+        /// <returns>
+        /// A list of Vector2Int positions representing the walkable tiles.
+        /// </returns>
         private void GetFloorPositions(string path, Vector2Int offset)
         {
             var json = System.IO.File.ReadAllText(path);
@@ -198,6 +235,21 @@ namespace Generators.GraphBased
                 _allFloorPositions.Add(new Vector2Int(t.position.x, t.position.y) + offset);
         }
 
+        /// <summary>
+        /// Retrieves door positions from the JSON file at the specified path,
+        /// applying the given offset.
+        /// </summary>
+        /// <param name="path">The path to the JSON file containing tilemap data.</param>
+        /// <param name="offset">The offset to apply to the positions.</param>
+        /// <remarks>
+        /// This method reads the JSON file, deserializes it into a TilemapData object,
+        /// and returns a list of Vector2Int positions
+        /// representing the door tiles,
+        /// adjusted by the specified offset.
+        /// </remarks>
+        /// <returns>
+        /// A list of Vector2Int positions representing the door tiles.
+        /// </returns>
         private static List<Vector2Int> GetDoorPositions(string path, Vector2Int offset)
         {
             var json = System.IO.File.ReadAllText(path);
@@ -211,20 +263,22 @@ namespace Generators.GraphBased
 
         #region Corridor Endpoint Calculation
 
+        /// <summary>
+        /// Gets the endpoint of a corridor based on the door position.
+        /// If no inward direction is found, it returns a position that is not a wall.
+        /// </summary>
+        /// <param name="door">The position of the door.</param>
+        /// <returns>The calculated endpoint for the corridor.</returns>
         private Vector2Int GetCorridorEndpoint(Vector2Int door)
         {
-            // Hacia dentro: vecino que sea floor
-            Vector2Int inward = Vector2Int.zero;
+            var inward = Vector2Int.zero;
             foreach (var dir in Utils.Utils.Directions)
             {
-                if (_allFloorPositions.Contains(door + dir))
-                {
-                    inward = dir;
-                    break;
-                }
+                if (!_allFloorPositions.Contains(door + dir)) continue;
+                inward = dir;
+                break;
             }
 
-            // Si no hay, tomar cualquiera no-muro
             if (inward == Vector2Int.zero)
             {
                 foreach (var dir in Utils.Utils.Directions)
@@ -240,7 +294,7 @@ namespace Generators.GraphBased
             // Hacia afuera
             var outward = -inward;
             const int maxStep = 3;
-            for (int i = 1; i <= maxStep; i++)
+            for (var i = 1; i <= maxStep; i++)
             {
                 var cand = door + outward * i;
                 if (!_allFloorPositions.Contains(cand) &&
@@ -255,6 +309,11 @@ namespace Generators.GraphBased
 
         #region Utility Methods
 
+        /// <summary>
+        /// Opens the graph window for the GraphBasedGenerator.
+        /// This method is called when the generator is initialized or when the user
+        /// requests to open the graph window.
+        /// </summary>
         public override void OpenGraphWindow()
         {
             GraphCustomWindow.ShowWindow();

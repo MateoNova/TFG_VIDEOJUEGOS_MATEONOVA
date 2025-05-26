@@ -70,6 +70,7 @@ namespace Generators.GraphBased
         /// Creates a port for the node.
         /// </summary>
         /// <param name="portDirection">The direction of the port (Input/Output).</param>
+        /// <param name="name">The name of the port.</param>
         /// <returns>The created port.</returns>
         private static Port CreatePort(Direction portDirection, string name)
         {
