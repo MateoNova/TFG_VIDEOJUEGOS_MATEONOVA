@@ -47,6 +47,34 @@ MonoBehaviour:
     m_Key: DisplayName
     m_Metadata:
       m_Items: []
+  - m_Id: 15601481949286400
+    m_Key: WalkIterationsLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601661297725440
+    m_Key: StepsPerIterationLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601685096206336
+    m_Key: GenerateCorridorsLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601717165854720
+    m_Key: CorridorLengthLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601736908443648
+    m_Key: CorridorCountLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601756848164864
+    m_Key: RoomPercentageLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601780902498304
+    m_Key: CorridorWidthLabel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

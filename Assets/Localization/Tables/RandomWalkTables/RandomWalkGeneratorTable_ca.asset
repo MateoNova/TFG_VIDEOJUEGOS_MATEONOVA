@@ -68,6 +68,34 @@ MonoBehaviour:
     m_Localized: Caminant Aleatori
     m_Metadata:
       m_Items: []
+  - m_Id: 15601481949286400
+    m_Localized: Walk Iterations
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601661297725440
+    m_Localized: "Passos per iteraci\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601685096206336
+    m_Localized: Generar passadissos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601717165854720
+    m_Localized: "Longitud del passad\xEDs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601736908443648
+    m_Localized: Quantitat de passadissos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601756848164864
+    m_Localized: Percentatge d'habitacions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601780902498304
+    m_Localized: "Amplada del passad\xEDs"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -63,6 +63,34 @@ MonoBehaviour:
     m_Localized: Path Wanderer
     m_Metadata:
       m_Items: []
+  - m_Id: 15601481949286400
+    m_Localized: Iteracions de passeig
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601661297725440
+    m_Localized: Steps per Iteration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601685096206336
+    m_Localized: Generate Corridors
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601717165854720
+    m_Localized: Corridor Length
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601736908443648
+    m_Localized: Corridor Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601756848164864
+    m_Localized: Room Percentage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15601780902498304
+    m_Localized: Corridor Width
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -13,37 +13,36 @@ namespace Generators
     {
         #region Serialized Fields
 
-        [SerializeField,
+        [SerializeField, LocalizedLabel("WalkIterationsLabel", "RandomWalkGeneratorTable"),
          LocalizedTooltip("WalkIterationsTooltip", "RandomWalkGeneratorTable")]
         private int walkIterations = 10;
 
-        [SerializeField,
+        [SerializeField, LocalizedLabel("StepsPerIterationLabel", "RandomWalkGeneratorTable"),
          LocalizedTooltip("StepsPerIterationTooltip", "RandomWalkGeneratorTable")]
         private int stepsPerIteration = 10;
 
         [SerializeField,
-         Condition("generateCorridors"),
+         Condition("generateCorridors"), LocalizedLabel("GenerateCorridorsLabel", "RandomWalkGeneratorTable"),
          LocalizedTooltip("GenerateCorridorsTooltip", "RandomWalkGeneratorTable")]
         private bool generateCorridors;
 
         [SerializeField,
-         ConditionalField("generateCorridors"),
+         ConditionalField("generateCorridors"), LocalizedLabel("CorridorLengthLabel", "RandomWalkGeneratorTable"),
          LocalizedTooltip("CorridorLengthTooltip", "RandomWalkGeneratorTable")]
         private int corridorLength = 10;
 
         [SerializeField,
-         ConditionalField("generateCorridors"),
+         ConditionalField("generateCorridors"), LocalizedLabel("CorridorCountLabel", "RandomWalkGeneratorTable"),
          LocalizedTooltip("CorridorCountTooltip", "RandomWalkGeneratorTable")]
         private int corridorCount = 5;
 
-        [SerializeField, Range(0f, 1f),
-         ConditionalField("generateCorridors"),
-         LocalizedTooltip("RoomPercentageTooltip", "RandomWalkGeneratorTable")]
+        [SerializeField, ConditionalField("generateCorridors"), LocalizedLabel("RoomPercentageLabel", "RandomWalkGeneratorTable"),
+         LocalizedTooltip("RoomPercentageTooltip", "RandomWalkGeneratorTable"), Range(0f, 1f)]
         private float roomPercentage = 0.8f;
 
-        [SerializeField, Range(1f, 4f),
-         ConditionalField("generateCorridors"),
-         LocalizedTooltip("CorridorWidthTooltip", "RandomWalkGeneratorTable")]
+        [SerializeField, ConditionalField("generateCorridors"),
+         LocalizedLabel("CorridorWidthLabel", "RandomWalkGeneratorTable"),
+         LocalizedTooltip("CorridorWidthTooltip", "RandomWalkGeneratorTable"), Range(1f, 4f)]
         private int corridorWidth = 1;
 
         #endregion
