@@ -9,18 +9,12 @@ namespace Models
     [CreateAssetMenu(menuName = "Tileset/Tileset Preset", fileName = "NewTilesetPreset")]
     public class TilesetPreset : ScriptableObject
     {
-        //[Header("Renamed Tiles")] public Tile[] tiles;
-
         [Header("Floor tiles")] [SerializeField]
         public List<TileBase> walkableTileBases = new();
 
         [SerializeField] public List<int> walkableTilesPriorities = new();
         [SerializeField] public bool randomWalkableTilesPlacement;
-
-
-        // Tilemap for wall tiles.
-
-        // Various wall tile types categorized by their positions.
+        
         [SerializeField, WallTileGroup("CardinalDirections")]
         public TileBase upWall;
 
@@ -117,7 +111,7 @@ namespace Models
             return bits;
         }
 
-        private Utils.Utils.WallPosition DetermineWallPosition(bool[] n)
+        private static Utils.Utils.WallPosition DetermineWallPosition(bool[] n)
         {
             // shorthand for readability
             bool N = n[0], NE = n[1], E = n[2], SE = n[3];

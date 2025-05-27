@@ -7,6 +7,9 @@ using Views.Attributes;
 
 namespace Models
 {
+    /// <summary>
+    /// Interface for painting tiles on a tilemap.
+    /// </summary>
     public interface ITilemapPainter
     {
         void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions);
@@ -21,51 +24,33 @@ namespace Models
         void ResetAllTiles();
     }
 
+    /// <summary>
+    /// A component that handles painting tiles on tilemaps, including walkable tiles, wall tiles, and door tiles.
+    /// It supports multiple tileset presets and allows for random or probability-based tile placement.
+    /// </summary>
     public class TilemapPainter : MonoBehaviour, ITilemapPainter
     {
-        public TilemapPainter(bool randomPlacement)
-        {
-            //randomWalkableTilesPlacement = randomPlacement;
-        }
+        #region fields
 
-        [SerializeField] private List<TilesetPreset> _tilesetPresets = new();
-        private int _tilesetPresetIndex = -1; // The index of the current tileset preset is none
-
-        public void AddAndSelectPreset(TilesetPreset preset)
-        {
-            if (preset == null) return;
-            if (!_tilesetPresets.Contains(preset))
-                _tilesetPresets.Add(preset);
-            _tilesetPresetIndex = _tilesetPresets.IndexOf(preset);
-
-            //RebalanceCoverages();          // <— Asegura same length
-        }
-
-        public void RebalanceCoverages()
-        {
-            int n = _tilesetPresets.Count;
-            _presetCoverages = Enumerable.Repeat(n > 0 ? 100f / n : 0f, n).ToList();
-        }
-
-        #region Walkable Tiles
+        [SerializeField] private List<TilesetPreset> tilesetPresets = new();
+        [SerializeField] private List<float> presetCoverages = new();
 
         [SerializeField] public Tilemap walkableTilemap;
+        [SerializeField] public Tilemap wallTilemap;
+        [SerializeField] public Tilemap doorTilemap;
 
         private Dictionary<TileBase, float> _walkableTilesProbabilities = new();
 
-        #endregion
+        private int _tilesetPresetIndex = -1; // The index of the current tileset preset is none
 
-        [SerializeField] public Tilemap wallTilemap;
-
-        #region Door Tiles
-
-        [SerializeField] public Tilemap doorTilemap;
-
-
-        #endregion
+        # endregion
 
         #region Initialization Helpers
 
+        /// <summary>
+        /// Initializes the TilemapPainter with the provided tilePreset.
+        /// </summary>
+        /// <param name="preset">The tileset preset to initialize with.</param>
         private void InitializeWalkableTilesProbabilities(TilesetPreset preset)
         {
             _walkableTilesProbabilities = new Dictionary<TileBase, float>();
@@ -81,18 +66,13 @@ namespace Models
             }
         }
 
-
-        private List<(Vector2Int worldPos, Vector3Int cellPos)> GetCellPositions(IEnumerable<Vector2Int> positions,
+        private static List<(Vector2Int worldPos, Vector3Int cellPos)> GetCellPositions(
+            IEnumerable<Vector2Int> positions,
             Tilemap tilemap)
         {
-            var list = new List<(Vector2Int, Vector3Int)>();
-            foreach (var pos in positions)
-            {
-                var cellPos = tilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0));
-                list.Add((pos, cellPos));
-            }
-
-            return list;
+            return (from pos in positions
+                let cellPos = tilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0))
+                select (pos, cellPos)).ToList();
         }
 
         #endregion
@@ -228,7 +208,7 @@ namespace Models
 
         #endregion
 
-        #region Optional: Tile Selection from Folder
+        #region Tile Selection from Folder
 
         private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
             Dictionary<TileBase, float> probabilities, string path)
@@ -299,116 +279,68 @@ namespace Models
 
         #endregion
 
-        public List<TileBase> GetWalkableTileBases()
-        {
-            var preset = GetCurrentTilesetPreset();
-            return preset?.walkableTileBases ?? new List<TileBase>();
-        }
+        # region Presets
 
-        public List<int> GetWalkableTilesPriorities()
+        public void AddAndSelectPreset(TilesetPreset preset)
         {
-            var preset = GetCurrentTilesetPreset();
-            return preset?.walkableTilesPriorities ?? new List<int>();
-        }
-
-        public bool GetRandomWalkableTilesPlacement()
-        {
-            var preset = GetCurrentTilesetPreset();
-            return preset?.randomWalkableTilesPlacement ?? false;
-        }
-
-        public void SetRandomWalkableTilesPlacement(bool newValue)
-        {
-            var preset = GetCurrentTilesetPreset();
             if (preset == null) return;
-            preset.randomWalkableTilesPlacement = newValue;
-            InitializeWalkableTilesProbabilities(preset);
+            if (!tilesetPresets.Contains(preset))
+                tilesetPresets.Add(preset);
+            _tilesetPresetIndex = tilesetPresets.IndexOf(preset);
         }
 
-        public void SetWalkableTileBases(int index, TileBase newTile)
+        public void RebalanceCoverages()
         {
-            var preset = GetCurrentTilesetPreset();
-            if (index < 0 || index >= preset.walkableTileBases.Count)
-            {
-                Debug.LogError($"Index {index} is out of range for walkable tile bases.");
-                return;
-            }
-
-            if (preset.walkableTileBases[index] == newTile) return;
-            preset.walkableTileBases[index] = newTile;
-            InitializeWalkableTilesProbabilities(preset);
-        }
-
-        public void ClearWalkableTileBases()
-        {
-            var preset = GetCurrentTilesetPreset();
-            preset.walkableTileBases.Clear();
+            var n = tilesetPresets.Count;
+            presetCoverages = Enumerable.Repeat(n > 0 ? 100f / n : 0f, n).ToList();
         }
 
         public TilesetPreset GetCurrentTilesetPreset()
         {
-            if (_tilesetPresetIndex < 0 || _tilesetPresetIndex >= _tilesetPresets.Count)
+            if (_tilesetPresetIndex < 0 || _tilesetPresetIndex >= tilesetPresets.Count)
                 return null;
-            return _tilesetPresets[_tilesetPresetIndex];
+            return tilesetPresets[_tilesetPresetIndex];
         }
 
-        public void ClearWalkableTilesPriorities()
-        {
-            var preset = GetCurrentTilesetPreset();
-            preset.walkableTilesPriorities.Clear();
-        }
-
-        public void AddTileWalkableTileBases(Tile tile)
-        {
-            var preset = GetCurrentTilesetPreset();
-            ;
-            if (preset.walkableTileBases.Contains(tile))
-            {
-                Debug.LogWarning($"Tile {tile.name} already exists in walkable tile bases.");
-                return;
-            }
-
-            preset.walkableTileBases.Add(tile);
-            preset.walkableTilesPriorities.Add(1);
-        }
 
         public void RemovePreset(TilesetPreset preset)
         {
-            int oldIndex = _tilesetPresets.IndexOf(preset);
-            if (_tilesetPresets.Remove(preset))
-            {
-                if (_tilesetPresetIndex >= _tilesetPresets.Count)
-                    _tilesetPresetIndex = _tilesetPresets.Count - 1;
-                //RebalanceCoverages();      // <— Vuelve a sincronizar
-            }
+            if (!tilesetPresets.Remove(preset)) return;
+
+            if (_tilesetPresetIndex >= tilesetPresets.Count)
+                _tilesetPresetIndex = tilesetPresets.Count - 1;
         }
 
-        // inside TilemapPainter class:
-        [SerializeField] private List<float> _presetCoverages = new List<float>();
 
-// Expose all loaded presets
         public List<TilesetPreset> GetAllPresets()
         {
-            return _tilesetPresets.ToList();
+            return tilesetPresets.ToList();
         }
 
-// Expose coverage percentages for each preset
         public List<float> GetPresetCoverages()
         {
-            return _presetCoverages.ToList();
+            return presetCoverages.ToList();
         }
 
-// Called by StyleView to initialize full list
         public void SetPresetCoverages(List<float> coverages)
         {
-            _presetCoverages = new List<float>(coverages);
+            presetCoverages = new List<float>(coverages);
         }
 
-// Called when a single coverage changed
-        public void SetPresetCoverage(int index, float coverage)
+        #endregion
+
+        #region Walls
+
+        public void GenerateWalls(HashSet<Vector2Int> walkable,
+            HashSet<Vector2Int> nonWall = null)
         {
-            if (index >= 0 && index < _presetCoverages.Count)
-                _presetCoverages[index] = coverage;
+            var preset = GetCurrentTilesetPreset();
+            var wallMap = wallTilemap;
+            if (preset == null || wallMap == null) return;
+
+            new WallAutoTiler(preset, wallMap).PaintWalls(walkable, nonWall);
         }
+
+        #endregion
     }
 }

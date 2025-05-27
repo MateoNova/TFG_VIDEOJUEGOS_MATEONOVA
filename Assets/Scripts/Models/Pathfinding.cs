@@ -5,7 +5,7 @@ namespace Models
 {
     public static class Pathfinding
     {
-        // Helper class for A*
+        
         private class Node
         {
             public Vector2Int Position;
@@ -82,7 +82,6 @@ namespace Models
                 }
             }
 
-            // If no path is found, return an empty list.
             return new List<Vector2Int>();
         }
 

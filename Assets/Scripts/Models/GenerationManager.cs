@@ -2,13 +2,15 @@
 
 namespace Models
 {
+    /// <summary>
+    /// Singleton manager for generation-related operations.
+    /// </summary>
     public class GenerationManager : MonoBehaviour
     {
         public static GenerationManager Instance { get; private set; }
 
         private void Awake()
         {
-            // Si ya existe una instancia y no es esta, se destruye la nueva
             if (Instance != null && Instance != this)
             {
                 DestroyImmediate(gameObject);
@@ -16,7 +18,6 @@ namespace Models
             }
 
             Instance = this;
-            // Si quieres que persista al cambiar de escenas:
             DontDestroyOnLoad(gameObject);
         }
     }

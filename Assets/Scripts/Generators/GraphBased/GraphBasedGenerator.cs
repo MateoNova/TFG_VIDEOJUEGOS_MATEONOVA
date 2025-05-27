@@ -74,7 +74,7 @@ namespace Generators.GraphBased
                 _allWallPositions.Add(door);
 
             var wallPositions = _allFloorPositions.Except(_allDoorsPositions).ToHashSet();
-            WallGenerator.GenerateWalls(wallPositions, tilemapPainter, _allWallPositions);
+            tilemapPainter.GenerateWalls(wallPositions, _allWallPositions);
 
             return null;
         }

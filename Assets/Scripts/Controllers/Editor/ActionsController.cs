@@ -31,10 +31,11 @@ namespace Controllers.Editor
             {
                 return;
             }
+
             if (hashWalkables.Count == 0) return;
-            
+
             var allWalkables = hashWalkables.ToList();
-            
+
             var (presets, coverages) = GetActivePresetsAndCoverages(painter);
             if (presets.Count == 0) return;
 
@@ -49,23 +50,24 @@ namespace Controllers.Editor
         /// </summary>
         /// <param name="painter">The tilemap painter used for retrieving presets and coverages.</param>
         /// <returns>A tuple containing the filtered presets and their corresponding coverages.</returns>
-        private static (List<TilesetPreset> presets, List<float> coverages) GetActivePresetsAndCoverages(TilemapPainter painter)
+        private static (List<TilesetPreset> presets, List<float> coverages) GetActivePresetsAndCoverages(
+            TilemapPainter painter)
         {
             var presets = painter.GetAllPresets();
             var coverages = painter.GetPresetCoverages().Select(c => c / 100f).ToList();
-        
+
             // Ensure both lists are synchronized in size
             if (presets.Count != coverages.Count)
             {
                 var count = presets.Count;
                 coverages = Enumerable.Repeat(count > 0 ? 1f / count : 0f, count).ToList();
             }
-        
+
             var active = presets
                 .Select((ps, i) => new { ps, cov = coverages[i] })
                 .Where(x => x.cov > 0f)
                 .ToList();
-        
+
             return (active.Select(x => x.ps).ToList(), active.Select(x => x.cov).ToList());
         }
 
@@ -173,8 +175,7 @@ namespace Controllers.Editor
 
                 painter.AddAndSelectPreset(presets[key]);
                 painter.PaintWalkableTiles(value);
-
-                WallGenerator.GenerateWalls(new HashSet<Vector2Int>(value), painter, allSet);
+                painter.GenerateWalls(new HashSet<Vector2Int>(value), allSet);
             }
         }
 

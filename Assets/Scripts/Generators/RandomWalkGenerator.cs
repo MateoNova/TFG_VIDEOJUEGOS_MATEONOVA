@@ -2,7 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using Views.Attributes;
-using WallGenerator = Models.WallGenerator;
 
 namespace Generators
 {
