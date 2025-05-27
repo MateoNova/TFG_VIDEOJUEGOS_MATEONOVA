@@ -37,17 +37,19 @@ namespace Views.Editor
         {
             _root = new VisualElement();
 
-            var actionsFoldout = StyleUtils.ModernFoldout(string.Empty);
+            var actionsFoldout = StyleUtils.SimpleExpander(string.Empty, out var body);
             actionsFoldout.SetLocalizedText(LocalizationKeysHelper.SpawnFoldout, LocalizationKeysHelper.SpawnTable);
-            _root.Add(actionsFoldout);
 
-            actionsFoldout.Add(CreateCharacterSelector());
+
+            body.Add(CreateCharacterSelector());
 
             var spawnButton = new Button(EnableSpawnPointSelection);
             spawnButton.SetLocalizedText(LocalizationKeysHelper.SpawnPointScene, LocalizationKeysHelper.SpawnTable);
-            actionsFoldout.Add(spawnButton);
+            body.Add(spawnButton);
 
             InitializeSpawnPointReference();
+
+            _root.Add(actionsFoldout);
 
             return _root;
         }

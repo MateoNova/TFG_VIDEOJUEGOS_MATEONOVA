@@ -31,43 +31,25 @@ namespace Views.Editor
         public VisualElement CreateUI()
         {
             var container = StyleUtils.SimpleContainer();
-            var actionsFoldout = CreateActionsFoldout();
+            
+            var actionsFoldout = StyleUtils.SimpleExpander(string.Empty, out var body);
+            actionsFoldout.SetLocalizedText(LocalizationKeysHelper.Actions, LocalizationKeysHelper.ActionsTable);
+            
             container.Add(actionsFoldout);
 
             if (!_showGenerationActions) return container;
 
-            AddClearToggle(actionsFoldout);
-            AddActionsButtons(actionsFoldout);
+            AddClearToggle(body);
+            AddActionsButtons(body);
 
             return container;
         }
-
-        /// <summary>
-        /// Creates the foldout for generation actions.
-        /// </summary>
-        /// <returns>A <see cref="Foldout"/> element for grouping generation actions.</returns>
-        private Foldout CreateActionsFoldout()
-        {
-            var actionsFoldout = StyleUtils.ModernFoldout(string.Empty);
-            ConfigureFoldout(actionsFoldout);
-            return actionsFoldout;
-        }
-
-        /// <summary>
-        /// Configures the foldout element with localized text and a value change callback.
-        /// </summary>
-        /// <param name="foldout">The foldout element to configure.</param>
-        private void ConfigureFoldout(Foldout foldout)
-        {
-            foldout.SetLocalizedText(LocalizationKeysHelper.Actions, LocalizationKeysHelper.ActionsTable);
-            foldout.RegisterValueChangedCallback(evt => _showGenerationActions = evt.newValue);
-        }
-
+        
         /// <summary>
         /// Adds buttons for generation actions (e.g., Generate, Clear, Save, Load) to the foldout.
         /// </summary>
         /// <param name="actionsFoldout">The foldout to which the buttons will be added.</param>
-        private static void AddActionsButtons(Foldout actionsFoldout)
+        private static void AddActionsButtons(VisualElement actionsFoldout)
         {
             var buttonsContainer = StyleUtils.ColumnButtonContainer();
             AddActionButtonsToContainer(buttonsContainer);
@@ -103,7 +85,7 @@ namespace Views.Editor
         /// Adds a toggle to the UI for clearing the dungeon before generating.
         /// </summary>
         /// <param name="actionsFoldout">The foldout to which the toggle will be added.</param>
-        private void AddClearToggle(Foldout actionsFoldout)
+        private void AddClearToggle(VisualElement actionsFoldout)
         {
             var clearToggle = StyleUtils.SimpleToggle(
                 string.Empty,

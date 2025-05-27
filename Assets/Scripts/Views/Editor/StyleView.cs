@@ -61,33 +61,24 @@ namespace Views.Editor
             _root ??= StyleUtils.SimpleContainer();
             _root.Clear();
 
-            var styleSection = CreateStyleSection();
+            var styleSection = StyleUtils.SimpleExpander(string.Empty, out var body);
+            styleSection.SetLocalizedText(LocalizationKeysHelper.StyleFoldout, LocalizationKeysHelper.StyleTable);
+            body.Add(CreatePresetSettings());
+            
             _root.Add(styleSection);
 
             if (_loadedPresets.Count > 1)
-                styleSection.Add(CreateBiomeCoverageFolder());
+                body.Add(CreateBiomeCoverageFolder());
 
             var painter = gen.TilemapPainter;
             for (var idx = 0; idx < _loadedPresets.Count; idx++)
             {
                 var preset = _loadedPresets[idx];
                 painter.AddAndSelectPreset(preset);
-                styleSection.Add(CreatePresetSubsection(preset, idx));
+                body.Add(CreatePresetSubsection(preset, idx));
             }
 
             return _root;
-        }
-
-        /// <summary>
-        /// Creates the main style section of the UI.
-        /// </summary>
-        /// <returns>A visual element representing the style section.</returns>
-        private VisualElement CreateStyleSection()
-        {
-            var section = StyleUtils.ModernFoldout(string.Empty);
-            section.SetLocalizedText(LocalizationKeysHelper.StyleFoldout, LocalizationKeysHelper.StyleTable);
-            section.Add(CreatePresetSettings());
-            return section;
         }
 
         /// <summary>
@@ -130,7 +121,7 @@ namespace Views.Editor
         /// <returns>A visual element representing the biome coverage folder.</returns>
         private VisualElement CreateBiomeCoverageFolder()
         {
-            var fold = StyleUtils.ModernFoldout(string.Empty);
+            var fold = StyleUtils.SimpleExpander(string.Empty, out var body);
             fold.SetLocalizedText(LocalizationKeysHelper.StyleBiomeCoverage, LocalizationKeysHelper.StyleTable);
 
             // Ensure _presetCoverage and _loadedPresets have the same length
@@ -162,7 +153,7 @@ namespace Views.Editor
                 });
                 row.Add(field);
 
-                fold.Add(row);
+                body.Add(row);
             }
 
             return fold;
@@ -176,7 +167,7 @@ namespace Views.Editor
         /// <returns>A visual element representing the preset subsection.</returns>
         private VisualElement CreatePresetSubsection(TilesetPreset preset, int presetIdx)
         {
-            var section = StyleUtils.ModernSubFoldout(preset.name);
+            var section = StyleUtils.SimpleExpander(preset.name, out var body, false);
 
             section.AddManipulator(new ContextualMenuManipulator(evt =>
                 {
@@ -186,8 +177,8 @@ namespace Views.Editor
                 }
             ));
 
-            section.Add(CreateFloorTileSettings(preset, presetIdx));
-            section.Add(CreateWallTileSettings(preset, presetIdx));
+            body.Add(CreateFloorTileSettings(preset, presetIdx));
+            body.Add(CreateWallTileSettings(preset, presetIdx));
 
             return section;
         }
@@ -227,7 +218,7 @@ namespace Views.Editor
             var walkables = preset.walkableTileBases;
             var priorities = preset.walkableTilesPriorities;
 
-            var fe = StyleUtils.ModernSubFoldout(string.Empty);
+            var fe = StyleUtils.SimpleExpander(string.Empty, out var body);
             fe.SetLocalizedText(LocalizationKeysHelper.StyleFloorSettings, LocalizationKeysHelper.StyleTable);
 
             var toggleRow = StyleUtils.HorizontalContainerCentered();
@@ -242,7 +233,7 @@ namespace Views.Editor
                 RefreshUI();
             });
             toggleRow.Add(tog);
-            fe.Add(toggleRow);
+            body.Add(toggleRow);
 
             var btnRow = StyleUtils.HorizontalContainerCentered();
             var addBtn = new Button(() =>
@@ -265,12 +256,12 @@ namespace Views.Editor
             clearBtn.SetLocalizedText(LocalizationKeysHelper.StyleClearFloorTiles, LocalizationKeysHelper.StyleTable);
             btnRow.Add(clearBtn);
 
-            fe.Add(btnRow);
+            body.Add(btnRow);
 
             var previewRow = StyleUtils.HorizontalContainerWrapped();
             for (var i = 0; i < walkables.Count; i++)
                 previewRow.Add(CreateWalkableTileControl(preset, presetIdx, i));
-            fe.Add(previewRow);
+            body.Add(previewRow);
 
             return fe;
         }
@@ -419,14 +410,14 @@ namespace Views.Editor
 
             foreach (var group in groups)
             {
-                var fold = StyleUtils.ModernSubFoldout(string.Empty);
+                var fold = StyleUtils.SimpleExpander(string.Empty, out var body);
                 fold.SetLocalizedText(group.Key, LocalizationKeysHelper.StyleTable);
 
                 var row = StyleUtils.HorizontalContainerWrapped();
                 foreach (var field in group)
                     row.Add(CreateWallTileControl(preset, presetIdx,
                         field)); 
-                fold.Add(row);
+                body.Add(row);
                 container.Add(fold);
             }
 
@@ -480,18 +471,22 @@ namespace Views.Editor
         {
             _root.Clear();
 
-            var styleSection = CreateStyleSection();
+            
+            var styleSection = StyleUtils.SimpleExpander(string.Empty, out var body);
+            styleSection.SetLocalizedText(LocalizationKeysHelper.StyleFoldout, LocalizationKeysHelper.StyleTable);
+            body.Add(CreatePresetSettings());
+            
             _root.Add(styleSection);
 
             if (_loadedPresets.Count > 1)
-                styleSection.Add(CreateBiomeCoverageFolder());
+                body.Add(CreateBiomeCoverageFolder());
 
             var painter = GeneratorService.Instance.CurrentGenerator.TilemapPainter;
             for (var idx = 0; idx < _loadedPresets.Count; idx++)
             {
                 var preset = _loadedPresets[idx];
                 painter.AddAndSelectPreset(preset);
-                styleSection.Add(CreatePresetSubsection(preset, idx));
+                body.Add(CreatePresetSubsection(preset, idx));
             }
 
             _root.MarkDirtyRepaint();

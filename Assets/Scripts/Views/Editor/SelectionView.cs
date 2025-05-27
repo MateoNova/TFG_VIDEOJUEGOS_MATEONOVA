@@ -56,13 +56,13 @@ namespace Views.Editor
         {
             _container = StyleUtils.SimpleContainer();
 
-            var foldout = StyleUtils.ModernFoldout(string.Empty);
+            var foldout = StyleUtils.SimpleExpander(string.Empty, out var body);
             foldout.SetLocalizedText(LocalizationKeysHelper.SelectionFoldout, LocalizationKeysHelper.SelectionTable);
 
             var cachedNames = controller.CachedGeneratorNames();
 
-            if (cachedNames == null || cachedNames.Count == 0) AddHelpLabel(foldout);
-            else AddDropdown(cachedNames, foldout);
+            if (cachedNames == null || cachedNames.Count == 0) AddHelpLabel(body);
+            else AddDropdown(cachedNames, body);
 
             _container.Add(foldout);
             return _container;
@@ -73,7 +73,7 @@ namespace Views.Editor
         /// </summary>
         /// <param name="cachedNames">The list of cached generator names.</param>
         /// <param name="foldout">The foldout to which the dropdown will be added.</param>
-        private void AddDropdown(List<string> cachedNames, Foldout foldout)
+        private void AddDropdown(List<string> cachedNames, VisualElement foldout)
         {
             dropdown = StyleUtils.SimpleDropdown();
             dropdown.SetLocalizedTitle(LocalizationKeysHelper.SelectionGeneratorDropdown,
@@ -109,7 +109,7 @@ namespace Views.Editor
         /// Adds a help label to the foldout when no generators are found.
         /// </summary>
         /// <param name="foldout">The foldout to which the help label will be added.</param>
-        private void AddHelpLabel(Foldout foldout)
+        private void AddHelpLabel(VisualElement foldout)
         {
             var helpLabel = StyleUtils.HelpLabel(string.Empty);
 

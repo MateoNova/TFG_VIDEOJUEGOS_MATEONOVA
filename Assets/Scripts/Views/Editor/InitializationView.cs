@@ -49,24 +49,15 @@ namespace Views.Editor
         public VisualElement CreateUI()
         {
             _container = StyleUtils.SimpleContainer();
-            var foldout = CreateFoldout();
+            var foldout = StyleUtils.SimpleExpander(string.Empty, out var body);
+            foldout.SetLocalizedText(LocalizationKeysHelper.InitFoldout, LocalizationKeysHelper.InitTable);
 
-            foldout.Add(CreateButtonContainer());
-            foldout.Add(CreateLanguageSelector());
+            body.Add(CreateButtonContainer());
+            body.Add(CreateLanguageSelector());
+
 
             _container.Add(foldout);
             return _container;
-        }
-
-        /// <summary>
-        /// Creates a foldout for the initialization view.
-        /// </summary>
-        private static Foldout CreateFoldout()
-        {
-            var foldout = StyleUtils.ModernFoldout(string.Empty);
-            foldout.SetLocalizedText(LocalizationKeysHelper.InitFoldout,
-                LocalizationKeysHelper.InitTable);
-            return foldout;
         }
 
         /// <summary>

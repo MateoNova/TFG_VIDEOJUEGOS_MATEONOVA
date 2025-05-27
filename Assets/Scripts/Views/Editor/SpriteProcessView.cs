@@ -57,38 +57,27 @@ namespace Views.Editor
         {
             var container = StyleUtils.SimpleContainer();
 
-            var foldout = CreateFoldout();
+            var foldout = StyleUtils.SimpleExpander(string.Empty, out var body);
+            foldout.SetLocalizedText(LocalizationKeysHelper.SpriteProcessPresetCreator,
+                LocalizationKeysHelper.SpriteProcessTable);
 
-            AddImageSelectionLabel(foldout);
-            AddSelectImageButton(foldout);
-            AddRenameButton(foldout);
-            AddPresetButton(foldout);
+            AddImageSelectionLabel(body);
+            AddSelectImageButton(body);
+            AddRenameButton(body);
+            AddPresetButton(body);
 
             container.Add(foldout);
             return container;
         }
 
         /// <summary>
-        /// Creates the main foldout element for grouping UI components.
-        /// </summary>
-        /// <returns>A <see cref="Foldout"/> element.</returns>
-        private Foldout CreateFoldout()
-        {
-            var foldout = StyleUtils.ModernFoldout(string.Empty);
-            foldout.SetLocalizedText(LocalizationKeysHelper.SpriteProcessPresetCreator,
-                LocalizationKeysHelper.SpriteProcessTable);
-            return foldout;
-        }
-
-        /// <summary>
         /// Adds the label for displaying the current image selection status to the foldout.
         /// </summary>
         /// <param name="foldout">The foldout to which the label will be added.</param>
-        private void AddImageSelectionLabel(Foldout foldout)
+        private void AddImageSelectionLabel(VisualElement foldout)
         {
             _selectedImageLabel = StyleUtils.LabelForTile(string.Empty);
             _selectedImageLabel.style.marginLeft = 2;
-            foldout.Add(_selectedImageLabel);
 
             _noImageString.StringChanged += text =>
             {
@@ -107,13 +96,16 @@ namespace Views.Editor
             };
 
             _noImageString.RefreshString();
+            
+            foldout.Add(_selectedImageLabel);
+
         }
 
         /// <summary>
         /// Adds the button for selecting an image to the foldout.
         /// </summary>
         /// <param name="foldout">The foldout to which the button will be added.</param>
-        private void AddSelectImageButton(Foldout foldout)
+        private void AddSelectImageButton(VisualElement foldout)
         {
             var selectButton = new Button(() =>
             {
@@ -139,7 +131,7 @@ namespace Views.Editor
         /// Adds the button for renaming sprites to the foldout.
         /// </summary>
         /// <param name="foldout">The foldout to which the button will be added.</param>
-        private void AddRenameButton(Foldout foldout)
+        private void AddRenameButton(VisualElement foldout)
         {
             var renameButton = new Button(() =>
             {
@@ -163,7 +155,7 @@ namespace Views.Editor
         /// Adds the button for creating a preset to the foldout.
         /// </summary>
         /// <param name="foldout">The foldout to which the button will be added.</param>
-        private void AddPresetButton(Foldout foldout)
+        private void AddPresetButton(VisualElement foldout)
         {
             var presetButton = new Button(() =>
             {

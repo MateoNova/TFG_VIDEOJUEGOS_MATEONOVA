@@ -40,11 +40,6 @@ namespace Views.Editor
         private Button _openGraphButton;
 
         /// <summary>
-        /// The foldout element for grouping generator settings.
-        /// </summary>
-        private Foldout _foldout;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SettingsView"/> class.
         /// Subscribes to centralized events for UI updates.
         /// </summary>
@@ -63,49 +58,39 @@ namespace Views.Editor
             _container ??= StyleUtils.SimpleContainer();
             _container.Clear();
 
-            _foldout = CreateFoldout();
+            var foldout = StyleUtils.SimpleExpander(string.Empty, out var body);
+            foldout.SetLocalizedText(LocalizationKeysHelper.SettingsFoldout, LocalizationKeysHelper.SettingsTable);
 
-            AddGeneratorSettings();
-            AddOpenGraphButton();
-            _container.Add(_foldout);
+            AddGeneratorSettings(body);
+            AddOpenGraphButton(body);
+            _container.Add(foldout);
 
             return _container;
-        }
-
-        /// <summary>
-        /// Creates the foldout element for grouping generator settings.
-        /// </summary>
-        /// <returns>A <see cref="Foldout"/> element with localized text.</returns>
-        private Foldout CreateFoldout()
-        {
-            var foldout = StyleUtils.ModernFoldout(string.Empty);
-            foldout.SetLocalizedText(LocalizationKeysHelper.SettingsFoldout, LocalizationKeysHelper.SettingsTable);
-            return foldout;
         }
 
         /// <summary>
         /// Adds generator-specific settings to the foldout.
         /// Displays a placeholder message if no generator is selected.
         /// </summary>
-        private void AddGeneratorSettings()
+        private void AddGeneratorSettings(VisualElement foldout)
         {
-            if (GeneratorService.Instance.CurrentGenerator == null) AddNoGeneratorSelectedLabel();
-            else AddGeneratorProperties();
+            if (GeneratorService.Instance.CurrentGenerator == null) AddNoGeneratorSelectedLabel(foldout);
+            else AddGeneratorProperties(foldout);
         }
 
         /// <summary>
         /// Adds a label to the foldout indicating that no generator is selected.
         /// </summary>
-        private void AddNoGeneratorSelectedLabel()
+        private void AddNoGeneratorSelectedLabel(VisualElement foldout)
         {
             var infoLabel = StyleUtils.HelpLabel("No generator selected.");
-            _foldout.Add(infoLabel);
+            foldout.Add(infoLabel);
         }
 
         /// <summary>
         /// Adds the properties of the selected generator to the UI.
         /// </summary>
-        private void AddGeneratorProperties()
+        private void AddGeneratorProperties(VisualElement foldout)
         {
             var settingsContainer = new VisualElement();
             var serializedObject = new SerializedObject(GeneratorService.Instance.CurrentGenerator);
@@ -149,20 +134,20 @@ namespace Views.Editor
                 _settingsController.UpdateConditionalVisibility(group, serializedObject, conditionalFields);
             }
 
-            _foldout.Add(settingsContainer);
+            foldout.Add(settingsContainer);
         }
 
         /// <summary>
         /// Adds the "Open Graph Window" button to the foldout.
         /// </summary>
-        private void AddOpenGraphButton()
+        private void AddOpenGraphButton(VisualElement foldout)
         {
             _openGraphButton = StyleUtils.DisplayChangeButton(_showOpenGraphButton,
                 () => GeneratorService.Instance.CurrentGenerator.OpenGraphWindow());
 
             _openGraphButton.SetLocalizedText(LocalizationKeysHelper.SettingsGraphWindow,
                 LocalizationKeysHelper.SettingsTable);
-            _foldout.Add(_openGraphButton);
+            foldout.Add(_openGraphButton);
         }
 
         /// <summary>

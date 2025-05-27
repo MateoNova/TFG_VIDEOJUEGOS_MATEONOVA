@@ -88,9 +88,10 @@ namespace Utils
             {
                 style =
                 {
-                    unityFontStyleAndWeight = FontStyle.Bold,
+                    unityFontStyleAndWeight = FontStyle.Normal,
                     marginTop = 10,
-                    marginBottom = 5
+                    marginBottom = 5,
+                    fontSize = 13
                 }
             };
         }
@@ -177,34 +178,147 @@ namespace Utils
             };
         }
 
-        public static Foldout ModernFoldout(string text, bool expanded = true)
+        public static VisualElement ModernFoldout(string text, bool expanded = true)
         {
-            var foldout = new Foldout
+            // Contenedor raíz
+            var expander = new VisualElement
             {
-                value = expanded,
-                text = text,
                 style =
                 {
                     marginTop = 5,
+                    marginBottom = 5,
                     borderTopWidth = 1,
                     borderLeftWidth = 1,
-                    borderRightWidth = 1
+                    borderRightWidth = 1,
+                    paddingLeft = 4,
+                    paddingRight = 4,
+                    paddingTop = 2,
+                    paddingBottom = 2
                 }
             };
 
-            // Apply the font size and style only after the Foldout is fully initialized
-            foldout.RegisterCallback<GeometryChangedEvent>(_ =>
+            // 1) Cabecera: un Toggle que actúa de “foldout header”
+            var header = new Toggle(text)
             {
-                var label = foldout.Q<Label>();
+                value = expanded,
+                style =
+                {
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    fontSize = 16,
+                    marginBottom = 4
+                }
+            };
+            expander.Add(header);
 
-                if (label == null) return;
+            // 2) Contenedor de contenido
+            var content = new VisualElement
+            {
+                style =
+                {
+                    flexDirection = FlexDirection.Column,
+                    display = expanded ? DisplayStyle.Flex : DisplayStyle.None
+                }
+            };
+            expander.Add(content);
 
-                label.style.unityFontStyleAndWeight = FontStyle.Bold;
-                label.style.fontSize = 16;
+            // 3) Al cambiar el toggle mostramos/ocultamos el contenido
+            header.RegisterValueChangedCallback(evt =>
+            {
+                content.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
             });
 
-            return foldout;
+            return content;
         }
+
+        /// <summary>
+        /// Crea un expander (similar a Foldout) sin propagar estilos a los hijos.
+        /// </summary>
+        /// <param name="title">Texto de la cabecera.</param>
+        /// <param name="content">VisualElement donde añadirás tus controles.</param>
+        /// <param name="expanded">Si empieza desplegado o no.</param>
+        /// <returns>El VisualElement completo (cabecera + contenido).</returns>
+        public static VisualElement SimpleExpander(string title, out VisualElement content, bool expanded = true)
+        {
+            var expander = new VisualElement
+            {
+                style =
+                {
+                    marginTop = 5,
+                    marginBottom = 5,
+                    borderTopWidth = 1,
+                    borderLeftWidth = 1,
+                    borderRightWidth = 1,
+                    paddingLeft = 4,
+                    paddingRight = 4,
+                    paddingTop = 2,
+                    paddingBottom = 2
+                }
+            };
+        
+            // Header with arrow and title
+            var header = new Button
+            {
+                style =
+                {
+                    flexDirection = FlexDirection.Row,
+                    alignItems = Align.Center,
+                    unityTextAlign = TextAnchor.MiddleLeft,
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    fontSize = 10,
+                    marginBottom = 4,
+                    backgroundColor = Color.clear,
+                    borderBottomWidth = 0,
+                    borderTopWidth = 0,
+                    borderLeftWidth = 0,
+                    borderRightWidth = 0,
+                    paddingLeft = 2 // Add a bit of left padding
+                }
+            };
+        
+            var arrow = new Label(expanded ? "▼" : "▶")
+            {
+                style =
+                {
+                    width = 14, // Slightly wider for better alignment
+                    unityTextAlign = TextAnchor.MiddleLeft,
+                    marginRight = 4
+                }
+            };
+            var titleLabel = new Label(title)
+            {
+                style =
+                {
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    fontSize = 14
+                }
+            };
+        
+            header.Add(arrow);
+            header.Add(titleLabel);
+            expander.Add(header);
+        
+            content = new VisualElement
+            {
+                style =
+                {
+                    flexDirection = FlexDirection.Column,
+                    display = expanded ? DisplayStyle.Flex : DisplayStyle.None,
+                    marginLeft = 18 // width of arrow (14) + marginRight (4)
+                }
+            };
+            expander.Add(content);
+        
+            var element = content;
+            header.clicked += () =>
+            {
+                var isExpanded = element.style.display == DisplayStyle.Flex;
+                element.style.display = isExpanded ? DisplayStyle.None : DisplayStyle.Flex;
+                arrow.text = isExpanded ? "▶" : "▼";
+            };
+        
+            return expander;
+        }
+
 
         public static Foldout ModernSubFoldout(string text, bool expanded = true)
         {

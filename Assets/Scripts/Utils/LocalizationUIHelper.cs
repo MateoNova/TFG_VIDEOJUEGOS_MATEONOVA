@@ -16,14 +16,15 @@ namespace Utils
         /// <param name="tableName">The name of the localization table (default is "DefaultTable").</param>
         public static void SetLocalizedText(this Label label, string key, string tableName = "DefaultTable")
         {
+            label.schedule.Execute(() => UpdateLabel());
+            LocalizationSettings.SelectedLocaleChanged += locale =>
+                label.schedule.Execute(() => UpdateLabel());
+            return;
+
             void UpdateLabel()
             {
                 label.text = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
             }
-
-            label.schedule.Execute(() => UpdateLabel());
-            LocalizationSettings.SelectedLocaleChanged += locale =>
-                label.schedule.Execute(() => UpdateLabel());
         }
 
         /// <summary>
@@ -34,14 +35,15 @@ namespace Utils
         /// <param name="tableName">The name of the localization table (default is "DefaultTable").</param>
         public static void SetLocalizedText(this Button button, string key, string tableName = "DefaultTable")
         {
+            button.schedule.Execute(() => UpdateButton());
+            LocalizationSettings.SelectedLocaleChanged += locale =>
+                button.schedule.Execute(() => UpdateButton());
+            return;
+
             void UpdateButton()
             {
                 button.text = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
             }
-
-            button.schedule.Execute(() => UpdateButton());
-            LocalizationSettings.SelectedLocaleChanged += locale =>
-                button.schedule.Execute(() => UpdateButton());
         }
 
         /// <summary>
@@ -50,16 +52,24 @@ namespace Utils
         /// <param name="foldout">The Foldout to update.</param>
         /// <param name="key">The localization key to retrieve the text.</param>
         /// <param name="tableName">The name of the localization table (default is "DefaultTable").</param>
-        public static void SetLocalizedText(this Foldout foldout, string key, string tableName = "DefaultTable")
+        public static void SetLocalizedText(this VisualElement expander, string key, string tableName = "DefaultTable")
         {
-            void UpdateFoldout()
+            // Find the title label (assuming it's always the second child of the header button)
+            var header = expander.Q<Button>();
+            var titleLabel = header?.Q<Label>(null, (string[])null); // This gets the first Label (the arrow), so get the second:
+            if (header != null && header.childCount > 1)
             {
-                foldout.text = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
+                titleLabel = header[1] as Label;
             }
-
-            foldout.schedule.Execute(() => UpdateFoldout());
-            LocalizationSettings.SelectedLocaleChanged += locale =>
-                foldout.schedule.Execute(() => UpdateFoldout());
+        
+            void UpdateTitle()
+            {
+                if (titleLabel != null)
+                    titleLabel.text = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
+            }
+        
+            expander.schedule.Execute(UpdateTitle);
+            LocalizationSettings.SelectedLocaleChanged += _ => expander.schedule.Execute(UpdateTitle);
         }
 
         /// <summary>
@@ -70,14 +80,15 @@ namespace Utils
         /// <param name="tableName">The name of the localization table (default is "DefaultTable").</param>
         public static void SetLocalizedTitle(this DropdownField dropdown, string key, string tableName = "DefaultTable")
         {
+            dropdown.schedule.Execute(() => UpdateDropdown());
+            LocalizationSettings.SelectedLocaleChanged += locale =>
+                dropdown.schedule.Execute(() => UpdateDropdown());
+            return;
+
             void UpdateDropdown()
             {
                 dropdown.label = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
             }
-
-            dropdown.schedule.Execute(() => UpdateDropdown());
-            LocalizationSettings.SelectedLocaleChanged += locale =>
-                dropdown.schedule.Execute(() => UpdateDropdown());
         }
 
         /// <summary>
@@ -88,14 +99,15 @@ namespace Utils
         /// <param name="tableName">The name of the localization table (default is "DefaultTable").</param>
         public static void SetLocalizedText(this Toggle toggle, string key, string tableName = "DefaultTable")
         {
+            toggle.schedule.Execute(() => UpdateToggle());
+            LocalizationSettings.SelectedLocaleChanged += locale =>
+                toggle.schedule.Execute(() => UpdateToggle());
+            return;
+
             void UpdateToggle()
             {
                 toggle.text = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
             }
-
-            toggle.schedule.Execute(() => UpdateToggle());
-            LocalizationSettings.SelectedLocaleChanged += locale =>
-                toggle.schedule.Execute(() => UpdateToggle());
         }
 
         /// <summary>
@@ -107,14 +119,15 @@ namespace Utils
         public static void SetLocalizedTooltip(this VisualElement element, string key,
             string tableName = "DefaultTable")
         {
+            element.schedule.Execute(() => UpdateTooltip());
+            LocalizationSettings.SelectedLocaleChanged += locale =>
+                element.schedule.Execute(() => UpdateTooltip());
+            return;
+
             void UpdateTooltip()
             {
                 element.tooltip = LocalizationSettings.StringDatabase.GetLocalizedString(tableName, key);
             }
-
-            element.schedule.Execute(() => UpdateTooltip());
-            LocalizationSettings.SelectedLocaleChanged += locale =>
-                element.schedule.Execute(() => UpdateTooltip());
         }
 
         /// <summary>
