@@ -434,19 +434,17 @@ namespace Controllers.Editor
 /// </summary>
 internal class CustomPhysicsShapePostprocessor : AssetPostprocessor
 {
-    // Grupos de nombres tal como están en Utils.Utils.PredefinedTileNames
-    static readonly HashSet<string> LeftAndRight50 = new()
+    private static readonly HashSet<string> LeftAndRight = new()
     {
         "LeftWall", "RightWall", "AloneWall"
     };
 
-    static readonly HashSet<string> Left55 = new()
+    private static readonly HashSet<string> OnlyLeft = new()
     {
         "TopLeftWall", "BottomLeftWall", "TopLeftInnerWall", "BottomLeftInnerWall", "TripleExceptLeftWall", "TripleExceptLeftInnerWall"
     };
 
-    // Subconjunto dentro de LeftEdgeAt60 que en realidad deben empezar al 40%
-    static readonly HashSet<string> Right50 = new()
+    private static readonly HashSet<string> OnlyRight = new()
     {
         "TopRightWall", "BottomRightWall", "TopRightInnerWall", "BottomRightInnerWall", "TripleExceptRightWall", "TripleExceptRightInnerWall"
     };
@@ -460,9 +458,9 @@ internal class CustomPhysicsShapePostprocessor : AssetPostprocessor
         {
             var baseName = sprite.name.Split('_').Last();
 
-            var leftAndRightContains = LeftAndRight50.Contains(baseName);
-            var leftContains = Left55.Contains(baseName);
-            var rightContains = Right50.Contains(baseName);
+            var leftAndRightContains = LeftAndRight.Contains(baseName);
+            var leftContains = OnlyLeft.Contains(baseName);
+            var rightContains = OnlyRight.Contains(baseName);
             if (!leftContains && !rightContains && !leftAndRightContains)
                 continue;
 
@@ -488,11 +486,9 @@ internal class CustomPhysicsShapePostprocessor : AssetPostprocessor
                 rightPct = leftPct + span;
             }
 
-            // Convertir a coordenadas de píxel dentro de sprite.rect
             var x0 = w * leftPct;
             var x1 = w * rightPct;
 
-            // Crear rectángulo de colisión (un polígono en cuatro vértices)
             var shape = new Vector2[]
             {
                 new(x0, 0f),
@@ -501,7 +497,6 @@ internal class CustomPhysicsShapePostprocessor : AssetPostprocessor
                 new(x0, h),
             };
 
-            // Sobrescribir la forma original
             sprite.OverridePhysicsShape(new List<Vector2[]> { shape });
         }
     }
