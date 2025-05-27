@@ -22,6 +22,98 @@ MonoBehaviour:
     m_Localized: "Cavernas Org\xE1nicas"
     m_Metadata:
       m_Items: []
+  - m_Id: 356408663904256
+    m_Localized: Ancho
+    m_Metadata:
+      m_Items: []
+  - m_Id: 614892890394624
+    m_Localized: Altura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615289352785920
+    m_Localized: Porcentaje de llenado inicial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615377814851584
+    m_Localized: Iteraciones de suavizado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615483200933888
+    m_Localized: "L\xEDmite de nacimiento"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615484736049152
+    m_Localized: "L\xEDmite de muerte"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615645025570816
+    m_Localized: "\xBFConectar todas las regiones?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615660087316480
+    m_Localized: "Distancia m\xE1xima de pasillo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615945916551168
+    m_Localized: Ancho del pasillo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616107963486208
+    m_Localized: "Ancho del mapa generado.\\n\\nUn valor m\xE1s grande crear\xE1
+      un mapa m\xE1s ancho.\\n\\nUn valor m\xE1s peque\xF1o crear\xE1 un mapa m\xE1s
+      estrecho."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616113537716224
+    m_Localized: "Altura del mapa generado.\\n\\nUn valor m\xE1s grande crear\xE1
+      un mapa m\xE1s alto.\\n\\nUn valor m\xE1s peque\xF1o crear\xE1 un mapa m\xE1s
+      bajo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616115764891648
+    m_Localized: "Porcentaje inicial de celdas llenas (suelo) en el mapa.\\n\\nUn
+      valor m\xE1s grande har\xE1 que el mapa tenga m\xE1s suelo al inicio.\\n\\nUn
+      valor m\xE1s peque\xF1o har\xE1 que el mapa tenga menos suelo al inicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616563406180352
+    m_Localized: "N\xFAmero de iteraciones de suavizado aplicadas al mapa.\\n\\nUn
+      valor m\xE1s grande har\xE1 el mapa m\xE1s suave y con formas m\xE1s naturales.\\n\\nUn
+      valor m\xE1s peque\xF1o har\xE1 el mapa m\xE1s irregular y menos suave."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616766230138880
+    m_Localized: "L\xEDmite de nacimiento para celdas vac\xEDas (cu\xE1ntos vecinos
+      llenos hacen que una celda vac\xEDa se convierta en suelo).\\n\\nUn valor m\xE1s
+      grande har\xE1 que sea m\xE1s dif\xEDcil que aparezca suelo nuevo.\\n\\nUn
+      valor m\xE1s peque\xF1o har\xE1 que aparezca suelo nuevo m\xE1s f\xE1cilmente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616768297930752
+    m_Localized: "L\xEDmite de muerte para celdas llenas (cu\xE1ntos vecinos llenos
+      se necesitan para que una celda llena siga siendo suelo).\\n\\nUn valor m\xE1s
+      grande har\xE1 que las celdas llenas sobrevivan m\xE1s f\xE1cilmente.\\n\\nUn
+      valor m\xE1s peque\xF1o har\xE1 que las celdas llenas mueran m\xE1s f\xE1cilmente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616770852261888
+    m_Localized: "Asegura la conectividad de todas las regiones del mapa mediante
+      pasillos.\\n\\nSi est\xE1 activado, todas las zonas separadas se conectar\xE1n.\\n\\nSi
+      est\xE1 desactivado, pueden quedar regiones aisladas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617556860637184
+    m_Localized: "Distancia m\xE1xima para conectar regiones separadas con un pasillo.\\n\\nUn
+      valor m\xE1s grande permite conectar regiones m\xE1s lejanas.\\n\\nUn valor
+      m\xE1s peque\xF1o solo conectar\xE1 regiones cercanas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617559247196160
+    m_Localized: "Ancho de los pasillos creados para conectar regiones.\\n\\nUn valor
+      m\xE1s grande har\xE1 pasillos m\xE1s anchos.\\n\\nUn valor m\xE1s peque\xF1o
+      har\xE1 pasillos m\xE1s estrechos."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -51,6 +51,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-es
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 962a3c98c51af03498dfcb4e2b869943
     m_Address: SpawningTable_es

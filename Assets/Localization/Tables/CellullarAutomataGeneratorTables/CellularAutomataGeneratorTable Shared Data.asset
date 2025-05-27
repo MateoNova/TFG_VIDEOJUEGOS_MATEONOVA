@@ -15,8 +15,80 @@ MonoBehaviour:
   m_TableCollectionName: CellularAutomataGeneratorTable
   m_TableCollectionNameGuidString: 501215b7aa03b274eb954f9dda9a40cb
   m_Entries:
+  - m_Id: 616107963486208
+    m_Key: WidthTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 356408663904256
+    m_Key: WidthLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616563406180352
+    m_Key: SmoothIterationsTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615377814851584
+    m_Key: SmoothIterationsLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617556860637184
+    m_Key: MaxCorridorDistanceTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615660087316480
+    m_Key: MaxCorridorDistanceLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616115764891648
+    m_Key: InitialFillPercentTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615289352785920
+    m_Key: InitialFillPercentLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616113537716224
+    m_Key: HeightTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 614892890394624
+    m_Key: HeightLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616770852261888
+    m_Key: FloodFillTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615645025570816
+    m_Key: FloodFillLabel
+    m_Metadata:
+      m_Items: []
   - m_Id: 14953648128
     m_Key: DisplayName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616768297930752
+    m_Key: DeathLimitTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615484736049152
+    m_Key: DeathLimitLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617559247196160
+    m_Key: CorridorWidthTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615945916551168
+    m_Key: CorridorWidthLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616766230138880
+    m_Key: BirthLimitTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615483200933888
+    m_Key: BirthLimitLabel
     m_Metadata:
       m_Items: []
   m_Metadata:

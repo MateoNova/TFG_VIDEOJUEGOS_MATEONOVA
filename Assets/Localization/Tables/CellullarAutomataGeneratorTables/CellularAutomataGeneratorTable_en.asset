@@ -22,6 +22,93 @@ MonoBehaviour:
     m_Localized: Organic Caverns
     m_Metadata:
       m_Items: []
+  - m_Id: 356408663904256
+    m_Localized: Width
+    m_Metadata:
+      m_Items: []
+  - m_Id: 614892890394624
+    m_Localized: Height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615289352785920
+    m_Localized: Initial fill percent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615377814851584
+    m_Localized: Smoothing iterations
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615483200933888
+    m_Localized: Birth limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615484736049152
+    m_Localized: Death limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615645025570816
+    m_Localized: "\xBFFlood fill?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615660087316480
+    m_Localized: Max corridor distance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615945916551168
+    m_Localized: Corridor width
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616107963486208
+    m_Localized: Width of the generated map.\n\nA larger value will create a wider
+      map.\n\nA smaller value will create a narrower map.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616113537716224
+    m_Localized: Height of the generated map.\n\nA larger value will create a taller
+      map.\n\nA smaller value will create a shorter map.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616115764891648
+    m_Localized: Initial percentage of filled (floor) cells in the map.\n\nA larger
+      value will make the map have more floor at the start.\n\nA smaller value will
+      make the map have less floor at the start.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616563406180352
+    m_Localized: Number of smoothing iterations applied to the map.\n\nA larger value
+      will make the map smoother and more natural.\n\nA smaller value will make the
+      map more irregular and less smooth.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616766230138880
+    m_Localized: Birth limit for empty cells (how many filled neighbors are needed
+      for an empty cell to become floor).\n\nA larger value makes it harder for new
+      floor to appear.\n\nA smaller value makes new floor appear more easily.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616768297930752
+    m_Localized: Death limit for filled cells (how many filled neighbors are needed
+      for a filled cell to remain floor).\n\nA larger value makes filled cells survive
+      more easily.\n\nA smaller value makes filled cells die more easily.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616770852261888
+    m_Localized: Ensures connectivity of all map regions using corridors.\n\nIf enabled,
+      all separated areas will be connected.\n\nIf disabled, isolated regions may
+      remain.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617556860637184
+    m_Localized: Maximum distance to connect separated regions with a corridor.\n\nA
+      larger value allows connecting more distant regions.\n\nA smaller value will
+      only connect nearby regions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617559247196160
+    m_Localized: Width of the corridors created to connect regions.\n\nA larger value
+      will make wider corridors.\n\nA smaller value will make narrower corridors.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

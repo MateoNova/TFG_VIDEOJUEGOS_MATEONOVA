@@ -45,6 +45,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 55cb982355c58174e869cc43d165d7f7
     m_Address: RandomWalkGeneratorTable_en

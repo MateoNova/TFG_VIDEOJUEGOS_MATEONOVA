@@ -22,6 +22,96 @@ MonoBehaviour:
     m_Localized: "Cavernes Org\xE0niques"
     m_Metadata:
       m_Items: []
+  - m_Id: 356408663904256
+    m_Localized: Amplada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 614892890394624
+    m_Localized: "Al\xE7ada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615289352785920
+    m_Localized: Percentatge d'ompliment inicial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615377814851584
+    m_Localized: Iteracions de suavitzat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615483200933888
+    m_Localized: "L\xEDmit de naixement"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615484736049152
+    m_Localized: "L\xEDmit de mort"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615645025570816
+    m_Localized: Connectar totes les regions?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615660087316480
+    m_Localized: "Dist\xE0ncia m\xE0xima del passad\xEDs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 615945916551168
+    m_Localized: "Amplada del passad\xEDs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616107963486208
+    m_Localized: "Amplada del mapa generat.\\n\\nUn valor m\xE9s gran crear\xE0 un
+      mapa m\xE9s ample.\\n\\nUn valor m\xE9s petit crear\xE0 un mapa m\xE9s estret."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616113537716224
+    m_Localized: "Al\xE7ada del mapa generat.\\n\\nUn valor m\xE9s gran crear\xE0
+      un mapa m\xE9s alt.\\n\\nUn valor m\xE9s petit crear\xE0 un mapa m\xE9s baix."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616115764891648
+    m_Localized: "Percentatge inicial de cel\xB7les plenes (terra) al mapa.\\n\\nUn
+      valor m\xE9s gran far\xE0 que el mapa tingui m\xE9s terra inicialment.\\n\\nUn
+      valor m\xE9s petit far\xE0 que el mapa tingui menys terra inicialment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616563406180352
+    m_Localized: "Nombre d'iteracions de suavitzat aplicades al mapa.\\n\\nUn valor
+      m\xE9s gran far\xE0 el mapa m\xE9s suau i amb formes m\xE9s naturals.\\n\\nUn
+      valor m\xE9s petit far\xE0 el mapa m\xE9s irregular i menys suau."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616766230138880
+    m_Localized: "L\xEDmit de naixement per a cel\xB7les buides (quantes ve\xEFnes
+      plenes fan que una cel\xB7la buida es converteixi en terra).\\n\\nUn valor
+      m\xE9s gran far\xE0 que sigui m\xE9s dif\xEDcil que aparegui terra nova.\\n\\nUn
+      valor m\xE9s petit far\xE0 que aparegui terra nova m\xE9s f\xE0cilment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616768297930752
+    m_Localized: "L\xEDmit de mort per a cel\xB7les plenes (quantes ve\xEFnes plenes
+      es necessiten perqu\xE8 una cel\xB7la plena segueixi sent terra).\\n\\nUn valor
+      m\xE9s gran far\xE0 que les cel\xB7les plenes sobrevisquin m\xE9s f\xE0cilment.\\n\\nUn
+      valor m\xE9s petit far\xE0 que les cel\xB7les plenes morin m\xE9s f\xE0cilment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 616770852261888
+    m_Localized: "Assegura la connectivitat de totes les regions del mapa mitjan\xE7ant
+      passadissos.\\n\\nSi est\xE0 activat, es connectaran totes les zones separades.\\n\\nSi
+      est\xE0 desactivat, poden quedar regions a\xEFllades"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617556860637184
+    m_Localized: "Dist\xE0ncia m\xE0xima per connectar regions separades amb un passad\xEDs.\\n\\nUn
+      valor m\xE9s gran permet connectar regions m\xE9s allunyades.\\n\\nUn valor
+      m\xE9s petit nom\xE9s connectar\xE0 regions properes."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 617559247196160
+    m_Localized: "Amplada dels passadissos creats per connectar regions.\\n\\nUn
+      valor m\xE9s gran far\xE0 passadissos m\xE9s amples.\\n\\nUn valor m\xE9s petit
+      far\xE0 passadissos m\xE9s estrets."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
