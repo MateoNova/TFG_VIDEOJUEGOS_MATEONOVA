@@ -178,58 +178,6 @@ namespace Utils
             };
         }
 
-        public static VisualElement ModernFoldout(string text, bool expanded = true)
-        {
-            // Contenedor raíz
-            var expander = new VisualElement
-            {
-                style =
-                {
-                    marginTop = 5,
-                    marginBottom = 5,
-                    borderTopWidth = 1,
-                    borderLeftWidth = 1,
-                    borderRightWidth = 1,
-                    paddingLeft = 4,
-                    paddingRight = 4,
-                    paddingTop = 2,
-                    paddingBottom = 2
-                }
-            };
-
-            // 1) Cabecera: un Toggle que actúa de “foldout header”
-            var header = new Toggle(text)
-            {
-                value = expanded,
-                style =
-                {
-                    unityFontStyleAndWeight = FontStyle.Bold,
-                    fontSize = 16,
-                    marginBottom = 4
-                }
-            };
-            expander.Add(header);
-
-            // 2) Contenedor de contenido
-            var content = new VisualElement
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Column,
-                    display = expanded ? DisplayStyle.Flex : DisplayStyle.None
-                }
-            };
-            expander.Add(content);
-
-            // 3) Al cambiar el toggle mostramos/ocultamos el contenido
-            header.RegisterValueChangedCallback(evt =>
-            {
-                content.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
-            });
-
-            return content;
-        }
-
         /// <summary>
         /// Crea un expander (similar a Foldout) sin propagar estilos a los hijos.
         /// </summary>
@@ -254,8 +202,7 @@ namespace Utils
                     paddingBottom = 2
                 }
             };
-        
-            // Header with arrow and title
+
             var header = new Button
             {
                 style =
@@ -271,15 +218,15 @@ namespace Utils
                     borderTopWidth = 0,
                     borderLeftWidth = 0,
                     borderRightWidth = 0,
-                    paddingLeft = 2 // Add a bit of left padding
+                    paddingLeft = 2
                 }
             };
-        
+
             var arrow = new Label(expanded ? "▼" : "▶")
             {
                 style =
                 {
-                    width = 14, // Slightly wider for better alignment
+                    width = 14,
                     unityTextAlign = TextAnchor.MiddleLeft,
                     marginRight = 4
                 }
@@ -292,22 +239,22 @@ namespace Utils
                     fontSize = 14
                 }
             };
-        
+
             header.Add(arrow);
             header.Add(titleLabel);
             expander.Add(header);
-        
+
             content = new VisualElement
             {
                 style =
                 {
                     flexDirection = FlexDirection.Column,
                     display = expanded ? DisplayStyle.Flex : DisplayStyle.None,
-                    marginLeft = 18 // width of arrow (14) + marginRight (4)
+                    paddingLeft = 22
                 }
             };
             expander.Add(content);
-        
+
             var element = content;
             header.clicked += () =>
             {
@@ -315,38 +262,8 @@ namespace Utils
                 element.style.display = isExpanded ? DisplayStyle.None : DisplayStyle.Flex;
                 arrow.text = isExpanded ? "▶" : "▼";
             };
-        
+
             return expander;
-        }
-
-
-        public static Foldout ModernSubFoldout(string text, bool expanded = true)
-        {
-            var foldout = new Foldout
-            {
-                value = expanded,
-                text = text,
-                style =
-                {
-                    marginTop = 3,
-                    borderTopWidth = 1,
-                    borderLeftWidth = 1,
-                    borderRightWidth = 1,
-                }
-            };
-
-            // Apply the font size and style only after the Foldout is fully initialized
-            foldout.RegisterCallback<GeometryChangedEvent>(_ =>
-            {
-                var label = foldout.Q<Label>();
-
-                if (label == null) return;
-
-                label.style.unityFontStyleAndWeight = FontStyle.Bold;
-                label.style.fontSize = 14;
-            });
-
-            return foldout;
         }
 
         public static DropdownField SimpleDropdown()
