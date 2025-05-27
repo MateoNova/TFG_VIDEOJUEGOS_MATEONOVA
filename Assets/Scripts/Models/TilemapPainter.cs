@@ -66,6 +66,14 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// Converts a collection of 2D world positions to their corresponding cell positions in a tilemap.
+        /// </summary>
+        /// <param name="positions">The world positions to convert.</param>
+        /// <param name="tilemap">The tilemap used for conversion.</param>
+        /// <returns>
+        /// A list of tuples, each containing the original world position and its corresponding cell position.
+        /// </returns>
         private static List<(Vector2Int worldPos, Vector3Int cellPos)> GetCellPositions(
             IEnumerable<Vector2Int> positions,
             Tilemap tilemap)
@@ -79,6 +87,12 @@ namespace Models
 
         #region Painting Tiles
 
+        /// <summary>
+        /// Paints walkable tiles on the walkable tilemap at the specified positions.
+        /// The tiles are chosen either randomly or based on defined probabilities,
+        /// depending on the current tileset preset configuration.
+        /// </summary>
+        /// <param name="tilePositions">The world positions where walkable tiles should be painted.</param>
         public void PaintWalkableTiles(IEnumerable<Vector2Int> tilePositions)
         {
             var preset = GetCurrentTilesetPreset();
@@ -95,7 +109,13 @@ namespace Models
                 PaintTilesWithProbabilities(cellPositions);
         }
 
-
+        /// <summary>
+        /// Paints walkable tiles at the given cell positions, selecting a random tile
+        /// from the preset's walkable tiles for each position.
+        /// </summary>
+        /// <param name="cellPositions">
+        /// A list of tuples containing the original world position and the corresponding cell position.
+        /// </param>
         private void PaintTilesRandomly(List<(Vector2Int, Vector3Int)> cellPositions)
         {
             var preset = GetCurrentTilesetPreset();
@@ -109,7 +129,13 @@ namespace Models
             }
         }
 
-
+        /// <summary>
+        /// Paints walkable tiles at the given cell positions, selecting tiles based on
+        /// their defined probabilities in the current preset.
+        /// </summary>
+        /// <param name="cellPositions">
+        /// A list of tuples containing the original world position and the corresponding cell position.
+        /// </param>
         private void PaintTilesWithProbabilities(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
         {
             var preset = GetCurrentTilesetPreset();
@@ -142,7 +168,12 @@ namespace Models
             }
         }
 
-
+        /// <summary>
+        /// Paints wall tiles on the wall tilemap at the specified positions,
+        /// using the tile that corresponds to the given wall position type.
+        /// </summary>
+        /// <param name="tilePositions">The world positions where wall tiles should be painted.</param>
+        /// <param name="wallPosition">The type of wall position to determine which tile to use.</param>
         public void PaintWallTiles(IEnumerable<Vector2Int> tilePositions, Utils.Utils.WallPosition wallPosition)
         {
             var preset = GetCurrentTilesetPreset();
@@ -184,7 +215,11 @@ namespace Models
             }
         }
 
-
+        /// <summary>
+        /// Paints door tiles on the door tilemap at the specified positions,
+        /// using the closed door tile from the current preset.
+        /// </summary>
+        /// <param name="tilePositions">The world positions where door tiles should be painted.</param>
         public void PaintDoorTiles(IEnumerable<Vector2Int> tilePositions)
         {
             var cellPositions = GetCellPositions(tilePositions, doorTilemap);
@@ -199,6 +234,9 @@ namespace Models
 
         #region Reset Tiles
 
+        /// <summary>
+        /// Resets all tiles in the tilemaps by clearing them.
+        /// </summary>
         public void ResetAllTiles()
         {
             walkableTilemap?.ClearAllTiles();
@@ -210,6 +248,15 @@ namespace Models
 
         #region Tile Selection from Folder
 
+        /// <summary>
+        /// Loads all tile assets from the specified folder and populates the given lists with them.
+        /// Clears the provided tile base, priority, and probability collections before adding new tiles.
+        /// Each found tile is added to <paramref name="tileBases"/> with a default priority of 0.
+        /// </summary>
+        /// <param name="tileBases">The list to populate with loaded tile assets.</param>
+        /// <param name="priorities">The list to populate with default priorities for each tile.</param>
+        /// <param name="probabilities">The dictionary to clear (not populated in this method).</param>
+        /// <param name="path">The folder path to search for tile assets.</param>
         private static void SelectTilesFromFolder(List<TileBase> tileBases, List<int> priorities,
             Dictionary<TileBase, float> probabilities, string path)
         {
@@ -228,7 +275,11 @@ namespace Models
             }
         }
 
-
+        /// <summary>
+        /// Loads all walkable tile assets from the specified folder into the current tileset preset,
+        /// resetting the walkable tile list and priorities.
+        /// </summary>
+        /// <param name="path">The folder path to search for walkable tile assets.</param>
         public void SelectWalkableTilesFromFolder(string path)
         {
             var preset = GetCurrentTilesetPreset();
@@ -240,6 +291,11 @@ namespace Models
 
         #region Tile Collections Clearing
 
+        /// <summary>
+        /// Removes all walkable tiles from the current tileset preset and clears the walkable tilemap.
+        /// This method clears the list of walkable tile bases, their priorities, and the probability dictionary,
+        /// then clears all tiles from the associated walkable tilemap.
+        /// </summary>
         public void RemoveAllWalkableTiles()
         {
             var preset = GetCurrentTilesetPreset();
@@ -249,7 +305,10 @@ namespace Models
             walkableTilemap?.ClearAllTiles();
         }
 
-
+        /// <summary>
+        /// Removes all wall tiles from the current tileset preset and clears the wall tilemap.
+        /// This method sets all wall tile references in the preset to null and clears all tiles from the associated wall tilemap.
+        /// </summary>
         public void RemoveAllWallTiles()
         {
             var preset = GetCurrentTilesetPreset();
@@ -281,6 +340,10 @@ namespace Models
 
         # region Presets
 
+        /// <summary>
+        /// Adds a tileset preset to the list if it is not already present and selects it as the current preset.
+        /// </summary>
+        /// <param name="preset">The tileset preset to add and select.</param>
         public void AddAndSelectPreset(TilesetPreset preset)
         {
             if (preset == null) return;
@@ -289,20 +352,30 @@ namespace Models
             _tilesetPresetIndex = tilesetPresets.IndexOf(preset);
         }
 
+        /// <summary>
+        /// Rebalances the coverage percentages for all tileset presets so that they are evenly distributed.
+        /// </summary>
         public void RebalanceCoverages()
         {
             var n = tilesetPresets.Count;
             presetCoverages = Enumerable.Repeat(n > 0 ? 100f / n : 0f, n).ToList();
         }
 
-        public TilesetPreset GetCurrentTilesetPreset()
+        /// <summary>
+        /// Gets the currently selected tileset preset, or null if none is selected.
+        /// </summary>
+        /// <returns>The current <see cref="TilesetPreset"/> or null.</returns>
+        private TilesetPreset GetCurrentTilesetPreset()
         {
             if (_tilesetPresetIndex < 0 || _tilesetPresetIndex >= tilesetPresets.Count)
                 return null;
             return tilesetPresets[_tilesetPresetIndex];
         }
 
-
+        /// <summary>
+        /// Removes the specified tileset preset from the list. Updates the selected index if necessary.
+        /// </summary>
+        /// <param name="preset">The tileset preset to remove.</param>
         public void RemovePreset(TilesetPreset preset)
         {
             if (!tilesetPresets.Remove(preset)) return;
@@ -311,17 +384,28 @@ namespace Models
                 _tilesetPresetIndex = tilesetPresets.Count - 1;
         }
 
-
+        /// <summary>
+        /// Returns a copy of the list of all tileset presets.
+        /// </summary>
+        /// <returns>A list of all <see cref="TilesetPreset"/> objects.</returns>
         public List<TilesetPreset> GetAllPresets()
         {
             return tilesetPresets.ToList();
         }
 
+        /// <summary>
+        /// Returns a copy of the list of preset coverages.
+        /// </summary>
+        /// <returns>A list of coverage percentages for each preset.</returns>
         public List<float> GetPresetCoverages()
         {
             return presetCoverages.ToList();
         }
 
+        /// <summary>
+        /// Sets the coverage percentages for the tileset presets.
+        /// </summary>
+        /// <param name="coverages">A list of coverage percentages to assign.</param>
         public void SetPresetCoverages(List<float> coverages)
         {
             presetCoverages = new List<float>(coverages);
@@ -331,6 +415,12 @@ namespace Models
 
         #region Walls
 
+        /// <summary>
+        /// Generates walls on the wall tilemap based on the provided walkable positions.
+        /// Uses the current tileset preset to determine the wall tiles to use.
+        /// </summary>
+        /// <param name="walkable">A set of walkable positions where walls should be generated.</param>
+        /// <param name="nonWall">An optional set of positions that should not be painted as walls.</param>
         public void GenerateWalls(HashSet<Vector2Int> walkable,
             HashSet<Vector2Int> nonWall = null)
         {
