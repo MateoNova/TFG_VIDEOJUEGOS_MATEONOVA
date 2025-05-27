@@ -8,18 +8,26 @@ using GeneratorService = Models.Editor.GeneratorService;
 namespace Controllers.Editor
 {
     /// <summary>
-    /// Controller responsible for managing actions related to dungeon generation, clearing, saving, and loading.
+    /// Provides methods for generating and managing dungeon layouts in the Unity Editor.
+    /// This includes generating new dungeons, painting floors and walls, and managing tile presets.
     /// </summary>
     public class ActionsController
     {
-        /// <summary>
-        /// Indicates whether the dungeon should be cleared before generating a new one.
-        /// </summary>
         public static bool ClearDungeonToggle { get; private set; } = true;
 
         /// <summary>
-        /// Generates a dungeon using the current generator and applies biome-based painting.
+        /// Generates a new dungeon layout, paints the floors and walls, and applies biome presets.
         /// </summary>
+        /// <remarks>
+        /// This method performs the following steps:
+        /// 1. Retrieves the current generator and its tilemap painter.
+        /// 2. Runs the dungeon generation algorithm to obtain walkable tile positions.
+        /// 3. Retrieves active biome presets and their coverage percentages.
+        /// 4. Generates random seed positions for each biome preset.
+        /// 5. Builds a biome map assigning each walkable tile to a biome region.
+        /// 6. Paints the floor tiles according to biome regions.
+        /// 7. Generates and paints unified walls based on the biome map.
+        /// </remarks>
         public static void Generate()
         {
             var gen = GeneratorService.Instance.CurrentGenerator;
@@ -27,13 +35,7 @@ namespace Controllers.Editor
             if (gen == null || painter == null) return;
 
             var hashWalkables = gen.RunGeneration(ClearDungeonToggle, gen.Origin);
-            if (hashWalkables == null || hashWalkables.Count == 0)
-            {
-                return;
-            }
-
-            if (hashWalkables.Count == 0) return;
-
+            if (hashWalkables == null || hashWalkables.Count == 0) return;
             var allWalkables = hashWalkables.ToList();
 
             var (presets, coverages) = GetActivePresetsAndCoverages(painter);
@@ -42,21 +44,157 @@ namespace Controllers.Editor
             var seeds = GenerateRandomSeeds(presets, allWalkables);
             var biomeMap = BuildBiomeMap(allWalkables, seeds, coverages);
 
-            PaintRegions(painter, presets, coverages, allWalkables, biomeMap);
+            PaintFloors(painter, presets, coverages, allWalkables, biomeMap);
+
+            GenerateUnifiedWalls(painter, presets, biomeMap);
         }
 
         /// <summary>
-        /// Filters presets and coverages to include only those with coverage greater than 0.
+        /// Paints the floor tiles for each biome region on the tilemap using the corresponding preset.
         /// </summary>
-        /// <param name="painter">The tilemap painter used for retrieving presets and coverages.</param>
-        /// <returns>A tuple containing the filtered presets and their corresponding coverages.</returns>
+        /// <param name="painter">The TilemapPainter used to paint tiles.</param>
+        /// <param name="presets">List of TilesetPresets, one for each biome.</param>
+        /// <param name="coverages">List of expected coverage percentages for each biome.</param>
+        /// <param name="allWalkables">List of all walkable tile positions.</param>
+        /// <param name="biomeMap">
+        /// Dictionary mapping each walkable tile position to its assigned biome index.
+        /// </param>
+        /// <remarks>
+        /// This method groups all walkable tiles by their biome, logs the coverage for each region,
+        /// selects the appropriate preset, and paints the floor tiles for each biome region.
+        /// </remarks>
+        private static void PaintFloors(
+            TilemapPainter painter,
+            List<TilesetPreset> presets,
+            List<float> coverages,
+            List<Vector2Int> allWalkables,
+            Dictionary<Vector2Int, int> biomeMap)
+        {
+            var regions = biomeMap
+                .GroupBy(kv => kv.Value)
+                .ToDictionary(g => g.Key, g => g.Select(kv => kv.Key).ToList());
+
+            foreach (var (biomeIdx, tiles) in regions)
+            {
+                LogCoverage(biomeIdx, tiles.Count, allWalkables.Count, coverages[biomeIdx]);
+                painter.AddAndSelectPreset(presets[biomeIdx]);
+                painter.PaintWalkableTiles(tiles);
+            }
+        }
+
+        /// <summary>
+        /// Generates and paints wall tiles around walkable regions, unifying wall appearance across biome boundaries.
+        /// </summary>
+        /// <param name="painter">The <see cref="TilemapPainter"/> used to paint wall tiles.</param>
+        /// <param name="presets">A list of <see cref="TilesetPreset"/>s, one for each biome.</param>
+        /// <param name="biomeMap">
+        /// A dictionary mapping each walkable tile position to its assigned biome index.
+        /// </param>
+        /// <remarks>
+        /// This method:
+        /// <list type="number">
+        /// <item>Finds all positions adjacent (including diagonals) to walkable tiles that are not themselves walkable.</item>
+        /// <item>For each such position, counts the influence (adjacency) of each biome.</item>
+        /// <item>Assigns the wall to the biome with the most influence at that position.</item>
+        /// <item>Determines the wall's visual type based on neighboring walkable tiles.</item>
+        /// <item>Paints the wall tile using the appropriate biome preset and wall type.</item>
+        /// </list>
+        /// </remarks>
+        private static void GenerateUnifiedWalls(
+            TilemapPainter painter,
+            List<TilesetPreset> presets,
+            Dictionary<Vector2Int, int> biomeMap)
+        {
+            var dirs = new[]
+            {
+                Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
+                new(1, 1), new(-1, 1), new(1, -1), new(-1, -1)
+            };
+
+            var influence = new Dictionary<Vector2Int, Dictionary<int, int>>();
+            foreach (var (pos, biome) in biomeMap)
+            {
+                foreach (var dir in dirs)
+                {
+                    var nb = pos + dir;
+                    if (biomeMap.ContainsKey(nb)) continue;
+
+                    if (!influence.ContainsKey(nb))
+                        influence[nb] = new Dictionary<int, int>();
+                    if (!influence[nb].ContainsKey(biome))
+                        influence[nb][biome] = 0;
+                    influence[nb][biome]++;
+                }
+            }
+
+            foreach (var (wallPos, value) in influence)
+            {
+                var chosenBiome = value
+                    .OrderByDescending(x => x.Value)
+                    .First()
+                    .Key;
+
+                var neighborBits = GetNeighborBits(wallPos, chosenBiome, biomeMap);
+                var wallPosition = Utils.Utils.DetermineWallPosition(neighborBits);
+
+                painter.AddAndSelectPreset(presets[chosenBiome]);
+                painter.PaintWallTiles(new[] { wallPos }, wallPosition);
+            }
+        }
+
+        /// <summary>
+        /// Returns an array of booleans indicating the presence of neighboring tiles belonging to the specified biome.
+        /// </summary>
+        /// <param name="pos">The position to check neighbors around.</param>
+        /// <param name="biome">The biome index to match neighbors against.</param>
+        /// <param name="biomeMap">A dictionary mapping tile positions to their biome indices.</param>
+        /// <returns>
+        /// A boolean array of length 8, where each element represents the presence of a neighboring tile
+        /// in the specified biome at the following directions:
+        /// 0: North, 1: North-East, 2: East, 3: South-East, 4: South, 5: South-West, 6: West, 7: North-West.
+        /// </returns>
+        private static bool[] GetNeighborBits(
+            Vector2Int pos,
+            int biome,
+            Dictionary<Vector2Int, int> biomeMap)
+        {
+            var bits = new bool[8];
+
+            bits[0] = Has(0, 1); // N
+            bits[1] = Has(1, 1); // NE
+            bits[2] = Has(1, 0); // E
+            bits[3] = Has(1, -1); // SE
+            bits[4] = Has(0, -1); // S
+            bits[5] = Has(-1, -1); // SW
+            bits[6] = Has(-1, 0); // W
+            bits[7] = Has(-1, 1); // NW
+            return bits;
+
+            bool Has(int dx, int dy) =>
+                biomeMap.TryGetValue(new Vector2Int(pos.x + dx, pos.y + dy), out var b) && b == biome;
+        }
+
+
+        /// <summary>
+        /// Retrieves the list of active tileset presets and their normalized coverage values from the given painter.
+        /// </summary>
+        /// <param name="painter">The <see cref="TilemapPainter"/> from which to obtain presets and coverages.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// <list type="bullet">
+        /// <item><description>A list of active <see cref="TilesetPreset"/>s (those with coverage &gt; 0).</description></item>
+        /// <item><description>A list of corresponding normalized coverage values (as floats between 0 and 1).</description></item>
+        /// </list>
+        /// </returns>
+        /// <remarks>
+        /// If the number of presets and coverages do not match, coverages are evenly distributed among all presets.
+        /// Only presets with a positive coverage value are considered active and included in the result.
+        /// </remarks>
         private static (List<TilesetPreset> presets, List<float> coverages) GetActivePresetsAndCoverages(
             TilemapPainter painter)
         {
             var presets = painter.GetAllPresets();
             var coverages = painter.GetPresetCoverages().Select(c => c / 100f).ToList();
-
-            // Ensure both lists are synchronized in size
             if (presets.Count != coverages.Count)
             {
                 var count = presets.Count;
@@ -67,29 +205,41 @@ namespace Controllers.Editor
                 .Select((ps, i) => new { ps, cov = coverages[i] })
                 .Where(x => x.cov > 0f)
                 .ToList();
-
             return (active.Select(x => x.ps).ToList(), active.Select(x => x.cov).ToList());
         }
 
         /// <summary>
-        /// Generates random seed positions for each preset.
+        /// Generates a list of random seed positions from the available walkable tiles,
+        /// with one seed for each tileset preset.
         /// </summary>
-        /// <param name="presets">The list of presets.</param>
-        /// <param name="allWalkables">The list of all walkable positions.</param>
-        /// <returns>A list of seed positions.</returns>
-        private static List<Vector2Int> GenerateRandomSeeds(List<TilesetPreset> presets, List<Vector2Int> allWalkables)
+        /// <param name="presets">The list of <see cref="TilesetPreset"/>s, one for each biome or region.</param>
+        /// <param name="allWalkables">The list of all walkable tile positions to choose seeds from.</param>
+        /// <returns>
+        /// A list of <see cref="Vector2Int"/> positions, each randomly selected from <paramref name="allWalkables"/>,
+        /// with the number of seeds equal to the number of presets.
+        /// </returns>
+        private static List<Vector2Int> GenerateRandomSeeds(
+            List<TilesetPreset> presets,
+            List<Vector2Int> allWalkables)
         {
             var rng = new System.Random();
             return presets.Select(_ => allWalkables[rng.Next(allWalkables.Count)]).ToList();
         }
 
         /// <summary>
-        /// Builds a biome map by assigning each walkable position to the closest seed based on coverage.
+        /// Builds a biome map by assigning each walkable tile position to the closest biome seed,
+        /// using domain-warped coordinates and coverage weighting.
         /// </summary>
-        /// <param name="allWalkables">The list of all walkable positions.</param>
-        /// <param name="seeds">The list of seed positions.</param>
-        /// <param name="coverages">The list of coverage values for each preset.</param>
-        /// <returns>A dictionary mapping each position to its assigned biome index.</returns>
+        /// <param name="allWalkables">A list of all walkable tile positions to be assigned to biomes.</param>
+        /// <param name="seeds">A list of seed positions, one for each biome.</param>
+        /// <param name="coverages">A list of coverage values for each biome, used to weight distance calculations.</param>
+        /// <returns>
+        /// A dictionary mapping each walkable tile position (<see cref="Vector2Int"/>) to its assigned biome index (int).
+        /// </returns>
+        /// <remarks>
+        /// Each walkable position is first warped using domain warping (Perlin noise),
+        /// then assigned to the biome whose seed is closest, factoring in the biome's coverage.
+        /// </remarks>
         private static Dictionary<Vector2Int, int> BuildBiomeMap(
             List<Vector2Int> allWalkables,
             List<Vector2Int> seeds,
@@ -110,12 +260,15 @@ namespace Controllers.Editor
         }
 
         /// <summary>
-        /// Applies domain warping to a position using Perlin noise.
+        /// Applies domain warping to the given position using Perlin noise,
+        /// producing a new position offset by noise-based values.
         /// </summary>
-        /// <param name="pos">The original position.</param>
-        /// <param name="noiseScale">The scale of the noise.</param>
-        /// <param name="warpStrength">The strength of the warp effect.</param>
-        /// <returns>The warped position.</returns>
+        /// <param name="pos">The original integer position to warp.</param>
+        /// <param name="noiseScale">The scale factor for the Perlin noise input.</param>
+        /// <param name="warpStrength">The strength of the warp (magnitude of the offset).</param>
+        /// <returns>
+        /// A <see cref="Vector2"/> representing the warped position, offset from the original by Perlin noise.
+        /// </returns>
         private static Vector2 ApplyDomainWarp(Vector2Int pos, float noiseScale, float warpStrength)
         {
             var nx = pos.x * noiseScale;
@@ -126,21 +279,26 @@ namespace Controllers.Editor
         }
 
         /// <summary>
-        /// Finds the closest seed to a given position, considering coverage values.
+        /// Finds the index of the closest seed to the given warped position,
+        /// factoring in the coverage value for each seed to weight the distance.
         /// </summary>
-        /// <param name="warped">The warped position.</param>
-        /// <param name="seeds">The list of seed positions.</param>
-        /// <param name="coverages">The list of coverage values for each preset.</param>
-        /// <returns>The index of the closest seed.</returns>
-        private static int FindClosestSeed(Vector2 warped, List<Vector2Int> seeds, List<float> coverages)
+        /// <param name="warped">The warped position to compare against the seeds.</param>
+        /// <param name="seeds">A list of seed positions (<see cref="Vector2Int"/>).</param>
+        /// <param name="coverages">A list of coverage values for each seed, used to weight the distance calculation.</param>
+        /// <returns>
+        /// The index of the seed in <paramref name="seeds"/> that is closest to <paramref name="warped"/>,
+        /// after dividing the squared distance by the corresponding coverage value.
+        /// </returns>
+        private static int FindClosestSeed(
+            Vector2 warped,
+            List<Vector2Int> seeds,
+            List<float> coverages)
         {
             var best = 0;
             var bestD = float.MaxValue;
-
             for (var i = 0; i < seeds.Count; i++)
             {
                 var d = Vector2.SqrMagnitude(warped - seeds[i]) / coverages[i];
-
                 if (!(d < bestD)) continue;
                 bestD = d;
                 best = i;
@@ -150,57 +308,28 @@ namespace Controllers.Editor
         }
 
         /// <summary>
-        /// Paints regions on the tilemap based on the biome map and logs coverage information.
-        /// </summary>
-        /// <param name="painter">The tilemap painter used for painting.</param>
-        /// <param name="presets">The list of presets.</param>
-        /// <param name="coverages">The list of coverage values for each preset.</param>
-        /// <param name="allWalkables">The list of all walkable positions.</param>
-        /// <param name="biomeMap">The biome map mapping positions to biome indices.</param>
-        private static void PaintRegions(
-            TilemapPainter painter,
-            List<TilesetPreset> presets,
-            List<float> coverages,
-            List<Vector2Int> allWalkables,
-            Dictionary<Vector2Int, int> biomeMap)
-        {
-            var allSet = new HashSet<Vector2Int>(allWalkables);
-            var regions = biomeMap
-                .GroupBy(kv => kv.Value)
-                .ToDictionary(g => g.Key, g => g.Select(kv => kv.Key).ToList());
-
-            foreach (var (key, value) in regions)
-            {
-                LogCoverage(key, value.Count, allWalkables.Count, coverages[key]);
-
-                painter.AddAndSelectPreset(presets[key]);
-                painter.PaintWalkableTiles(value);
-                painter.GenerateWalls(new HashSet<Vector2Int>(value), allSet);
-            }
-        }
-
-        /// <summary>
-        /// Logs the coverage information for a specific biome region.
+        /// Logs the actual and expected coverage percentage for a biome region.
         /// </summary>
         /// <param name="idx">The index of the biome region.</param>
-        /// <param name="regionCount">The number of tiles in the region.</param>
+        /// <param name="regionCount">The number of tiles assigned to this region.</param>
         /// <param name="total">The total number of walkable tiles.</param>
-        /// <param name="expectedCoverage">The expected coverage percentage for the biome.</param>
+        /// <param name="expectedCoverage">The expected coverage for this region (as a value between 0 and 1).</param>
         private static void LogCoverage(int idx, int regionCount, int total, float expectedCoverage)
         {
             var realPct = regionCount / (float)total * 100f;
             var expPct = expectedCoverage * 100f;
-
             Debug.Log($"[CoverageCheck] Region {idx}: {regionCount} tiles ({realPct:F2}%) — expected {expPct:F2}%");
         }
 
         /// <summary>
-        /// Clears the current dungeon by resetting all tiles.
+        /// Clears the current dungeon by invoking the <c>ClearDungeon</c> method on the active generator,
+        /// if one is available.
         /// </summary>
         public static void ClearDungeon() => GeneratorService.Instance.CurrentGenerator?.ClearDungeon();
 
         /// <summary>
-        /// Saves the current dungeon to a JSON file.
+        /// Opens a file save dialog to let the user specify a location and filename,
+        /// then saves the current dungeon to the selected JSON file if a valid path is provided.
         /// </summary>
         public static void SaveDungeon()
         {
@@ -210,7 +339,8 @@ namespace Controllers.Editor
         }
 
         /// <summary>
-        /// Loads a dungeon from a JSON file.
+        /// Opens a file dialog to let the user select a JSON file to load a dungeon from,
+        /// then loads the dungeon using the current generator if a valid path is provided.
         /// </summary>
         public static void LoadDungeon()
         {
@@ -220,9 +350,8 @@ namespace Controllers.Editor
         }
 
         /// <summary>
-        /// Sets the value of the ClearDungeonToggle property.
+        /// Sets the value of the ClearDungeon toggle.
         /// </summary>
-        /// <param name="newValue">The new value for the toggle.</param>
         public void SetClearDungeon(bool newValue) => ClearDungeonToggle = newValue;
     }
 }
