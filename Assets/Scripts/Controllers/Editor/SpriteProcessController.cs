@@ -47,7 +47,6 @@ namespace Controllers.Editor
 
             RegisterNameIdPairs(dataProvider, rects);
             ApplySlicing(dataProvider, rects);
-
             return true;
         }
 
@@ -67,7 +66,7 @@ namespace Controllers.Editor
             importer.spritePixelsPerUnit = CellSize;
             importer.filterMode = FilterMode.Point;
             importer.mipmapEnabled = false;
-            
+
             EditorUtility.SetDirty(importer);
             importer.SaveAndReimport();
 
@@ -100,25 +99,24 @@ namespace Controllers.Editor
 
             var rects = new List<SpriteRect>();
             int texW = texture.width, texH = texture.height, idx = 0;
-
             for (var y = texH - CellSize; y >= 0; y -= CellSize)
-            for (var x = 0; x < texW; x += CellSize)
             {
-                if (IsCellBlank(texture, x, y)) continue;
-
-                var baseName = idx < Utils.Utils.PredefinedTileNames.Count
-                    ? Utils.Utils.PredefinedTileNames[idx]
-                    : $"Floor {idx - Utils.Utils.PredefinedTileNames.Count + 1}";
-
-                rects.Add(new SpriteRect
+                for (var x = 0; x < texW; x += CellSize)
                 {
-                    name = $"{idx}_{baseName}",
-                    spriteID = GUID.Generate(),
-                    rect = new Rect(x, y, CellSize, CellSize),
-                    alignment = (int)SpriteAlignment.Center,
-                    pivot = new Vector2(PivotValue, PivotValue)
-                });
-                idx++;
+                    if (IsCellBlank(texture, x, y)) continue;
+                    var baseName = idx < Utils.Utils.PredefinedTileNames.Count
+                        ? Utils.Utils.PredefinedTileNames[idx]
+                        : $"Floor {idx - Utils.Utils.PredefinedTileNames.Count + 1}";
+                    rects.Add(new SpriteRect
+                    {
+                        name = $"{idx}_{baseName}",
+                        spriteID = GUID.Generate(),
+                        rect = new Rect(x, y, CellSize, CellSize),
+                        alignment = (int)SpriteAlignment.Center,
+                        pivot = new Vector2(PivotValue, PivotValue)
+                    });
+                    idx++;
+                }
             }
 
             return rects;
@@ -238,6 +236,7 @@ namespace Controllers.Editor
 
                 return folderPath;
             }
+
             Debug.LogError($"[CreatePreset] Invalid directory for preset path: {presetPath}");
             return null;
         }
@@ -426,6 +425,84 @@ namespace Controllers.Editor
                 var yIdx = (int)((texH - CellSize - rect.y) / CellSize);
                 tilemap.SetTile(new Vector3Int(xIdx, -yIdx, 0), tile);
             }
+        }
+    }
+}
+
+/// <summary>
+/// AssetPostprocessor para forzar colliders distintos según el nombre de la tile.
+/// </summary>
+internal class CustomPhysicsShapePostprocessor : AssetPostprocessor
+{
+    // Grupos de nombres tal como están en Utils.Utils.PredefinedTileNames
+    static readonly HashSet<string> LeftAndRight50 = new()
+    {
+        "LeftWall", "RightWall", "AloneWall"
+    };
+
+    static readonly HashSet<string> Left55 = new()
+    {
+        "TopLeftWall", "BottomLeftWall", "TopLeftInnerWall", "BottomLeftInnerWall", "TripleExceptLeftWall", "TripleExceptLeftInnerWall"
+    };
+
+    // Subconjunto dentro de LeftEdgeAt60 que en realidad deben empezar al 40%
+    static readonly HashSet<string> Right50 = new()
+    {
+        "TopRightWall", "BottomRightWall", "TopRightInnerWall", "BottomRightInnerWall", "TripleExceptRightWall", "TripleExceptRightInnerWall"
+    };
+
+
+    private void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
+    {
+        if (sprites == null || sprites.Length == 0) return;
+
+        foreach (var sprite in sprites)
+        {
+            var baseName = sprite.name.Split('_').Last();
+
+            var leftAndRightContains = LeftAndRight50.Contains(baseName);
+            var leftContains = Left55.Contains(baseName);
+            var rightContains = Right50.Contains(baseName);
+            if (!leftContains && !rightContains && !leftAndRightContains)
+                continue;
+
+            var w = sprite.rect.width;
+            var h = sprite.rect.height;
+
+            float leftPct, rightPct;
+
+            if (leftContains)
+            {
+                leftPct = 0.30f;
+                rightPct = 1.0f;
+            }
+            else if (rightContains)
+            {
+                leftPct = 0f;
+                rightPct = 0.7f;
+            }
+            else
+            {
+                const float span = 0.4f;
+                leftPct = (1f - span) * 0.5f;
+                rightPct = leftPct + span;
+            }
+
+            // Convertir a coordenadas de píxel dentro de sprite.rect
+            var x0 = w * leftPct;
+            var x1 = w * rightPct;
+
+            // Crear rectángulo de colisión (un polígono en cuatro vértices)
+            var shape = new Vector2[]
+            {
+                new(x0, 0f),
+                new(x1, 0f),
+                new(x1, h),
+                new(x0, h),
+            };
+
+            // Sobrescribir la forma original
+            sprite.OverridePhysicsShape(new List<Vector2[]> { shape });
         }
     }
 }

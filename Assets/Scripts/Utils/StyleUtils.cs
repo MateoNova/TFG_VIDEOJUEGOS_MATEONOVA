@@ -90,8 +90,7 @@ namespace Utils
                 {
                     unityFontStyleAndWeight = FontStyle.Normal,
                     marginTop = 10,
-                    marginBottom = 5,
-                    fontSize = 13
+                    marginBottom = 5
                 }
             };
         }
