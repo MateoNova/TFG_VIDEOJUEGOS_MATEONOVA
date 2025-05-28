@@ -22,7 +22,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 22187834bad40b24bad408e927bf48c1, type: 2}
   - {fileID: 11400000, guid: a89230c4cf16fdb4d856f6915cad8d1b, type: 2}
   walkableTilesPriorities: 0100000000000000000000000000000000000000000000000000000000000000
-  randomWalkableTilesPlacement: 0
+  randomWalkableTilesPlacement: 1
   upWall: {fileID: 11400000, guid: d3ddb260e29eac24cb314f2fb3ad810b, type: 2}
   downWall: {fileID: 11400000, guid: 58d318ad40c05a545a761f218a81c51f, type: 2}
   leftWall: {fileID: 11400000, guid: 3320cbcc6f6719d44933f19801c19039, type: 2}

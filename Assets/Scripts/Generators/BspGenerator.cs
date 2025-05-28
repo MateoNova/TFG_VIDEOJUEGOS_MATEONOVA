@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Views.Attributes;
 
 namespace Generators
@@ -34,6 +36,8 @@ namespace Generators
 
         #endregion
 
+        private static ProfilerMarker myMarker = new("BSP_Generation");
+
         #region Generation Process
 
         /// <summary>
@@ -43,36 +47,39 @@ namespace Generators
         /// <param name="startPoint">The starting point for the generation.</param>
         public override HashSet<Vector2Int> RunGeneration(bool resetTilemap = true, Vector2Int startPoint = default)
         {
-            if (resetTilemap)
+            using (myMarker.Auto())
             {
-                tilemapPainter.ResetAllTiles();
-            }
-
-            // Create the root node for the BSP tree.
-            var rootNode = new BspNode(new RectInt(startPoint.x, startPoint.y, maxRoomSize * 2, maxRoomSize * 2));
-            SplitNode(rootNode, maxIterations);
-
-            // Collect rooms from the BSP tree.
-            var rooms = new List<RectInt>();
-            CollectRooms(rootNode, rooms);
-
-            // Fill walkable tiles from all rooms.
-            var walkableTiles = new HashSet<Vector2Int>();
-            foreach (var room in rooms)
-            {
-                for (var x = room.xMin; x < room.xMax; x++)
+                if (resetTilemap)
                 {
-                    for (var y = room.yMin; y < room.yMax; y++)
+                    tilemapPainter.ResetAllTiles();
+                }
+
+                var rootNode = new BspNode(new RectInt(startPoint.x, startPoint.y, maxRoomSize * 2, maxRoomSize * 2));
+                SplitNode(rootNode, maxIterations);
+
+                var rooms = new List<RectInt>();
+                CollectRooms(rootNode, rooms);
+
+                var walkableTiles = new HashSet<Vector2Int>();
+                foreach (var room in rooms)
+                {
+                    for (var x = room.xMin; x < room.xMax; x++)
                     {
-                        walkableTiles.Add(new Vector2Int(x, y));
+                        for (var y = room.yMin; y < room.yMax; y++)
+                        {
+                            walkableTiles.Add(new Vector2Int(x, y));
+                        }
                     }
                 }
+
+                CreateCorridors(rootNode, walkableTiles, rooms);
+
+                var walkSize = walkableTiles.Count;
+                Profiler.BeginSample($"BSP_WalkableTiles: {walkSize}");
+                Profiler.EndSample();
+                
+                return walkableTiles;
             }
-
-            // Create corridors connecting rooms.
-            CreateCorridors(rootNode, walkableTiles, rooms);
-
-            return walkableTiles;
         }
 
         #endregion

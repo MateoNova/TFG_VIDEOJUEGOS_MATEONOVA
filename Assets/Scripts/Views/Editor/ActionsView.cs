@@ -104,7 +104,7 @@ namespace Views.Editor
         {
             toggle.SetLocalizedText(LocalizationKeysHelper.ActionsClearToggle, LocalizationKeysHelper.ActionsTable);
             toggle.SetLocalizedTooltip(LocalizationKeysHelper.ActionsClearTooltip, LocalizationKeysHelper.ActionsTable);
-            toggle.RegisterValueChangedCallback(evt => _actionsController.SetClearDungeon(evt.newValue));
+            toggle.RegisterValueChangedCallback(evt => ActionsController.SetClearDungeon(evt.newValue));
         }
     }
 }

@@ -101,7 +101,9 @@ namespace Models
 
             InitializeWalkableTilesProbabilities(preset);
             var positions = tilePositions.ToList();
-            var cellPositions = GetCellPositions(positions, walkableTilemap);
+            var cellPositions = GetCellPositions(positions, walkableTilemap)
+                .Select(t => t.cellPos)
+                .ToArray();
 
             if (preset.randomWalkableTilesPlacement)
                 PaintTilesRandomly(cellPositions);
@@ -116,17 +118,19 @@ namespace Models
         /// <param name="cellPositions">
         /// A list of tuples containing the original world position and the corresponding cell position.
         /// </param>
-        private void PaintTilesRandomly(List<(Vector2Int, Vector3Int)> cellPositions)
+        private void PaintTilesRandomly(Vector3Int[] cellPositions)
         {
             var preset = GetCurrentTilesetPreset();
             if (preset == null || preset.walkableTileBases.Count == 0) return;
-
+            
             var rnd = new System.Random();
-            foreach (var (_, cell) in cellPositions)
+            var tile = new TileBase[cellPositions.Length];
+            for (var index = 0; index < cellPositions.Length; index++)
             {
-                var tile = preset.walkableTileBases[rnd.Next(preset.walkableTileBases.Count)];
-                walkableTilemap.SetTile(cell, tile);
+                tile[index] = preset.walkableTileBases[rnd.Next(preset.walkableTileBases.Count)];
             }
+            
+            walkableTilemap.SetTiles(cellPositions, tile);
         }
 
         /// <summary>
@@ -136,7 +140,7 @@ namespace Models
         /// <param name="cellPositions">
         /// A list of tuples containing the original world position and the corresponding cell position.
         /// </param>
-        private void PaintTilesWithProbabilities(List<(Vector2Int worldPos, Vector3Int cellPos)> cellPositions)
+        private void PaintTilesWithProbabilities(Vector3Int[] cellPositions)
         {
             var preset = GetCurrentTilesetPreset();
             var total = _walkableTilesProbabilities.Values.Sum();
@@ -149,23 +153,29 @@ namespace Models
                     Debug.LogError($"Probability for tile {tile.name} is not set.");
                     continue;
                 }
-
+        
                 accumulator += prob / total;
                 cumulativeList.Add((tile, accumulator));
             }
-
+        
             var rnd = new System.Random();
-            foreach (var (_, cellPos) in cellPositions)
+            var cellArray = new Vector3Int[cellPositions.Length];
+            var tileArray = new TileBase[cellPositions.Length];
+        
+            for (var i = 0; i < cellPositions.Length; i++)
             {
+                var cellPos = cellPositions[i];
                 var randomValue = (float)rnd.NextDouble();
                 foreach (var (tile, cumulative) in cumulativeList)
                 {
                     if (!(randomValue <= cumulative)) continue;
-
-                    walkableTilemap.SetTile(cellPos, tile);
+                    cellArray[i] = cellPos;
+                    tileArray[i] = tile;
                     break;
                 }
             }
+        
+            walkableTilemap.SetTiles(cellArray, tileArray);
         }
 
         /// <summary>

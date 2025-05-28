@@ -44,27 +44,32 @@ namespace Models
         public void PaintWalls(HashSet<Vector2Int> walkable, HashSet<Vector2Int> nonWall = null)
         {
             var candidates = new HashSet<Vector2Int>();
-
-            // gather wall candidates
+        
             foreach (var nb in walkable.SelectMany(p => Dirs, (p, d) => p + d).Where(nb =>
                          !walkable.Contains(nb) && (nonWall == null || !nonWall.Contains(nb))))
                 candidates.Add(nb);
-
-            // paint by mask
+        
+            var cells = new Vector3Int[candidates.Count];
+            var tiles = new TileBase[candidates.Count];
+            var idx = 0;
+        
             foreach (var pos in candidates)
             {
                 var mask = 0;
                 for (var i = 0; i < 8; i++)
                     if (walkable.Contains(pos + Dirs[i]))
                         mask |= 1 << i;
-
+        
                 var tile = (mask < _maskTiles.Length && _maskTiles[mask] != null)
                     ? _maskTiles[mask]
                     : _maskTiles[0];
-
-                var cell = _tilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0));
-                _tilemap.SetTile(cell, tile);
+        
+                cells[idx] = _tilemap.WorldToCell(new Vector3Int(pos.x, pos.y, 0));
+                tiles[idx] = tile;
+                idx++;
             }
+        
+            _tilemap.SetTiles(cells, tiles);
         }
     }
 }

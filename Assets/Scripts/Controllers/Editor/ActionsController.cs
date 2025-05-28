@@ -1,52 +1,98 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Models;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Profiling;
 using GeneratorService = Models.Editor.GeneratorService;
 
 namespace Controllers.Editor
 {
     /// <summary>
-    /// Provides methods for generating and managing dungeon layouts in the Unity Editor.
-    /// This includes generating new dungeons, painting floors and walls, and managing tile presets.
+    /// Provides methods for generating, clearing, saving, and loading dungeons,
+    /// as well as managing the state of the dungeon generation process.
     /// </summary>
     public class ActionsController
     {
         public static bool ClearDungeonToggle { get; private set; } = true;
 
         /// <summary>
-        /// Generates a new dungeon layout, paints the floors and walls, and applies biome presets.
+        /// Generates a new dungeon layout, assigns biome regions using a parallelized Burst job,
+        /// paints the floors and unified walls according to biome assignments, and manages profiling.
         /// </summary>
         /// <remarks>
-        /// This method performs the following steps:
-        /// 1. Retrieves the current generator and its tilemap painter.
+        /// The method performs the following steps:
+        /// 1. Retrieves the current dungeon generator and its tilemap painter.
         /// 2. Runs the dungeon generation algorithm to obtain walkable tile positions.
         /// 3. Retrieves active biome presets and their coverage percentages.
         /// 4. Generates random seed positions for each biome preset.
-        /// 5. Builds a biome map assigning each walkable tile to a biome region.
-        /// 6. Paints the floor tiles according to biome regions.
-        /// 7. Generates and paints unified walls based on the biome map.
+        /// 5. Uses a Burst-compiled parallel job to assign each walkable tile to the closest biome seed,
+        ///    applying domain warping and coverage weighting.
+        /// 6. Builds a biome map from the job results.
+        /// 7. Paints the floor tiles for each biome region.
+        /// 8. Generates and paints unified wall tiles based on the biome map.
+        /// Profiling samples are used to measure performance of key steps.
         /// </remarks>
         public static void Generate()
         {
-            var gen = GeneratorService.Instance.CurrentGenerator;
-            var painter = gen?.TilemapPainter;
-            if (gen == null || painter == null) return;
+            var marker = new ProfilerMarker("ActionsController.Generate");
+            using (marker.Auto())
+            {
+                var gen = GeneratorService.Instance.CurrentGenerator;
+                var painter = gen?.TilemapPainter;
+                if (gen == null || painter == null) return;
 
-            var hashWalkables = gen.RunGeneration(ClearDungeonToggle, gen.Origin);
-            if (hashWalkables == null || hashWalkables.Count == 0) return;
-            var allWalkables = hashWalkables.ToList();
+                var hashWalkables = gen.RunGeneration(ClearDungeonToggle, gen.Origin);
+                if (hashWalkables == null || hashWalkables.Count == 0) return;
+                var allWalkables = hashWalkables.ToList();
 
-            var (presets, coverages) = GetActivePresetsAndCoverages(painter);
-            if (presets.Count == 0) return;
+                Profiler.BeginSample($"WalkableTiles: {allWalkables.Count}");
+                Profiler.EndSample();
 
-            var seeds = GenerateRandomSeeds(presets, allWalkables);
-            var biomeMap = BuildBiomeMap(allWalkables, seeds, coverages);
+                var (presets, coverages) = GetActivePresetsAndCoverages(painter);
+                if (presets.Count == 0) return;
 
-            PaintFloors(painter, presets, coverages, allWalkables, biomeMap);
+                Profiler.BeginSample($"BiomeRegions: {presets.Count}");
+                Profiler.EndSample();
 
-            GenerateUnifiedWalls(painter, presets, biomeMap);
+                var seeds = GenerateRandomSeeds(presets, allWalkables);
+
+                var tempCount = allWalkables.Count;
+                var posArr = new NativeArray<int2>(tempCount, Allocator.TempJob);
+                for (var i = 0; i < tempCount; i++) posArr[i] = new int2(allWalkables[i].x, allWalkables[i].y);
+                var seedArr = new NativeArray<int2>(seeds.Count, Allocator.TempJob);
+                for (var i = 0; i < seeds.Count; i++) seedArr[i] = new int2(seeds[i].x, seeds[i].y);
+                var covArr = new NativeArray<float>(coverages.Count, Allocator.TempJob);
+                for (var i = 0; i < coverages.Count; i++) covArr[i] = coverages[i];
+                var outArr = new NativeArray<int>(tempCount, Allocator.TempJob);
+
+                var job = new BuildBiomeMapJob
+                {
+                    Positions = posArr,
+                    Seeds = seedArr,
+                    Coverages = covArr,
+                    OutIndices = outArr
+                };
+                var handle = job.Schedule(tempCount, 64);
+                handle.Complete();
+
+                var biomeMap = new Dictionary<Vector2Int, int>(tempCount);
+                for (var i = 0; i < tempCount; i++)
+                    biomeMap[new Vector2Int(posArr[i].x, posArr[i].y)] = outArr[i];
+
+                posArr.Dispose();
+                seedArr.Dispose();
+                covArr.Dispose();
+                outArr.Dispose();
+
+                PaintFloors(painter, presets, coverages, allWalkables, biomeMap);
+                GenerateUnifiedWalls(painter, presets, biomeMap);
+            }
         }
 
         /// <summary>
@@ -127,6 +173,9 @@ namespace Controllers.Editor
                 }
             }
 
+            Profiler.BeginSample($"WallTiles: {influence.Count}");
+            Profiler.EndSample();
+
             foreach (var (wallPos, value) in influence)
             {
                 var chosenBiome = value
@@ -173,7 +222,6 @@ namespace Controllers.Editor
             bool Has(int dx, int dy) =>
                 biomeMap.TryGetValue(new Vector2Int(pos.x + dx, pos.y + dy), out var b) && b == biome;
         }
-
 
         /// <summary>
         /// Retrieves the list of active tileset presets and their normalized coverage values from the given painter.
@@ -226,86 +274,6 @@ namespace Controllers.Editor
             return presets.Select(_ => allWalkables[rng.Next(allWalkables.Count)]).ToList();
         }
 
-        /// <summary>
-        /// Builds a biome map by assigning each walkable tile position to the closest biome seed,
-        /// using domain-warped coordinates and coverage weighting.
-        /// </summary>
-        /// <param name="allWalkables">A list of all walkable tile positions to be assigned to biomes.</param>
-        /// <param name="seeds">A list of seed positions, one for each biome.</param>
-        /// <param name="coverages">A list of coverage values for each biome, used to weight distance calculations.</param>
-        /// <returns>
-        /// A dictionary mapping each walkable tile position (<see cref="Vector2Int"/>) to its assigned biome index (int).
-        /// </returns>
-        /// <remarks>
-        /// Each walkable position is first warped using domain warping (Perlin noise),
-        /// then assigned to the biome whose seed is closest, factoring in the biome's coverage.
-        /// </remarks>
-        private static Dictionary<Vector2Int, int> BuildBiomeMap(
-            List<Vector2Int> allWalkables,
-            List<Vector2Int> seeds,
-            List<float> coverages)
-        {
-            var biomeMap = new Dictionary<Vector2Int, int>(allWalkables.Count);
-            const float noiseScale = 0.1f;
-            const float warpStrength = 2f;
-
-            foreach (var pos in allWalkables)
-            {
-                var warped = ApplyDomainWarp(pos, noiseScale, warpStrength);
-                var best = FindClosestSeed(warped, seeds, coverages);
-                biomeMap[pos] = best;
-            }
-
-            return biomeMap;
-        }
-
-        /// <summary>
-        /// Applies domain warping to the given position using Perlin noise,
-        /// producing a new position offset by noise-based values.
-        /// </summary>
-        /// <param name="pos">The original integer position to warp.</param>
-        /// <param name="noiseScale">The scale factor for the Perlin noise input.</param>
-        /// <param name="warpStrength">The strength of the warp (magnitude of the offset).</param>
-        /// <returns>
-        /// A <see cref="Vector2"/> representing the warped position, offset from the original by Perlin noise.
-        /// </returns>
-        private static Vector2 ApplyDomainWarp(Vector2Int pos, float noiseScale, float warpStrength)
-        {
-            var nx = pos.x * noiseScale;
-            var ny = pos.y * noiseScale;
-            var ox = (Mathf.PerlinNoise(nx, ny) - 0.5f) * warpStrength;
-            var oy = (Mathf.PerlinNoise(nx + 100f, ny + 100f) - 0.5f) * warpStrength;
-            return new Vector2(pos.x + ox, pos.y + oy);
-        }
-
-        /// <summary>
-        /// Finds the index of the closest seed to the given warped position,
-        /// factoring in the coverage value for each seed to weight the distance.
-        /// </summary>
-        /// <param name="warped">The warped position to compare against the seeds.</param>
-        /// <param name="seeds">A list of seed positions (<see cref="Vector2Int"/>).</param>
-        /// <param name="coverages">A list of coverage values for each seed, used to weight the distance calculation.</param>
-        /// <returns>
-        /// The index of the seed in <paramref name="seeds"/> that is closest to <paramref name="warped"/>,
-        /// after dividing the squared distance by the corresponding coverage value.
-        /// </returns>
-        private static int FindClosestSeed(
-            Vector2 warped,
-            List<Vector2Int> seeds,
-            List<float> coverages)
-        {
-            var best = 0;
-            var bestD = float.MaxValue;
-            for (var i = 0; i < seeds.Count; i++)
-            {
-                var d = Vector2.SqrMagnitude(warped - seeds[i]) / coverages[i];
-                if (!(d < bestD)) continue;
-                bestD = d;
-                best = i;
-            }
-
-            return best;
-        }
 
         /// <summary>
         /// Logs the actual and expected coverage percentage for a biome region.
@@ -352,6 +320,50 @@ namespace Controllers.Editor
         /// <summary>
         /// Sets the value of the ClearDungeon toggle.
         /// </summary>
-        public void SetClearDungeon(bool newValue) => ClearDungeonToggle = newValue;
+        public static void SetClearDungeon(bool newValue) => ClearDungeonToggle = newValue;
+    }
+
+    [BurstCompile]
+    internal struct BuildBiomeMapJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeArray<int2> Positions;
+        [ReadOnly] public NativeArray<int2> Seeds;
+        [ReadOnly] public NativeArray<float> Coverages;
+        public float NoiseScale;
+        public float WarpStrength;
+        public NativeArray<int> OutIndices;
+
+        public void Execute(int index)
+        {
+            var pos = Positions[index];
+            var warped = ApplyDomainWarp(pos, NoiseScale, WarpStrength);
+            var best = FindClosestSeed(warped, Seeds, Coverages);
+            OutIndices[index] = best;
+        }
+
+        private static float2 ApplyDomainWarp(int2 pos, float noiseScale, float warpStrength)
+        {
+            var nx = pos.x * noiseScale;
+            var ny = pos.y * noiseScale;
+            var ox = (Mathf.PerlinNoise(nx, ny) - 0.5f) * warpStrength;
+            var oy = (Mathf.PerlinNoise(nx + 100f, ny + 100f) - 0.5f) * warpStrength;
+            return new float2(pos.x + ox, pos.y + oy);
+        }
+
+        private static int FindClosestSeed(float2 warped, NativeArray<int2> seeds, NativeArray<float> coverages)
+        {
+            var best = 0;
+            var bestD = float.MaxValue;
+            for (var i = 0; i < seeds.Length; i++)
+            {
+                var seed = new float2(seeds[i].x, seeds[i].y);
+                var d = math.distancesq(warped, seed) / coverages[i];
+                if (!(d < bestD)) continue;
+                bestD = d;
+                best = i;
+            }
+
+            return best;
+        }
     }
 }
