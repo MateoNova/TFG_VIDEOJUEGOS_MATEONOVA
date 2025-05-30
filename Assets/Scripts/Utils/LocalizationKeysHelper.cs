@@ -1,5 +1,9 @@
 ﻿namespace Utils
 {
+    /// <summary>
+    /// Helper class containing localization keys for various UI elements in the editor.
+    /// These keys are used to set localized text for UI components in the editor views.
+    /// /// </summary>
     public static class LocalizationKeysHelper
     {
         # region Initialization View

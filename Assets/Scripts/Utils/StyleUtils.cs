@@ -4,6 +4,10 @@ using UnityEngine.UIElements;
 
 namespace Utils
 {
+    /// <summary>
+    /// Utility class for creating common UI styles and elements in Unity's UI Toolkit.
+    /// Provides methods to create styled containers, buttons, labels, toggles, and other UI components.
+    /// </summary>
     public static class StyleUtils
     {
         public static ScrollView SimpleScrollView()
@@ -176,14 +180,7 @@ namespace Utils
                 value = value
             };
         }
-
-        /// <summary>
-        /// Crea un expander (similar a Foldout) sin propagar estilos a los hijos.
-        /// </summary>
-        /// <param name="title">Texto de la cabecera.</param>
-        /// <param name="content">VisualElement donde añadirás tus controles.</param>
-        /// <param name="expanded">Si empieza desplegado o no.</param>
-        /// <returns>El VisualElement completo (cabecera + contenido).</returns>
+        
         public static VisualElement SimpleExpander(string title, out VisualElement content, bool expanded = true)
         {
             var expander = new VisualElement

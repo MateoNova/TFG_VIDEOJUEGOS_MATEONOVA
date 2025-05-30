@@ -16,7 +16,6 @@ namespace Character
 
         private void Update()
         {
-            // Capture input in Update
             _movement.x = Input.GetAxisRaw("Horizontal");
             _movement.y = Input.GetAxisRaw("Vertical");
         }

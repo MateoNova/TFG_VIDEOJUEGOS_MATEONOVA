@@ -36,7 +36,6 @@ namespace Character
             var smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
             transform.position = smoothedPosition;
 
-            // Rotate the camera to face the direction of the target's movement
             transform.rotation = target.rotation;
         }
     }

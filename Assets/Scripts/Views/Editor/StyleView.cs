@@ -167,7 +167,7 @@ namespace Views.Editor
         /// <returns>A visual element representing the preset subsection.</returns>
         private VisualElement CreatePresetSubsection(TilesetPreset preset, int presetIdx)
         {
-            var section = StyleUtils.SimpleExpander(preset.name, out var body, false);
+            var section = StyleUtils.SimpleExpander(preset.name, out var body);
 
             section.AddManipulator(new ContextualMenuManipulator(evt =>
                 {

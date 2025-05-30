@@ -95,7 +95,7 @@ namespace Utils
 
 
         public static string GetObjectSelectorUpdateCommand() => "ObjectSelectorUpdated";
-
+        
         public static bool[] GetNeighborBits(int mask)
         {
             // order: N, NE, E, SE, S, SW, W, NW
