@@ -33,7 +33,7 @@ namespace Utils
             TripleExceptLeftInner,
             TripleExceptRightInner
         }
-        
+
         public static readonly List<string> PredefinedTileNames = new()
         {
             "TopLeftWall", "TripleExceptUpWall", "TopRightWall", "TopLeftInnerWall", "TopRightInnerWall",
@@ -88,14 +88,14 @@ namespace Utils
 
         public static string AddSpacesToCamelCase(string input)
         {
-            return string.IsNullOrEmpty(input) ? input : Regex.Replace(input, "(?<!^)([A-Z0-9])", " $1");
+            return string.IsNullOrEmpty(input) ? input : Regex.Replace(input, @"^\d+_", "");
         }
 
         public static string GetDefaultIconContent() => "d_UnityEditor.ConsoleWindow";
 
 
         public static string GetObjectSelectorUpdateCommand() => "ObjectSelectorUpdated";
-        
+
         public static bool[] GetNeighborBits(int mask)
         {
             // order: N, NE, E, SE, S, SW, W, NW
@@ -105,7 +105,7 @@ namespace Utils
             return bits;
         }
 
-         public static WallPosition DetermineWallPosition(bool[] n)
+        public static WallPosition DetermineWallPosition(bool[] n)
         {
             // shorthand for readability
             bool N = n[0], NE = n[1], E = n[2], SE = n[3];
